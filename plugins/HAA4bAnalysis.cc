@@ -23,6 +23,7 @@
 
 //ROOT includes
 #include <TH1F.h>
+#include <TH2F.h>
 
 //CMSSW includes
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -46,47 +47,61 @@ typedef math::XYZTLorentzVector LorentzVector;
 //
 
 class HAA4bAnalysis : public edm::EDAnalyzer {
-   public:
-      explicit HAA4bAnalysis(const edm::ParameterSet&);
-      ~HAA4bAnalysis();
+public:
+  explicit HAA4bAnalysis(const edm::ParameterSet&);
+  ~HAA4bAnalysis();
 
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 
-   private:
-      virtual void beginJob() override;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-      virtual void endJob() override;
+private:
+  virtual void beginJob() override;
+  virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
+  virtual void endJob() override;
 
-      int get_best_combination(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
-      bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
+  int get_best_combination(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
+  bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
 
-      // ----------member data ---------------------------
-      const edm::InputTag jets_;
-      std::string bdiscr_;
-      double minPt_;
+  // ----------member data ---------------------------
+  const edm::InputTag jets_;
+  std::string bdiscr_;
+  double minPt1_;
+  double minPt4_;
 
-      edm::Service<TFileService> fs;
+  edm::Service<TFileService> fs;
 
-      TH1F* h_jet1pt;
-      TH1F* h_jet2pt;
-      TH1F* h_jet3pt;
-      TH1F* h_jet4pt;
+  TH1F* h_jet1pt;
+  TH1F* h_jet2pt;
+  TH1F* h_jet3pt;
+  TH1F* h_jet4pt;
 
-      TH1F* h_jet1Btag;
-      TH1F* h_jet2Btag;
-      TH1F* h_jet3Btag;
-      TH1F* h_jet4Btag;
+  TH1F* h_jet1eta;
+  TH1F* h_jet2eta;
+  TH1F* h_jet3eta;
+  TH1F* h_jet4eta;
 
-      TH1F* h_m_pair1;
-      TH1F* h_m_pair2;
-      TH1F* h_m_4b;
+  TH1F* h_jet1Btag;
+  TH1F* h_jet2Btag;
+  TH1F* h_jet3Btag;
+  TH1F* h_jet4Btag;
 
-      TH1F* h_delta_Phi_pair;
-      TH1F* h_delta_Eta_pair;
+  TH1F* h_m_pair1;
+  TH1F* h_m_pair2;
+  TH1F* h_m_4b;
+  TH2F* h_m4b_m12;
+  TH2F* h_m4b_m34;
 
-      int _Nevents_processed;
-      int _Nevents_passed;
+  TH1F* h_delta_Phi_pair;
+  TH1F* h_delta_Eta_pair;
+
+  TH1F* h_Events;
+
+  int _Nevents_processed;
+  int _Nevents_4bjets;
+  int _Nevents_ptpass;
+  int _Nevents_mpairs;
+  int _Nevents_deltaM;
+  int _Nevents_passed;
   
 };
 
@@ -95,27 +110,41 @@ class HAA4bAnalysis : public edm::EDAnalyzer {
 HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   jets_(iConfig.getParameter<edm::InputTag>("jets")),
   bdiscr_(iConfig.getParameter<std::string>("BTagAlgo")),
-  minPt_(iConfig.getParameter<double>("minPt"))
+  minPt1_(iConfig.getParameter<double>("minPt1")),
+  minPt4_(iConfig.getParameter<double>("minPt4"))
 {
   _Nevents_processed = 0;
-  _Nevents_passed = 0;
+  _Nevents_4bjets    = 0;
+  _Nevents_ptpass    = 0;
+  _Nevents_mpairs    = 0;
+  _Nevents_deltaM    = 0;
+  _Nevents_passed    = 0;
 
   h_jet1pt = fs->make<TH1F>("h_jet1pt", "P_t of the 1st jet", 200, 0., 500.);
   h_jet2pt = fs->make<TH1F>("h_jet2pt", "P_t of the 2nd jet", 200, 0., 500.);
   h_jet3pt = fs->make<TH1F>("h_jet3pt", "P_t of the 3rd jet", 200, 0., 500.);
   h_jet4pt = fs->make<TH1F>("h_jet4pt", "P_t of the 4th jet", 200, 0., 500.);
 
-  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 200, 0., 500.);
-  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 200, 0., 500.);
-  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 200, 0., 500.);
-  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 200, 0., 500.);
+  h_jet1eta = fs->make<TH1F>("h_jet1eta", "#eta of the 1st jet", 50, -10., 10.);
+  h_jet2eta = fs->make<TH1F>("h_jet2eta", "#eta of the 2nd jet", 50, -10., 10.);
+  h_jet3eta = fs->make<TH1F>("h_jet3eta", "#eta of the 3rd jet", 50, -10., 10.);
+  h_jet4eta = fs->make<TH1F>("h_jet4eta", "#eta of the 4th jet", 50, -10., 10.);
 
-  h_m_pair1 = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 400, 120., 800.);
-  h_m_pair2 = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 400, 120., 800.);
-  h_m_4b    = fs->make<TH1F>("h_m_4b", "Invariant mass of the four b jets", 400, 120., 1000.);
+  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, 0., 1.);
+  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, 0., 1.);
+  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, 0., 1.);
+  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, 0., 1.);
 
-  h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 30, -3.14, 3.14);
+  h_m_pair1 = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
+  h_m_pair2 = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
+  h_m_4b    = fs->make<TH1F>("h_m_4b", "Invariant mass of the four b jets", 200, 130., 1000.);
+  h_m4b_m12 = fs->make<TH2F>("h_m4b_m12", "Invariant mass of 4b vs m12", 200, 130., 1000.,200,130.,800.);
+  h_m4b_m34 = fs->make<TH2F>("h_m4b_m34", "Invariant mass of 4b vs m34", 200, 130., 1000.,200,130.,800.);
+
+  h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 30, 0., 3.14);
   h_delta_Eta_pair = fs->make<TH1F>("h_delta_Eta_pair", "#Delta_{#eta} between the two jet pairs", 50, -10., 10.);
+
+  h_Events = fs->make<TH1F>("h_Events", "Event counting in different steps", 6, 0., 6.);
 
 }
 
@@ -141,6 +170,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(jets_, jets);
 
   if(jets->size() < 4) return;
+
+  _Nevents_4bjets++;
 
   int nj1 = -1;
   int nj2 = -1;
@@ -199,10 +230,15 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   LorentzVector jet3_4mom = jet3.p4();
   LorentzVector jet4_4mom = jet4.p4();
  
-  if(jet4_4mom.Pt() < minPt_) return;
+  if(jet1_4mom.Pt() < minPt1_) return;
+  if(jet4_4mom.Pt() < minPt4_) return;
+
+  _Nevents_ptpass++;
 
   //Refuse to continue if no combination is above 120 GeV
   if( !check_combinations(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom) ) return;
+
+  _Nevents_mpairs++;
 
   //Convention:
   //1 -> 12 34
@@ -228,18 +264,27 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //Avoid a case in which the difference between the masses is above 100 GeV
   if(fabs (p_pair1.M() - p_pair2.M() ) > 100.) return;
 
+  _Nevents_deltaM++;
+
   //Angular distributions between the two pairs
   float delta_Phi_pairs = p_pair1.Phi() - p_pair2.Phi();
   float delta_Eta_pairs = p_pair1.Eta() - p_pair2.Eta();
 
   float total_Mass_4b = (p_pair1 + p_pair2).M();
-  if(total_Mass_4b < 250.) return;
+  if(total_Mass_4b < 260.) return;
+
+  _Nevents_passed++;
 
   //Now plot a few quantities for the jets
   h_jet1pt->Fill(jet1.p4().Pt());
   h_jet2pt->Fill(jet2.p4().Pt());
   h_jet3pt->Fill(jet3.p4().Pt());
   h_jet4pt->Fill(jet4.p4().Pt());
+
+  h_jet1eta->Fill(jet1.p4().Eta());
+  h_jet2eta->Fill(jet2.p4().Eta());
+  h_jet3eta->Fill(jet3.p4().Eta());
+  h_jet4eta->Fill(jet4.p4().Eta());
 
   h_jet1Btag->Fill(jet1.bDiscriminator(bdiscr_));
   h_jet2Btag->Fill(jet2.bDiscriminator(bdiscr_));
@@ -250,9 +295,11 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   h_m_pair1->Fill(p_pair1.M());
   h_m_pair2->Fill(p_pair2.M());
   h_m_4b->Fill(total_Mass_4b);
+  h_m4b_m12->Fill(total_Mass_4b,p_pair1.M());
+  h_m4b_m34->Fill(total_Mass_4b,p_pair2.M());
 
   //And the angular "distributions"
-  h_delta_Phi_pair->Fill(delta_Phi_pairs);
+  h_delta_Phi_pair->Fill(fabs(delta_Phi_pairs));
   h_delta_Eta_pair->Fill(delta_Eta_pairs);
 
 }
@@ -266,9 +313,22 @@ void HAA4bAnalysis::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void HAA4bAnalysis::endJob() 
 {
+  h_Events->Fill(0.5,_Nevents_processed);
+  h_Events->Fill(1.1,_Nevents_4bjets);
+  h_Events->Fill(2.5,_Nevents_ptpass);
+  h_Events->Fill(3.5,_Nevents_mpairs);
+  h_Events->Fill(4.5,_Nevents_deltaM);
+  h_Events->Fill(5.5,_Nevents_passed);
+
+  std::cout << "#######################" << std::endl;
   std::cout << "EVENT SUMMARY" << std::endl;
   std::cout << "Number of events processed = " << _Nevents_processed << std::endl;
-  
+  std::cout << "Number of events with 4 bjets = " << _Nevents_4bjets << std::endl;
+  std::cout << "Number of events passing pt cuts = " << _Nevents_ptpass << std::endl;
+  std::cout << "Number of events with m_12/34 > 120 GeV = " << _Nevents_mpairs << std::endl;
+  std::cout << "Number of events with delta_m_12/34 < 100 GeV = " << _Nevents_deltaM << std::endl;
+  std::cout << "Number of events passing the selection = " << _Nevents_passed << std::endl;
+  std::cout << "#######################" << std::endl;
 }
 
 int HAA4bAnalysis::get_best_combination(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4){
@@ -294,12 +354,12 @@ int HAA4bAnalysis::get_best_combination(LorentzVector m1, LorentzVector m2, Lore
 
 bool HAA4bAnalysis::check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4){
 
-  bool b12 = (m1+m2).M() > 120.;
-  bool b13 = (m1+m3).M() > 120.;
-  bool b14 = (m1+m4).M() > 120.;
-  bool b34 = (m3+m4).M() > 120.;
-  bool b24 = (m2+m4).M() > 120.;
-  bool b23 = (m2+m3).M() > 120.;
+  bool b12 = (m1+m2).M() > 130.;
+  bool b13 = (m1+m3).M() > 130.;
+  bool b14 = (m1+m4).M() > 130.;
+  bool b34 = (m3+m4).M() > 130.;
+  bool b24 = (m2+m4).M() > 130.;
+  bool b23 = (m2+m3).M() > 130.;
 
   return b12 || b13 || b14 || b34 || b24 || b23;
 }
