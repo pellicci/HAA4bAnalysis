@@ -1,21 +1,35 @@
-import ROOT
 import os
 
 ###All normalizations are provided to 1fb-1 of lumi in these tables
 
-dir_input = "crab_projects/backgrounds/"
+dir_input = "crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
 
-output_filename = "Background_normalizations.txt"
+output_filename = "Normalizations_table.txt"
 
 ##These are in pb
 def get_xsec_fromsample(samplename):
     
     if samplename == "ttbar":
-        return 670.3
+        return 831.76
 
     if samplename == "DY_5_50":
-        return 71600.0
+        return 71310.0
+
+    if samplename == "DY_50":
+        return 6225.2
+
+    if samplename == "QCD_15_30":
+        return 1837410000.0
+
+    if samplename == "QCD_30_50":
+        return 140932000.0
+
+    if samplename == "QCD_50_80":
+        return 19204300.0
+
+    if samplename == "QCD_80_120":
+        return 2762530.0
 
     if samplename == "QCD_120_170":
         return 471100.0
@@ -45,16 +59,25 @@ def get_xsec_fromsample(samplename):
         return 0.114943
 
     if samplename == "SingleTop_tW":
-        return 38.09
+        return 35.6
 
     if samplename == "SingleAntiTop_tW":
-        return 38.09
+        return 35.6
 
     if samplename == "ZZ":
-        return 10.32
+        return 16.523
 
     if samplename == "WW":
         return 63.21
+
+    if samplename == "WZ":
+        return 47.13
+
+    if samplename == "WJetsToLNu":
+        return 61526.7
+
+    if samplename == "Signal_H500_A200":
+        return 1.96
 
 ##Now starts the program
 
@@ -67,9 +90,10 @@ for dirname in list_dirs:
     print "Processing sample dir " + dirname
     crab_command = "crab report -d " + dir_input + dirname + "| grep read"
 
-    number_events = -1.
-    if(samplename == "ttbar"):
+    if samplename == "ttbar":
         number_events = 42784971.0
+    elif samplename == "WJetsToLNu":
+        number_events = 72207128.0
     else :
         event_string = os.popen(crab_command).read()
         number_events = float((event_string.split())[0])

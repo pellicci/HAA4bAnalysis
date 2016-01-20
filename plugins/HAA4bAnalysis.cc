@@ -24,6 +24,7 @@
 //ROOT includes
 #include <TH1F.h>
 #include <TH2F.h>
+#include <TTree.h>
 
 //CMSSW includes
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -96,6 +97,31 @@ private:
 
   TH1F* h_Events;
 
+  //TTree stuff
+  TTree *mytree;
+
+  float var_jet1pt;
+  float var_jet2pt;
+  float var_jet3pt;
+  float var_jet4pt;
+
+  float var_jet1eta;
+  float var_jet2eta;
+  float var_jet3eta;
+  float var_jet4eta;
+
+  float var_jet1Btag;
+  float var_jet2Btag;
+  float var_jet3Btag;
+  float var_jet4Btag;
+
+  float var_m_pair1;
+  float var_m_pair2;
+  float var_m_4b;
+
+  float var_delta_Phi_pair;
+  float var_delta_Eta_pair;
+
   int _Nevents_processed;
   int _Nevents_4bjets;
   int _Nevents_ptpass;
@@ -130,10 +156,10 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   h_jet3eta = fs->make<TH1F>("h_jet3eta", "#eta of the 3rd jet", 50, -10., 10.);
   h_jet4eta = fs->make<TH1F>("h_jet4eta", "#eta of the 4th jet", 50, -10., 10.);
 
-  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, 0., 1.);
-  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, 0., 1.);
-  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, 0., 1.);
-  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, 0., 1.);
+  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, 0.89, 1.);
+  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, 0.89, 1.);
+  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, 0.89, 1.);
+  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, 0.89, 1.);
 
   h_m_pair1 = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
   h_m_pair2 = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
@@ -146,6 +172,24 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
 
   h_Events = fs->make<TH1F>("h_Events", "Event counting in different steps", 6, 0., 6.);
 
+  mytree = fs->make<TTree>("mytree", "Tree containing events after presel");
+  mytree->Branch("jet1pt",&var_jet1pt,"jet1pt/F");
+  mytree->Branch("jet2pt",&var_jet1pt,"jet2pt/F");
+  mytree->Branch("jet3pt",&var_jet1pt,"jet3pt/F");
+  mytree->Branch("jet4pt",&var_jet1pt,"jet4pt/F");
+  mytree->Branch("jet1eta",&var_jet1eta,"jet1eta/F");
+  mytree->Branch("jet2eta",&var_jet1eta,"jet2eta/F");
+  mytree->Branch("jet3eta",&var_jet1eta,"jet3eta/F");
+  mytree->Branch("jet4eta",&var_jet1eta,"jet4eta/F");
+  mytree->Branch("jet1Btag",&var_jet1Btag,"jet1Btag/F");
+  mytree->Branch("jet2Btag",&var_jet1Btag,"jet2Btag/F");
+  mytree->Branch("jet3Btag",&var_jet1Btag,"jet3Btag/F");
+  mytree->Branch("jet4Btag",&var_jet1Btag,"jet4Btag/F");
+  mytree->Branch("m_pair1",&var_m_pair1,"m_pair1/F");
+  mytree->Branch("m_pair2",&var_m_pair2,"m_pair2/F");
+  mytree->Branch("m_4b",&var_m_4b,"m_4b/F");
+  mytree->Branch("delta_Phi_pair",&var_delta_Phi_pair,"delta_Phi_pair/F");
+  mytree->Branch("delta_Eta_pair",&var_delta_Eta_pair,"delta_Eta_pair/F");
 }
 
 
@@ -267,8 +311,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   _Nevents_deltaM++;
 
   //Angular distributions between the two pairs
-  float delta_Phi_pairs = p_pair1.Phi() - p_pair2.Phi();
-  float delta_Eta_pairs = p_pair1.Eta() - p_pair2.Eta();
+  float var_delta_Phi_pairs = p_pair1.Phi() - p_pair2.Phi();
+  float var_delta_Eta_pairs = p_pair1.Eta() - p_pair2.Eta();
 
   float total_Mass_4b = (p_pair1 + p_pair2).M();
   if(total_Mass_4b < 260.) return;
@@ -276,32 +320,53 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   _Nevents_passed++;
 
   //Now plot a few quantities for the jets
-  h_jet1pt->Fill(jet1.p4().Pt());
-  h_jet2pt->Fill(jet2.p4().Pt());
-  h_jet3pt->Fill(jet3.p4().Pt());
-  h_jet4pt->Fill(jet4.p4().Pt());
+  var_jet1pt = jet1.p4().Pt();
+  var_jet2pt = jet2.p4().Pt();
+  var_jet3pt = jet3.p4().Pt();
+  var_jet4pt = jet4.p4().Pt();
 
-  h_jet1eta->Fill(jet1.p4().Eta());
-  h_jet2eta->Fill(jet2.p4().Eta());
-  h_jet3eta->Fill(jet3.p4().Eta());
-  h_jet4eta->Fill(jet4.p4().Eta());
+  var_jet1eta = jet1.p4().Eta();
+  var_jet2eta = jet2.p4().Eta();
+  var_jet3eta = jet3.p4().Eta();
+  var_jet4eta = jet4.p4().Eta();
 
-  h_jet1Btag->Fill(jet1.bDiscriminator(bdiscr_));
-  h_jet2Btag->Fill(jet2.bDiscriminator(bdiscr_));
-  h_jet3Btag->Fill(jet3.bDiscriminator(bdiscr_));
-  h_jet4Btag->Fill(jet4.bDiscriminator(bdiscr_));
+  var_jet1Btag = jet1.bDiscriminator(bdiscr_);
+  var_jet2Btag = jet2.bDiscriminator(bdiscr_);
+  var_jet3Btag = jet3.bDiscriminator(bdiscr_);
+  var_jet4Btag = jet4.bDiscriminator(bdiscr_);
+
+  var_m_pair1 = p_pair1.M();
+  var_m_pair2 = p_pair2.M();
+
+  var_m_4b = total_Mass_4b;
+
+  h_jet1pt->Fill(var_jet1pt);
+  h_jet2pt->Fill(var_jet2pt);
+  h_jet3pt->Fill(var_jet3pt);
+  h_jet4pt->Fill(var_jet4pt);
+
+  h_jet1eta->Fill(var_jet1eta);
+  h_jet2eta->Fill(var_jet2eta);
+  h_jet3eta->Fill(var_jet3eta);
+  h_jet4eta->Fill(var_jet4eta);
+
+  h_jet1Btag->Fill(var_jet1Btag);
+  h_jet2Btag->Fill(var_jet2Btag);
+  h_jet3Btag->Fill(var_jet3Btag);
+  h_jet4Btag->Fill(var_jet4Btag);
 
   //And the invariant masses
-  h_m_pair1->Fill(p_pair1.M());
-  h_m_pair2->Fill(p_pair2.M());
+  h_m_pair1->Fill(var_m_pair1);
+  h_m_pair2->Fill(var_m_pair2);
   h_m_4b->Fill(total_Mass_4b);
   h_m4b_m12->Fill(total_Mass_4b,p_pair1.M());
   h_m4b_m34->Fill(total_Mass_4b,p_pair2.M());
 
   //And the angular "distributions"
-  h_delta_Phi_pair->Fill(fabs(delta_Phi_pairs));
-  h_delta_Eta_pair->Fill(delta_Eta_pairs);
+  h_delta_Phi_pair->Fill(var_delta_Phi_pairs);
+  h_delta_Eta_pair->Fill(var_delta_Eta_pairs);
 
+  mytree->Fill();
 }
 
 

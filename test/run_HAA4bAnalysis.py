@@ -31,7 +31,7 @@ process.TFileService = cms.Service("TFileService",
 
 
 #Put a loose selection on the b-jets
-getattr(process,'selectedPatJetsAK5PFCHS').cut = cms.string('bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.605')
+getattr(process,'selectedPatJetsAK5PFCHS').cut = cms.string('bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.89')
 
 process.load("HiggsAnalysis.HAA4bAnalysis.HAA4b_Analysis_cfi")
 process.analysis = cms.Path(process.HZZ4bAnalysis)

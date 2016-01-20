@@ -3,8 +3,8 @@ config = config()
 
 config.section_('General')
 config.General.transferOutputs = True
-config.General.requestName = 'HAA4bAnalysis'
-config.General.workArea = 'crab_projects'
+config.General.requestName = 'HAA4bAnalysis_Signal_H500_A200'
+config.General.workArea = 'crab_projects/samples'
 
 config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
