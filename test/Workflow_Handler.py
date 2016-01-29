@@ -51,4 +51,21 @@ class Workflow_Handler:
 
         return root_file
 
+    def get_best_combination(self, m1, m2, m3, m4):
+
+        diff_m_12_34 = abs( (m1+m2).M() - (m3+m4).M() );
+        diff_m_13_24 = abs( (m1+m3).M() - (m2+m4).M() );
+        diff_m_14_23 = abs( (m1+m4).M() - (m2+m3).M() );
+
+        diff_vector = [diff_m_12_34, diff_m_13_24, diff_m_14_23]
+        diff_vector.sort()
+
+        if diff_vector[0] == diff_m_12_34:
+            return 1
+        elif diff_vector[0] == diff_m_13_24:
+            return 2
+        elif diff_vector[0] == diff_m_14_23:
+            return 3
+
+
 

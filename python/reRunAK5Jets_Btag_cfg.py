@@ -42,7 +42,7 @@ def reSetJet(process):
         rParam = 0.5
     )
 
-    getattr(process,'selectedPatJetsAK5PFCHS').cut = cms.string('pt > 10')
+    getattr(process,'selectedPatJetsAK5PFCHS').cut = cms.string('pt > 20.')
 
     process.rejet = cms.Path(process.packedGenParticlesForJetsNoNu *
                              process.ak5GenJetsNoNu *

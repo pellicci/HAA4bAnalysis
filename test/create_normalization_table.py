@@ -5,7 +5,10 @@ import os
 dir_input = "crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
 
-output_filename = "Normalizations_table.txt"
+if not os.path.exists("rootfiles"):
+    os.makedirs("rootfiles")
+
+output_filename = "rootfiles/Normalizations_table.txt"
 
 ##These are in pb
 def get_xsec_fromsample(samplename):
@@ -91,7 +94,7 @@ for dirname in list_dirs:
     crab_command = "crab report -d " + dir_input + dirname + "| grep read"
 
     if samplename == "ttbar":
-        number_events = 42784971.0
+        number_events = 42784971.0*(185./186.)
     elif samplename == "WJetsToLNu":
         number_events = 72207128.0
     else :

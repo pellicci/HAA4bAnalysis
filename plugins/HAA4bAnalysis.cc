@@ -24,6 +24,7 @@
 //ROOT includes
 #include <TH1F.h>
 #include <TH2F.h>
+#include <TLorentzVector.h>
 #include <TTree.h>
 
 //CMSSW includes
@@ -100,34 +101,23 @@ private:
   //TTree stuff
   TTree *mytree;
 
-  float var_jet1pt;
-  float var_jet2pt;
-  float var_jet3pt;
-  float var_jet4pt;
-
-  float var_jet1eta;
-  float var_jet2eta;
-  float var_jet3eta;
-  float var_jet4eta;
+  TLorentzVector *jet1_4mom_tree;
+  TLorentzVector *jet2_4mom_tree;
+  TLorentzVector *jet3_4mom_tree;
+  TLorentzVector *jet4_4mom_tree;
 
   float var_jet1Btag;
   float var_jet2Btag;
   float var_jet3Btag;
   float var_jet4Btag;
 
-  float var_m_pair1;
-  float var_m_pair2;
-  float var_m_4b;
-
-  float var_delta_Phi_pair;
-  float var_delta_Eta_pair;
-
-  int _Nevents_processed;
-  int _Nevents_4bjets;
-  int _Nevents_ptpass;
-  int _Nevents_mpairs;
-  int _Nevents_deltaM;
-  int _Nevents_passed;
+  //A few counters
+  float _Nevents_processed;
+  float _Nevents_4bjets;
+  float _Nevents_ptpass;
+  float _Nevents_mpairs;
+  float _Nevents_deltaM;
+  float _Nevents_passed;
   
 };
 
@@ -139,13 +129,14 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   minPt1_(iConfig.getParameter<double>("minPt1")),
   minPt4_(iConfig.getParameter<double>("minPt4"))
 {
-  _Nevents_processed = 0;
-  _Nevents_4bjets    = 0;
-  _Nevents_ptpass    = 0;
-  _Nevents_mpairs    = 0;
-  _Nevents_deltaM    = 0;
-  _Nevents_passed    = 0;
+  _Nevents_processed = 0.;
+  _Nevents_4bjets    = 0.;
+  _Nevents_ptpass    = 0.;
+  _Nevents_mpairs    = 0.;
+  _Nevents_deltaM    = 0.;
+  _Nevents_passed    = 0.;
 
+  //Create the histograms and let TFileService handle them
   h_jet1pt = fs->make<TH1F>("h_jet1pt", "P_t of the 1st jet", 200, 0., 500.);
   h_jet2pt = fs->make<TH1F>("h_jet2pt", "P_t of the 2nd jet", 200, 0., 500.);
   h_jet3pt = fs->make<TH1F>("h_jet3pt", "P_t of the 3rd jet", 200, 0., 500.);
@@ -167,29 +158,26 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   h_m4b_m12 = fs->make<TH2F>("h_m4b_m12", "Invariant mass of 4b vs m12", 200, 130., 1000.,200,130.,800.);
   h_m4b_m34 = fs->make<TH2F>("h_m4b_m34", "Invariant mass of 4b vs m34", 200, 130., 1000.,200,130.,800.);
 
-  h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 30, 0., 3.14);
+  h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 50, 0., 6.28);
   h_delta_Eta_pair = fs->make<TH1F>("h_delta_Eta_pair", "#Delta_{#eta} between the two jet pairs", 50, -10., 10.);
 
   h_Events = fs->make<TH1F>("h_Events", "Event counting in different steps", 6, 0., 6.);
 
+  jet1_4mom_tree = new TLorentzVector();
+  jet2_4mom_tree = new TLorentzVector();
+  jet3_4mom_tree = new TLorentzVector();
+  jet4_4mom_tree = new TLorentzVector();
+
+  //Create the tree and let TFileService handle it
   mytree = fs->make<TTree>("mytree", "Tree containing events after presel");
-  mytree->Branch("jet1pt",&var_jet1pt,"jet1pt/F");
-  mytree->Branch("jet2pt",&var_jet1pt,"jet2pt/F");
-  mytree->Branch("jet3pt",&var_jet1pt,"jet3pt/F");
-  mytree->Branch("jet4pt",&var_jet1pt,"jet4pt/F");
-  mytree->Branch("jet1eta",&var_jet1eta,"jet1eta/F");
-  mytree->Branch("jet2eta",&var_jet1eta,"jet2eta/F");
-  mytree->Branch("jet3eta",&var_jet1eta,"jet3eta/F");
-  mytree->Branch("jet4eta",&var_jet1eta,"jet4eta/F");
+  mytree->Branch("jet1_4mom","TLorentzVector",&jet1_4mom_tree);
+  mytree->Branch("jet2_4mom","TLorentzVector",&jet2_4mom_tree);
+  mytree->Branch("jet3_4mom","TLorentzVector",&jet3_4mom_tree);
+  mytree->Branch("jet4_4mom","TLorentzVector",&jet4_4mom_tree);
   mytree->Branch("jet1Btag",&var_jet1Btag,"jet1Btag/F");
-  mytree->Branch("jet2Btag",&var_jet1Btag,"jet2Btag/F");
-  mytree->Branch("jet3Btag",&var_jet1Btag,"jet3Btag/F");
-  mytree->Branch("jet4Btag",&var_jet1Btag,"jet4Btag/F");
-  mytree->Branch("m_pair1",&var_m_pair1,"m_pair1/F");
-  mytree->Branch("m_pair2",&var_m_pair2,"m_pair2/F");
-  mytree->Branch("m_4b",&var_m_4b,"m_4b/F");
-  mytree->Branch("delta_Phi_pair",&var_delta_Phi_pair,"delta_Phi_pair/F");
-  mytree->Branch("delta_Eta_pair",&var_delta_Eta_pair,"delta_Eta_pair/F");
+  mytree->Branch("jet2Btag",&var_jet2Btag,"jet2Btag/F");
+  mytree->Branch("jet3Btag",&var_jet3Btag,"jet3Btag/F");
+  mytree->Branch("jet4Btag",&var_jet4Btag,"jet4Btag/F");
 }
 
 
@@ -213,6 +201,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // get jets from the event
   iEvent.getByLabel(jets_, jets);
 
+  //No point to continue if there aren't 4 jets
   if(jets->size() < 4) return;
 
   _Nevents_4bjets++;
@@ -229,6 +218,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   float jetpt4max = -999.;
   
   // loop over jets and determine the ranking
+  // jets in decreasing pt from 1 to 4
   for(auto jet = jets->begin(); jet != jets->end(); ++jet){
       float thept = jet->p4().Pt();
 
@@ -264,6 +254,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       nCounter++;
     }
 
+  //Select the highest pt jets
   pat::Jet jet1 = jets->at(nj1);
   pat::Jet jet2 = jets->at(nj2);
   pat::Jet jet3 = jets->at(nj3);
@@ -277,6 +268,11 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   if(jet1_4mom.Pt() < minPt1_) return;
   if(jet4_4mom.Pt() < minPt4_) return;
 
+  jet1_4mom_tree->SetPxPyPzE(jet1_4mom.Px(),jet1_4mom.Py(),jet1_4mom.Pz(),jet1_4mom.E());
+  jet2_4mom_tree->SetPxPyPzE(jet2_4mom.Px(),jet2_4mom.Py(),jet2_4mom.Pz(),jet2_4mom.E());
+  jet3_4mom_tree->SetPxPyPzE(jet3_4mom.Px(),jet3_4mom.Py(),jet3_4mom.Pz(),jet3_4mom.E());
+  jet4_4mom_tree->SetPxPyPzE(jet4_4mom.Px(),jet4_4mom.Py(),jet4_4mom.Pz(),jet4_4mom.E());
+
   _Nevents_ptpass++;
 
   //Refuse to continue if no combination is above 120 GeV
@@ -284,6 +280,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   _Nevents_mpairs++;
 
+  //Get the best pairing possible of two by two bjets, according to invariant mass
   //Convention:
   //1 -> 12 34
   //2 -> 13 24
@@ -311,8 +308,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   _Nevents_deltaM++;
 
   //Angular distributions between the two pairs
-  float var_delta_Phi_pairs = p_pair1.Phi() - p_pair2.Phi();
-  float var_delta_Eta_pairs = p_pair1.Eta() - p_pair2.Eta();
+  float var_delta_Phi_pair = p_pair1.Phi() - p_pair2.Phi();
+  float var_delta_Eta_pair = p_pair1.Eta() - p_pair2.Eta();
 
   float total_Mass_4b = (p_pair1 + p_pair2).M();
   if(total_Mass_4b < 260.) return;
@@ -320,35 +317,20 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   _Nevents_passed++;
 
   //Now plot a few quantities for the jets
-  var_jet1pt = jet1.p4().Pt();
-  var_jet2pt = jet2.p4().Pt();
-  var_jet3pt = jet3.p4().Pt();
-  var_jet4pt = jet4.p4().Pt();
-
-  var_jet1eta = jet1.p4().Eta();
-  var_jet2eta = jet2.p4().Eta();
-  var_jet3eta = jet3.p4().Eta();
-  var_jet4eta = jet4.p4().Eta();
-
   var_jet1Btag = jet1.bDiscriminator(bdiscr_);
   var_jet2Btag = jet2.bDiscriminator(bdiscr_);
   var_jet3Btag = jet3.bDiscriminator(bdiscr_);
   var_jet4Btag = jet4.bDiscriminator(bdiscr_);
 
-  var_m_pair1 = p_pair1.M();
-  var_m_pair2 = p_pair2.M();
+  h_jet1pt->Fill(jet1.p4().Pt());
+  h_jet2pt->Fill(jet2.p4().Pt());
+  h_jet3pt->Fill(jet3.p4().Pt());
+  h_jet4pt->Fill(jet4.p4().Pt());
 
-  var_m_4b = total_Mass_4b;
-
-  h_jet1pt->Fill(var_jet1pt);
-  h_jet2pt->Fill(var_jet2pt);
-  h_jet3pt->Fill(var_jet3pt);
-  h_jet4pt->Fill(var_jet4pt);
-
-  h_jet1eta->Fill(var_jet1eta);
-  h_jet2eta->Fill(var_jet2eta);
-  h_jet3eta->Fill(var_jet3eta);
-  h_jet4eta->Fill(var_jet4eta);
+  h_jet1eta->Fill(jet1.p4().Eta());
+  h_jet2eta->Fill(jet2.p4().Eta());
+  h_jet3eta->Fill(jet3.p4().Eta());
+  h_jet4eta->Fill(jet4.p4().Eta());
 
   h_jet1Btag->Fill(var_jet1Btag);
   h_jet2Btag->Fill(var_jet2Btag);
@@ -356,15 +338,15 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   h_jet4Btag->Fill(var_jet4Btag);
 
   //And the invariant masses
-  h_m_pair1->Fill(var_m_pair1);
-  h_m_pair2->Fill(var_m_pair2);
+  h_m_pair1->Fill(p_pair1.M());
+  h_m_pair2->Fill(p_pair2.M());
   h_m_4b->Fill(total_Mass_4b);
   h_m4b_m12->Fill(total_Mass_4b,p_pair1.M());
   h_m4b_m34->Fill(total_Mass_4b,p_pair2.M());
 
   //And the angular "distributions"
-  h_delta_Phi_pair->Fill(var_delta_Phi_pairs);
-  h_delta_Eta_pair->Fill(var_delta_Eta_pairs);
+  h_delta_Phi_pair->Fill(var_delta_Phi_pair);
+  h_delta_Eta_pair->Fill(var_delta_Eta_pair);
 
   mytree->Fill();
 }
