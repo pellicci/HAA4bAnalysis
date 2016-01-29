@@ -15,21 +15,25 @@ myWF = Workflow_Handler("Signal_H500_A200")
 #PT_PAIR1_MIN = 150.
 #PT_PAIR2_MIN = 150.
 
-PT1_MIN = 165.
+PT1_MIN = 180.
 PT2_MIN = 130.
-PT3_MIN = 130.
-PT4_MIN = 110.
-DELTA_PHI_MIN = 0.9
-DELTA_ETA_MAX = 1.5
-PT_PAIR1_MIN = 0.
-PT_PAIR2_MIN = 0.
+PT3_MIN = 80.
+PT4_MIN = 75.
+ETA1_MAX = 5.
+ETA2_MAX = 5.
+ETA3_MAX = 5.
+ETA4_MAX = 5.
+DELTA_PHI_MIN = 0.2
+DELTA_ETA_MAX = 0.6
+PT_PAIR1_MIN = 190.
+PT_PAIR2_MIN = 190.
 
 ##Normalize to this luminsity, in fb-1
 luminosity_norm = 10.
 ##Make signal histos larger
 signal_magnify = 10.
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b"]
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta"]
 
 def select_all_but_one(cutstring):
 
@@ -38,10 +42,21 @@ def select_all_but_one(cutstring):
     selection_bools["h_jet2pt"] = jet2pt > PT2_MIN
     selection_bools["h_jet3pt"] = jet3pt > PT3_MIN
     selection_bools["h_jet4pt"] = jet4pt > PT4_MIN
+
+    selection_bools["h_jet1eta"] = jet1eta < ETA1_MAX
+    selection_bools["h_jet2eta"] = jet2eta < ETA2_MAX
+    selection_bools["h_jet3eta"] = jet3eta < ETA3_MAX
+    selection_bools["h_jet4eta"] = jet4eta < ETA4_MAX
+
     selection_bools["h_delta_Phi_pair"] = delta_Phi > DELTA_PHI_MIN
     selection_bools["h_delta_Eta_pair"] = abs(delta_Eta) < DELTA_ETA_MAX
     selection_bools["h_pt_pair1"] = pt_pair1 > PT_PAIR1_MIN
     selection_bools["h_pt_pair2"] = pt_pair2 > PT_PAIR1_MIN
+
+    selection_bools["h_jet1Btag"] = mytree.jet1Btag > 0.97
+    selection_bools["h_jet2Btag"] = mytree.jet2Btag > 0.97
+    selection_bools["h_jet3Btag"] = mytree.jet3Btag > 0.97
+    selection_bools["h_jet4Btag"] = mytree.jet4Btag > 0.97
 
     result = True
 
@@ -74,25 +89,33 @@ for sample_name in samplename_list:
     if "QCD" in sample_name:
         continue
 
-    h_base[sample_name+list_histos[0]]  = ROOT.TH1F(sample_name+list_histos[0], "p_{t} of 1st jet", 50, PT1_MIN, 500.)
-    h_base[sample_name+list_histos[1]]  = ROOT.TH1F(sample_name+list_histos[1], "p_{t} of 2nd jet", 50, PT2_MIN, 500.)
-    h_base[sample_name+list_histos[2]]  = ROOT.TH1F(sample_name+list_histos[2], "p_{t} of 3rd jet", 50, PT3_MIN, 500.)
-    h_base[sample_name+list_histos[3]]  = ROOT.TH1F(sample_name+list_histos[3], "p_{t} of 4th jet", 50, PT4_MIN, 500.)
+    h_base[sample_name+list_histos[0]]  = ROOT.TH1F(sample_name+list_histos[0], "p_{t} of 1st jet", 50, 50., 500.)
+    h_base[sample_name+list_histos[1]]  = ROOT.TH1F(sample_name+list_histos[1], "p_{t} of 2nd jet", 50, 50., 500.)
+    h_base[sample_name+list_histos[2]]  = ROOT.TH1F(sample_name+list_histos[2], "p_{t} of 3rd jet", 50, 50., 500.)
+    h_base[sample_name+list_histos[3]]  = ROOT.TH1F(sample_name+list_histos[3], "p_{t} of 4th jet", 50, 50., 500.)
     h_base[sample_name+list_histos[4]]  = ROOT.TH1F(sample_name+list_histos[4], "#Delta_{#phi} of the two jet pairs", 30, 0., 6.28)
     h_base[sample_name+list_histos[5]]  = ROOT.TH1F(sample_name+list_histos[5], "#Delta_{#eta} of the two jet pairs", 20, -5., 5.)
     h_base[sample_name+list_histos[6]]  = ROOT.TH1F(sample_name+list_histos[6], "p_T of the first jet pair", 50, 0., 500.)
     h_base[sample_name+list_histos[7]]  = ROOT.TH1F(sample_name+list_histos[7], "p_T of the second jet pair", 50, 0., 500.)
     h_base[sample_name+list_histos[8]]  = ROOT.TH1F(sample_name+list_histos[8], "4jets invariant mass", 100, 0., 1000.)
+    h_base[sample_name+list_histos[9]]  = ROOT.TH1F(sample_name+list_histos[9], "#eta of 1st jet", 30, -7., 7.)
+    h_base[sample_name+list_histos[10]] = ROOT.TH1F(sample_name+list_histos[10], "#eta of 2nd jet", 30, -7., 7.)
+    h_base[sample_name+list_histos[11]] = ROOT.TH1F(sample_name+list_histos[11], "#eta of 3rd jet", 30, -7., 7.)
+    h_base[sample_name+list_histos[12]] = ROOT.TH1F(sample_name+list_histos[12], "#eta of 4th jet", 30, -7., 7.)
 
-h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 50, PT1_MIN, 500.)
-h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 50, PT2_MIN, 500.)
-h_QCD[list_histos[2]]  = ROOT.TH1F(list_histos[2], "p_{t} of 3rd jet", 50, PT3_MIN, 500.)
-h_QCD[list_histos[3]]  = ROOT.TH1F(list_histos[3], "p_{t} of 4th jet", 50, PT4_MIN, 500.)
+h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 50, 50., 500.)
+h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 50, 50., 500.)
+h_QCD[list_histos[2]]  = ROOT.TH1F(list_histos[2], "p_{t} of 3rd jet", 50, 50., 500.)
+h_QCD[list_histos[3]]  = ROOT.TH1F(list_histos[3], "p_{t} of 4th jet", 50, 50., 500.)
 h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "#Delta_{#phi} of the two jet pairs", 30, 0., 6.28)
 h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "#Delta_{#eta} of the two jet pairs", 20, -5., 5.)
 h_QCD[list_histos[6]]  = ROOT.TH1F(list_histos[6], "p_T of the first jet pair", 50, 0., 500.)
 h_QCD[list_histos[7]]  = ROOT.TH1F(list_histos[7], "p_T of the second jet pair", 50, 0., 500.)
 h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "4jets invariant mass", 100, 0., 1000.)
+h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#eta of 1st jet", 30, -7., 7.)
+h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "#eta of 2nd jet", 30, -7., 7.)
+h_QCD[list_histos[11]] = ROOT.TH1F(list_histos[11], "#eta of 3rd jet", 30, -7., 7.)
+h_QCD[list_histos[12]] = ROOT.TH1F(list_histos[12], "#eta of 4th jet", 30, -7., 7.)
 
 ##Graphics stuff
 canvas = dict()
@@ -100,6 +123,9 @@ for hname in list_histos:
     canvas[hname] = ROOT.TCanvas(hname,hname)
 leg1 = ROOT.TLegend(0.6,0.6,0.9,0.9)
 leg1.SetHeader("Samples considered")
+
+Nsig_passed = 0.
+Nbkg_passed = 0.
 
 ##Loop on samples, and then on events, and merge QCD stuff
 idx_sample = 0
@@ -131,6 +157,11 @@ for name_sample in samplename_list:
         jet2pt = jet2_4mom.Pt()
         jet3pt = jet3_4mom.Pt()
         jet4pt = jet4_4mom.Pt()
+
+        jet1eta = jet1_4mom.Eta()
+        jet2eta = jet2_4mom.Eta()
+        jet3eta = jet3_4mom.Eta()
+        jet4eta = jet4_4mom.Eta()
 
         combination_flag = myWF.get_best_combination(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom);
 
@@ -172,6 +203,14 @@ for name_sample in samplename_list:
                 h_QCD["h_pt_pair2"].Fill(pt_pair2,norm_factor)
             if select_all_but_one("h_m4b"):
                 h_QCD["h_m4b"].Fill(m4b,norm_factor)
+            if select_all_but_one("h_jet1eta"):
+                h_QCD["h_jet1eta"].Fill(jet1eta,norm_factor)
+            if select_all_but_one("h_jet2eta"):
+                h_QCD["h_jet2eta"].Fill(jet2eta,norm_factor)
+            if select_all_but_one("h_jet3eta"):
+                h_QCD["h_jet3eta"].Fill(jet3eta,norm_factor)
+            if select_all_but_one("h_jet4eta"):
+                h_QCD["h_jet4eta"].Fill(jet4eta,norm_factor)
         else:
             if select_all_but_one("h_jet1pt"):
                 h_base[name_sample+"h_jet1pt"].Fill(jet1pt,norm_factor)
@@ -191,6 +230,20 @@ for name_sample in samplename_list:
                 h_base[name_sample+"h_pt_pair2"].Fill(pt_pair2,norm_factor)
             if select_all_but_one("h_m4b"):
                 h_base[name_sample+"h_m4b"].Fill(m4b,norm_factor)
+            if select_all_but_one("h_jet1eta"):
+                h_base[name_sample+"h_jet1eta"].Fill(jet1eta,norm_factor)
+            if select_all_but_one("h_jet2eta"):
+                h_base[name_sample+"h_jet2eta"].Fill(jet2eta,norm_factor)
+            if select_all_but_one("h_jet3eta"):
+                h_base[name_sample+"h_jet3eta"].Fill(jet3eta,norm_factor)
+            if select_all_but_one("h_jet4eta"):
+                h_base[name_sample+"h_jet4eta"].Fill(jet4eta,norm_factor)
+
+        if select_all_but_one("actually all"):
+            if name_sample == myWF.sig_samplename:
+                Nsig_passed += norm_factor
+            else:
+                Nbkg_passed += norm_factor
 
     if QCDflag:
         continue
@@ -220,7 +273,14 @@ for idx_histo,hname in enumerate(list_histos):
 for hname in list_histos:
     canvas[hname].cd()
     hs[hname].Draw("histo")
-    h_base[myWF.sig_samplename+hname].Scale(signal_magnify)
-    h_base[myWF.sig_samplename+hname].Draw("SAMEHISTO")
+    if signal_magnify != 1:
+        h_base[myWF.sig_samplename+hname].Scale(signal_magnify)
     leg1.Draw()
     canvas[hname].SaveAs("plots/tree_" + hname + ".gif")
+
+print "Number of expected events for ", luminosity_norm, " fb-1"
+print "Number of signal events = ", Nsig_passed
+print "Number of background events = ", Nbkg_passed
+print "Significance S/sqrt(B) = ", Nsig_passed/math.sqrt(Nbkg_passed)
+print "Significance S/sqrt(B + deltaB^2) = ", Nsig_passed/(math.sqrt(Nbkg_passed) + 0.2*Nbkg_passed)
+print "Significance S/sqrt(S+B) = ", Nsig_passed/math.sqrt(Nsig_passed + Nbkg_passed)
