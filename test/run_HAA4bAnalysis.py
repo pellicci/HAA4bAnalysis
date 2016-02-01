@@ -34,6 +34,17 @@ process.TFileService = cms.Service("TFileService",
 getattr(process,'selectedPatJetsAK5PFCHS').cut = cms.string('bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > 0.89')
 
 process.load("HiggsAnalysis.HAA4bAnalysis.HAA4b_Analysis_cfi")
-process.analysis = cms.Path(process.HZZ4bAnalysis)
+#process.analysis = cms.Path(process.HZZ4bAnalysis)
 
-process.schedule = cms.Schedule(process.rejet , process.analysis)
+import HLTrigger.HLTfilters.triggerResultsFilter_cfi as hlt
+process.trigger_filter = hlt.triggerResultsFilter.clone()
+process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v*', 'HLT_QuadJet45_TripleBTagCSV0p67_v*')
+process.trigger_filter.hltResults = cms.InputTag( "TriggerResults", "", "HLT" )
+process.trigger_filter.l1tResults = cms.InputTag("")
+process.trigger_filter.throw = cms.bool( False )
+#process.FilterPath = cms.Path(process.trigger_filter)
+
+#process.schedule = cms.Sequence(process.rejet * process.analysis )
+process.seq = cms.Path(process.trigger_filter * process.HZZ4bAnalysis )
+
+process.schedule = cms.Schedule(process.rejet , process.seq)

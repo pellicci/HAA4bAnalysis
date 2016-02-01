@@ -29,9 +29,9 @@ PT_PAIR1_MIN = 190.
 PT_PAIR2_MIN = 190.
 
 ##Normalize to this luminsity, in fb-1
-luminosity_norm = 10.
+luminosity_norm = 30.
 ##Make signal histos larger
-signal_magnify = 10.
+signal_magnify = 1.
 
 list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta"]
 
