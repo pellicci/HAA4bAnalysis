@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: miniAOD-prod -s PAT --eventcontent MINIAODSIM --runUnscheduled --mc --filein /store/relval/CMSSW_7_4_1/RelValTTbar_13/GEN-SIM-RECO/PU50ns_MCRUN2_74_V8_gensim71X-v1/00000/06ACC5B7-7FEC-E411-8CB1-0025905964BA.root --conditions auto:run2_mc_GRun -n 100 --no_exec
+# with command line options: miniAOD-prod_new -s PAT --eventcontent MINIAODSIM --runUnscheduled --mc --filein HAA4b_pythia8_FULLSIM.root --conditions auto:run2_mc -n 10 --no_exec
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('PAT')
@@ -14,18 +14,18 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('PhysicsTools.PatAlgos.slimming.metFilterPaths_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:HAA4b_pythia8_FULLSIM_62.root'),
+    fileNames = cms.untracked.vstring('file:HAA4b_pythia8_FULLSIM.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -35,7 +35,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('miniAOD-prod nevts:100'),
+    annotation = cms.untracked.string('miniAOD-prod_new nevts:10'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
@@ -52,7 +52,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     dropMetaData = cms.untracked.string('ALL'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     fastCloning = cms.untracked.bool(False),
-    fileName = cms.untracked.string('miniAOD-prod_PAT.root'),
+    fileName = cms.untracked.string('miniAOD-prod_new_PAT.root'),
     outputCommands = process.MINIAODSIMEventContent.outputCommands,
     overrideInputFileSplitLevels = cms.untracked.bool(True)
 )
@@ -60,30 +60,35 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 
 # Other statements
-from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc_GRun', '')
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
 # Path and EndPath definitions
-process.Flag_trkPOG_toomanystripclus53X = cms.Path(~process.toomanystripclus53X)
-process.Flag_EcalDeadCellBoundaryEnergyFilter = cms.Path(process.EcalDeadCellBoundaryEnergyFilter)
-process.Flag_HBHENoiseIsoFilter = cms.Path(process.HBHENoiseFilterResultProducer+process.HBHENoiseIsoFilter)
 process.Flag_trackingFailureFilter = cms.Path(process.goodVertices+process.trackingFailureFilter)
 process.Flag_goodVertices = cms.Path(process.primaryVertexFilter)
-process.Flag_hcalLaserEventFilter = cms.Path(process.hcalLaserEventFilter)
 process.Flag_CSCTightHaloFilter = cms.Path(process.CSCTightHaloFilter)
 process.Flag_trkPOGFilters = cms.Path(process.trkPOGFilters)
-process.Flag_eeBadScFilter = cms.Path(process.eeBadScFilter)
-process.Flag_trkPOG_manystripclus53X = cms.Path(~process.manystripclus53X)
-process.Flag_METFilters = cms.Path(process.metFilters)
 process.Flag_trkPOG_logErrorTooManyClusters = cms.Path(~process.logErrorTooManyClusters)
-process.Flag_HBHENoiseFilter = cms.Path(process.HBHENoiseFilterResultProducer+process.HBHENoiseFilter)
 process.Flag_EcalDeadCellTriggerPrimitiveFilter = cms.Path(process.EcalDeadCellTriggerPrimitiveFilter)
 process.Flag_ecalLaserCorrFilter = cms.Path(process.ecalLaserCorrFilter)
+process.Flag_trkPOG_manystripclus53X = cms.Path(~process.manystripclus53X)
+process.Flag_eeBadScFilter = cms.Path(process.eeBadScFilter)
+process.Flag_METFilters = cms.Path(process.metFilters)
+process.Flag_chargedHadronTrackResolutionFilter = cms.Path(process.chargedHadronTrackResolutionFilter)
+process.Flag_CSCTightHaloTrkMuUnvetoFilter = cms.Path(process.CSCTightHaloTrkMuUnvetoFilter)
+process.Flag_HBHENoiseIsoFilter = cms.Path(process.HBHENoiseFilterResultProducer+process.HBHENoiseIsoFilter)
+process.Flag_hcalLaserEventFilter = cms.Path(process.hcalLaserEventFilter)
+process.Flag_HBHENoiseFilter = cms.Path(process.HBHENoiseFilterResultProducer+process.HBHENoiseFilter)
+process.Flag_trkPOG_toomanystripclus53X = cms.Path(~process.toomanystripclus53X)
+process.Flag_EcalDeadCellBoundaryEnergyFilter = cms.Path(process.EcalDeadCellBoundaryEnergyFilter)
+process.Flag_HcalStripHaloFilter = cms.Path(process.HcalStripHaloFilter)
+process.Flag_muonBadTrackFilter = cms.Path(process.muonBadTrackFilter)
+process.Flag_CSCTightHalo2015Filter = cms.Path(process.CSCTightHalo2015Filter)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.MINIAODSIMoutput_step = cms.EndPath(process.MINIAODSIMoutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.Flag_HBHENoiseFilter,process.Flag_HBHENoiseIsoFilter,process.Flag_CSCTightHaloFilter,process.Flag_hcalLaserEventFilter,process.Flag_EcalDeadCellTriggerPrimitiveFilter,process.Flag_EcalDeadCellBoundaryEnergyFilter,process.Flag_goodVertices,process.Flag_eeBadScFilter,process.Flag_ecalLaserCorrFilter,process.Flag_trkPOGFilters,process.Flag_trkPOG_manystripclus53X,process.Flag_trkPOG_toomanystripclus53X,process.Flag_trkPOG_logErrorTooManyClusters,process.Flag_METFilters,process.endjob_step,process.MINIAODSIMoutput_step)
+process.schedule = cms.Schedule(process.Flag_HBHENoiseFilter,process.Flag_HBHENoiseIsoFilter,process.Flag_CSCTightHaloFilter,process.Flag_CSCTightHaloTrkMuUnvetoFilter,process.Flag_CSCTightHalo2015Filter,process.Flag_HcalStripHaloFilter,process.Flag_hcalLaserEventFilter,process.Flag_EcalDeadCellTriggerPrimitiveFilter,process.Flag_EcalDeadCellBoundaryEnergyFilter,process.Flag_goodVertices,process.Flag_eeBadScFilter,process.Flag_ecalLaserCorrFilter,process.Flag_trkPOGFilters,process.Flag_chargedHadronTrackResolutionFilter,process.Flag_muonBadTrackFilter,process.Flag_trkPOG_manystripclus53X,process.Flag_trkPOG_toomanystripclus53X,process.Flag_trkPOG_logErrorTooManyClusters,process.Flag_METFilters,process.endjob_step,process.MINIAODSIMoutput_step)
 
 #do not add changes to your config after this point (unless you know what you are doing)
 from FWCore.ParameterSet.Utilities import convertToUnscheduled

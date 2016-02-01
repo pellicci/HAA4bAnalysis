@@ -15,12 +15,12 @@ from HiggsAnalysis.HAA4bAnalysis.reRunAK5Jets_Btag_cfg import *
 reSetJet(process)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:miniAOD-prod_PAT.root'),
+    fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
