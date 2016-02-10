@@ -23,7 +23,7 @@ h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "Btag value of 1st jet", 50, 
 h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "Btag value of 2nd jet", 50, 0.89, 1.)
 h_QCD[list_histos[6]]  = ROOT.TH1F(list_histos[6], "Btag value of 3rd jet", 50, 0.89, 1.)
 h_QCD[list_histos[7]]  = ROOT.TH1F(list_histos[7], "Btag value of 4th jet", 50, 0.89, 1.)
-h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "#Delta_{#phi} between the two jet pairs", 30, 0., 3.14)
+h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "#Delta_{#phi} between the two jet pairs", 50, 0., 6.28)
 h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#Delta_{#eta} between the two jet pairs", 50, -10., 10.)
 h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "Events after pre-selection steps", 6, 0., 6.)
 h_QCD[list_histos[11]] = ROOT.TH1F(list_histos[11], "#eta of 1st jet", 50, -10., 10.)
@@ -108,7 +108,7 @@ for idx_hname,hname in enumerate(list_histos):
 
 for hname in list_histos:
     canvas[hname].cd()
-    hs[hname].Draw()
+    hs[hname].Draw("histo")
     if hname == "h_Events" or hname == "h_delta_Phi_pair":
         canvas[hname].SetLogy(1)
 

@@ -118,6 +118,8 @@ private:
   float _Nevents_mpairs;
   float _Nevents_deltaM;
   float _Nevents_passed;
+
+  edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_;
   
 };
 
@@ -129,6 +131,9 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   minPt1_(iConfig.getParameter<double>("minPt1")),
   minPt4_(iConfig.getParameter<double>("minPt4"))
 {
+
+  jetstoken_ = consumes<std::vector<pat::Jet> >(jets_);
+
   _Nevents_processed = 0.;
   _Nevents_4bjets    = 0.;
   _Nevents_ptpass    = 0.;

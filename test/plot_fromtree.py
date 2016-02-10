@@ -3,35 +3,44 @@ import math
 import numpy as np
 
 from Workflow_Handler import Workflow_Handler
-myWF = Workflow_Handler("Signal_H500_A200")
+myWF = Workflow_Handler("Signal_H800_A300")
 
 ##Global constants
-#PT1_MIN = 165.
-#PT2_MIN = 130.
-#PT3_MIN = 130.
-#PT4_MIN = 110.
-#DELTA_PHI_MIN = 0.9
-#DELTA_ETA_MAX = 1.5
-#PT_PAIR1_MIN = 150.
-#PT_PAIR2_MIN = 150.
 
-PT1_MIN = 180.
-PT2_MIN = 130.
-PT3_MIN = 80.
-PT4_MIN = 75.
+##This is for mH = 800 and mA = 300
+#PT1_MIN = 150.
+#PT2_MIN = 150.
+#PT3_MIN = 80.
+#PT4_MIN = 80.
+#DELTA_PHI_MIN = 2.4
+#DELTA_ETA_MAX = 10.
+#PT_PAIR1_MIN = 0.
+#PT_PAIR2_MIN = 0.
+#TTTT
+
+##This is for mH = 800 and mA = 300
+PT1_MIN = 50.
+PT2_MIN = 50.
+PT3_MIN = 50.
+PT4_MIN = 50.
 ETA1_MAX = 5.
 ETA2_MAX = 5.
 ETA3_MAX = 5.
 ETA4_MAX = 5.
-DELTA_PHI_MIN = 0.2
-DELTA_ETA_MAX = 0.6
-PT_PAIR1_MIN = 190.
-PT_PAIR2_MIN = 190.
+DELTA_PHI_MIN = 0.
+DELTA_ETA_MAX = 10.
+PT_PAIR1_MIN = 0.
+PT_PAIR2_MIN = 0.
+
+JET1_BTAG = 0.89 #0.97
+JET2_BTAG = 0.89 #0.97
+JET3_BTAG = 0.89 #0.97
+JET4_BTAG = 0.89 #0.97
 
 ##Normalize to this luminsity, in fb-1
 luminosity_norm = 30.
 ##Make signal histos larger
-signal_magnify = 1.
+signal_magnify = 100.
 
 list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta"]
 
@@ -53,10 +62,10 @@ def select_all_but_one(cutstring):
     selection_bools["h_pt_pair1"] = pt_pair1 > PT_PAIR1_MIN
     selection_bools["h_pt_pair2"] = pt_pair2 > PT_PAIR1_MIN
 
-    selection_bools["h_jet1Btag"] = mytree.jet1Btag > 0.97
-    selection_bools["h_jet2Btag"] = mytree.jet2Btag > 0.97
-    selection_bools["h_jet3Btag"] = mytree.jet3Btag > 0.97
-    selection_bools["h_jet4Btag"] = mytree.jet4Btag > 0.97
+    selection_bools["h_jet1Btag"] = mytree.jet1Btag > JET1_BTAG
+    selection_bools["h_jet2Btag"] = mytree.jet2Btag > JET2_BTAG
+    selection_bools["h_jet3Btag"] = mytree.jet3Btag > JET3_BTAG
+    selection_bools["h_jet4Btag"] = mytree.jet4Btag > JET4_BTAG
 
     result = True
 
@@ -86,36 +95,39 @@ for hname in list_histos:
 
 ##Define the histos to be created
 for sample_name in samplename_list:
+
     if "QCD" in sample_name:
         continue
+    if "Signal" in sample_name and not sample_name == myWF.sig_samplename:
+        continue
 
-    h_base[sample_name+list_histos[0]]  = ROOT.TH1F(sample_name+list_histos[0], "p_{t} of 1st jet", 50, 50., 500.)
-    h_base[sample_name+list_histos[1]]  = ROOT.TH1F(sample_name+list_histos[1], "p_{t} of 2nd jet", 50, 50., 500.)
-    h_base[sample_name+list_histos[2]]  = ROOT.TH1F(sample_name+list_histos[2], "p_{t} of 3rd jet", 50, 50., 500.)
-    h_base[sample_name+list_histos[3]]  = ROOT.TH1F(sample_name+list_histos[3], "p_{t} of 4th jet", 50, 50., 500.)
-    h_base[sample_name+list_histos[4]]  = ROOT.TH1F(sample_name+list_histos[4], "#Delta_{#phi} of the two jet pairs", 30, 0., 6.28)
+    h_base[sample_name+list_histos[0]]  = ROOT.TH1F(sample_name+list_histos[0], "p_{t} of 1st jet", 25, 50., 500.)
+    h_base[sample_name+list_histos[1]]  = ROOT.TH1F(sample_name+list_histos[1], "p_{t} of 2nd jet", 25, 50., 500.)
+    h_base[sample_name+list_histos[2]]  = ROOT.TH1F(sample_name+list_histos[2], "p_{t} of 3rd jet", 25, 50., 500.)
+    h_base[sample_name+list_histos[3]]  = ROOT.TH1F(sample_name+list_histos[3], "p_{t} of 4th jet", 25, 50., 500.)
+    h_base[sample_name+list_histos[4]]  = ROOT.TH1F(sample_name+list_histos[4], "#Delta_{#phi} of the two jet pairs", 15, 0., 3.14)
     h_base[sample_name+list_histos[5]]  = ROOT.TH1F(sample_name+list_histos[5], "#Delta_{#eta} of the two jet pairs", 20, -5., 5.)
     h_base[sample_name+list_histos[6]]  = ROOT.TH1F(sample_name+list_histos[6], "p_T of the first jet pair", 50, 0., 500.)
     h_base[sample_name+list_histos[7]]  = ROOT.TH1F(sample_name+list_histos[7], "p_T of the second jet pair", 50, 0., 500.)
-    h_base[sample_name+list_histos[8]]  = ROOT.TH1F(sample_name+list_histos[8], "4jets invariant mass", 100, 0., 1000.)
-    h_base[sample_name+list_histos[9]]  = ROOT.TH1F(sample_name+list_histos[9], "#eta of 1st jet", 30, -7., 7.)
-    h_base[sample_name+list_histos[10]] = ROOT.TH1F(sample_name+list_histos[10], "#eta of 2nd jet", 30, -7., 7.)
-    h_base[sample_name+list_histos[11]] = ROOT.TH1F(sample_name+list_histos[11], "#eta of 3rd jet", 30, -7., 7.)
-    h_base[sample_name+list_histos[12]] = ROOT.TH1F(sample_name+list_histos[12], "#eta of 4th jet", 30, -7., 7.)
+    h_base[sample_name+list_histos[8]]  = ROOT.TH1F(sample_name+list_histos[8], "4jets invariant mass", 40, 0., 1000.)
+    h_base[sample_name+list_histos[9]]  = ROOT.TH1F(sample_name+list_histos[9], "#eta of 1st jet", 20, -7., 7.)
+    h_base[sample_name+list_histos[10]] = ROOT.TH1F(sample_name+list_histos[10], "#eta of 2nd jet", 20, -7., 7.)
+    h_base[sample_name+list_histos[11]] = ROOT.TH1F(sample_name+list_histos[11], "#eta of 3rd jet", 20, -7., 7.)
+    h_base[sample_name+list_histos[12]] = ROOT.TH1F(sample_name+list_histos[12], "#eta of 4th jet", 20, -7., 7.)
 
-h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 50, 50., 500.)
-h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 50, 50., 500.)
-h_QCD[list_histos[2]]  = ROOT.TH1F(list_histos[2], "p_{t} of 3rd jet", 50, 50., 500.)
-h_QCD[list_histos[3]]  = ROOT.TH1F(list_histos[3], "p_{t} of 4th jet", 50, 50., 500.)
-h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "#Delta_{#phi} of the two jet pairs", 30, 0., 6.28)
+h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 25, 50., 500.)
+h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 25, 50., 500.)
+h_QCD[list_histos[2]]  = ROOT.TH1F(list_histos[2], "p_{t} of 3rd jet", 25, 50., 500.)
+h_QCD[list_histos[3]]  = ROOT.TH1F(list_histos[3], "p_{t} of 4th jet", 25, 50., 500.)
+h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "#Delta_{#phi} of the two jet pairs", 15, 0., 3.14)
 h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "#Delta_{#eta} of the two jet pairs", 20, -5., 5.)
 h_QCD[list_histos[6]]  = ROOT.TH1F(list_histos[6], "p_T of the first jet pair", 50, 0., 500.)
 h_QCD[list_histos[7]]  = ROOT.TH1F(list_histos[7], "p_T of the second jet pair", 50, 0., 500.)
-h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "4jets invariant mass", 100, 0., 1000.)
-h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#eta of 1st jet", 30, -7., 7.)
-h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "#eta of 2nd jet", 30, -7., 7.)
-h_QCD[list_histos[11]] = ROOT.TH1F(list_histos[11], "#eta of 3rd jet", 30, -7., 7.)
-h_QCD[list_histos[12]] = ROOT.TH1F(list_histos[12], "#eta of 4th jet", 30, -7., 7.)
+h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "4jets invariant mass", 40, 0., 1000.)
+h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#eta of 1st jet", 20, -7., 7.)
+h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "#eta of 2nd jet", 20, -7., 7.)
+h_QCD[list_histos[11]] = ROOT.TH1F(list_histos[11], "#eta of 3rd jet", 20, -7., 7.)
+h_QCD[list_histos[12]] = ROOT.TH1F(list_histos[12], "#eta of 4th jet", 20, -7., 7.)
 
 ##Graphics stuff
 canvas = dict()
@@ -130,6 +142,9 @@ Nbkg_passed = 0.
 ##Loop on samples, and then on events, and merge QCD stuff
 idx_sample = 0
 for name_sample in samplename_list:
+
+    if "Signal" in name_sample and not name_sample == myWF.sig_samplename:
+        continue
 
     if not "QCD" in name_sample:
         QCDflag = False
@@ -177,6 +192,9 @@ for name_sample in samplename_list:
 
         delta_Phi = abs(p_pair1.Phi() - p_pair2.Phi())
         delta_Eta = p_pair1.Eta() - p_pair2.Eta()
+
+        if delta_Phi > 3.14:
+            delta_Phi = 6.28 - delta_Phi
 
         pt_pair1 = p_pair1.Pt()
         pt_pair2 = p_pair2.Pt()

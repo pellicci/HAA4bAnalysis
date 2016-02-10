@@ -2,43 +2,47 @@ import ROOT
 import math
 import numpy as np
 
+##normalize to the 2016 lumi
+luminosity_norm = 30.
+
 from Workflow_Handler import Workflow_Handler
-myWF = Workflow_Handler("Signal_H500_A200")
+myWF = Workflow_Handler("Signal_H800_A300")
 
 def is_Event_selected(jet_btag,jet_pt):
     """Save events according to some basic selection criteria"""
-    btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
+    #btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
+    btag_cut = jet_btag[0] > 0.89 and jet_btag[1] > 0.89 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
     #pt_cut = jet_pt[0] > 165. and jet_pt[1] > 130. and jet_pt[2] > 130. and jet_pt[3] > 110.
-    pt_cut = jet_pt[0] > 180. and jet_pt[1] > 130. and jet_pt[2] > 80. and jet_pt[3] > 75.
+    #pt_cut = jet_pt[3] > 50.
 
-    return btag_cut and pt_cut
+    return btag_cut #and pt_cut
 
 ##Here starts the program
 Norm_Map = myWF.get_normalizations_map()
 
-steps_cut1 = 30
-cut1_init = 3.
-cut1_stepsize = 0.1
+steps_cut1 = 20
+cut1_init = 70.
+cut1_stepsize = 10.
 
-steps_cut2 = 1
-cut2_init = 3.
-cut2_stepsize = 0.1
+steps_cut2 = 20
+cut2_init = 70.
+cut2_stepsize = 10.
 
-steps_cut3 = 1
-cut3_init = 0.
+steps_cut3 = 20
+cut3_init = 50.
 cut3_stepsize = 10.
 
-steps_cut4 = 1
-cut4_init = 100.
+steps_cut4 = 20
+cut4_init = 50.
 cut4_stepsize = 10.
 
-steps_cut5 = 1
-cut5_init = 50.
+steps_cut5 = 20
+cut5_init = 0.
 cut5_stepsize = 10.
 
-steps_cut6 = 1
-cut6_init = 50.
-cut6_stepsize = 10.
+steps_cut6 = 25
+cut6_init = 0.
+cut6_stepsize = 0.1
 
 cut_Nbkg = [[[[[[0. for x in range(steps_cut6)] for x in range(steps_cut5)] for x in range(steps_cut4)] for x in range(steps_cut3)] for x in range(steps_cut2)] for x in range(steps_cut1)]
 cut_Nsig = [[[[[[0. for x in range(steps_cut6)] for x in range(steps_cut5)] for x in range(steps_cut4)] for x in range(steps_cut3)] for x in range(steps_cut2)] for x in range(steps_cut1)]
@@ -50,8 +54,11 @@ root_file = myWF.get_root_files()
 ##loop on the samples and on the cuts and calculate N_bkg and N_sig
 for name_sample in samplename_list:
 
-    norm_factor = Norm_Map[name_sample]
+    norm_factor = Norm_Map[name_sample]*luminosity_norm
     mytree = root_file[name_sample].Get("HZZ4bAnalysis/mytree")
+
+    if "Signal" in name_sample and not name_sample == myWF.sig_samplename:
+        continue
 
     for jentry in xrange(mytree.GetEntriesFast()):
         ientry = mytree.LoadTree( jentry )
@@ -94,53 +101,57 @@ for name_sample in samplename_list:
         delta_Phi = abs(p_pair1.Phi() - p_pair2.Phi())
         delta_Eta = abs(p_pair1.Eta() - p_pair2.Eta())
  
-        if p_pair1.Pt() < 190.:
-            continue
-        if p_pair2.Pt() < 190.:
-            continue
-       
-        for icut1 in xrange(steps_cut1):
-            cut1_value = cut1_init - cut1_stepsize*icut1
+        if delta_Phi > 3.14:
+            delta_Phi = 6.28 - delta_Phi
 
-            if delta_Eta > cut1_value:
+        for icut1 in xrange(steps_cut1):
+            cut1_value = cut1_init + cut1_stepsize*icut1
+
+            if jet1pt < cut1_value:
                 continue
 
             for icut2 in xrange(steps_cut2):
                 cut2_value = cut2_init + cut2_stepsize*icut2
 
-                # if delta_Eta > cut2_value:
-                #     continue
+                if jet2pt < cut2_value:
+                    continue
+
+                if cut2_value > cut1_value:
+                    continue
 
                 for icut3 in xrange(steps_cut3):
                     cut3_value = cut3_init + cut3_stepsize*icut3
 
-                    # if p_pair2.Pt() < cut3_value:
-                    #     continue
+                    if jet3pt < cut3_value:
+                        continue
+
+                    if cut3_value > cut2_value:
+                        continue
 
                     for icut4 in xrange(steps_cut4):
                         cut4_value = cut4_init + cut4_stepsize*icut4
                         
-                        # if jet1pt < cut4_value:
-                        #     continue
+                        if jet4pt < cut4_value:
+                             continue
+
+                        if cut4_value > cut3_value:
+                            continue
 
                         for icut5 in xrange(steps_cut5):
                             cut5_value = cut5_init + cut5_stepsize*icut5
 
-                            # if jet2pt < cut5_value:
-                            #     continue
+                            if p_pair1.Pt() < cut5_value:
+                                continue
 
-                            # if cut5_value > cut4_value:
-                            #     continue
+                            if p_pair2.Pt() < cut5_value:
+                                continue
 
                             for icut6 in xrange(steps_cut6):
                                 cut6_value = cut6_init + cut6_stepsize*icut6
 
-                                # if jet3pt < cut6_value:
-                                #     continue
+                                if delta_Phi < cut6_value:
+                                    continue
 
-                                # if cut6_value > cut5_value:
-                                #     continue
-                            
                                 if name_sample == myWF.sig_samplename:
                                     cut_Nsig[icut1][icut2][icut3][icut4][icut5][icut6] += norm_factor
                                 else:
@@ -149,7 +160,7 @@ for name_sample in samplename_list:
 ##Calculate the significance
 signif_list = [[[[[[0. for x in range(steps_cut6)] for x in range(steps_cut5)] for x in range(steps_cut4)] for x in range(steps_cut3)] for x in range(steps_cut2)] for x in range(steps_cut1)]
 
-cut1_x_list = [cut1_init - cut1_stepsize*icut for icut in range(steps_cut1)]
+cut1_x_list = [cut1_init + cut1_stepsize*icut for icut in range(steps_cut1)]
 cut2_x_list = [cut2_init + cut2_stepsize*icut for icut in range(steps_cut2)]
 cut3_x_list = [cut3_init + cut3_stepsize*icut for icut in range(steps_cut3)]
 cut4_x_list = [cut4_init + cut4_stepsize*icut for icut in range(steps_cut4)]
@@ -166,7 +177,7 @@ for icut1 in xrange(steps_cut1):
 
                         if cut_Nbkg[icut1][icut2][icut3][icut4][icut5][icut6] != 0:
                             signif_list[icut1][icut2][icut3][icut4][icut5][icut6] = cut_Nsig[icut1][icut2][icut3][icut4][icut5][icut6]/(
-                                math.sqrt(cut_Nbkg[icut1][icut2][icut3][icut4][icut5][icut6]) + 0.2*cut_Nbkg[icut1][icut2][icut3][icut4][icut5][icut6])
+                                math.sqrt(cut_Nbkg[icut1][icut2][icut3][icut4][icut5][icut6])) # + 0.2*cut_Nbkg[icut1][icut2][icut3][icut4][icut5][icut6])
                         else:
                             signif_list[icut1][icut2][icut3][icut4][icut5][icut6] = 0.
 
@@ -179,7 +190,7 @@ for icut1 in xrange(steps_cut1):
                             cut5_max = icut5
                             cut6_max = icut6
 
-print "The cut1 value is ", cut1_init - cut1_stepsize*cut1_max
+print "The cut1 value is ", cut1_init + cut1_stepsize*cut1_max
 print "The cut2 value is ", cut2_init + cut2_stepsize*cut2_max
 print "The cut3 value is ", cut3_init + cut3_stepsize*cut3_max
 print "The cut4 value is ", cut4_init + cut4_stepsize*cut4_max
