@@ -3,15 +3,15 @@ import math
 import numpy as np
 
 ##normalize to the 2016 lumi
-luminosity_norm = 30.
+luminosity_norm = 5.
 
 from Workflow_Handler import Workflow_Handler
 myWF = Workflow_Handler("Signal_H800_A300")
 
 def is_Event_selected(jet_btag,jet_pt):
     """Save events according to some basic selection criteria"""
-    #btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
-    btag_cut = jet_btag[0] > 0.89 and jet_btag[1] > 0.89 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
+    btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
+    #btag_cut = jet_btag[0] > 0.89 and jet_btag[1] > 0.89 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
     #pt_cut = jet_pt[0] > 165. and jet_pt[1] > 130. and jet_pt[2] > 130. and jet_pt[3] > 110.
     #pt_cut = jet_pt[3] > 50.
 

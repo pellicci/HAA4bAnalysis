@@ -38,11 +38,11 @@ JET3_BTAG = 0.89 #0.97
 JET4_BTAG = 0.89 #0.97
 
 ##Normalize to this luminsity, in fb-1
-luminosity_norm = 30.
+luminosity_norm = 5.
 ##Make signal histos larger
 signal_magnify = 100.
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta"]
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag" ]
 
 def select_all_but_one(cutstring):
 
@@ -114,6 +114,10 @@ for sample_name in samplename_list:
     h_base[sample_name+list_histos[10]] = ROOT.TH1F(sample_name+list_histos[10], "#eta of 2nd jet", 20, -7., 7.)
     h_base[sample_name+list_histos[11]] = ROOT.TH1F(sample_name+list_histos[11], "#eta of 3rd jet", 20, -7., 7.)
     h_base[sample_name+list_histos[12]] = ROOT.TH1F(sample_name+list_histos[12], "#eta of 4th jet", 20, -7., 7.)
+    h_base[sample_name+list_histos[13]] = ROOT.TH1F(sample_name+list_histos[13], "B-tag of 1st jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[14]] = ROOT.TH1F(sample_name+list_histos[14], "B-tag of 2nd jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[15]] = ROOT.TH1F(sample_name+list_histos[15], "B-tag of 3rd jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[16]] = ROOT.TH1F(sample_name+list_histos[16], "B-tag of 4th jet", 15, 0.89, 1.)
 
 h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 25, 50., 500.)
 h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 25, 50., 500.)
@@ -128,6 +132,10 @@ h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#eta of 1st jet", 20, -7., 7
 h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "#eta of 2nd jet", 20, -7., 7.)
 h_QCD[list_histos[11]] = ROOT.TH1F(list_histos[11], "#eta of 3rd jet", 20, -7., 7.)
 h_QCD[list_histos[12]] = ROOT.TH1F(list_histos[12], "#eta of 4th jet", 20, -7., 7.)
+h_QCD[list_histos[13]] = ROOT.TH1F(list_histos[13], "B-tag of 1st jet", 15, 0.89, 1.)
+h_QCD[list_histos[14]] = ROOT.TH1F(list_histos[14], "B-tag of 2nd jet", 15, 0.89, 1.)
+h_QCD[list_histos[15]] = ROOT.TH1F(list_histos[15], "B-tag of 3rd jet", 15, 0.89, 1.)
+h_QCD[list_histos[16]] = ROOT.TH1F(list_histos[16], "B-tag of 4th jet", 15, 0.89, 1.)
 
 ##Graphics stuff
 canvas = dict()
@@ -229,6 +237,14 @@ for name_sample in samplename_list:
                 h_QCD["h_jet3eta"].Fill(jet3eta,norm_factor)
             if select_all_but_one("h_jet4eta"):
                 h_QCD["h_jet4eta"].Fill(jet4eta,norm_factor)
+            if select_all_but_one("h_jet1Btag"):
+                h_QCD["h_jet1Btag"].Fill(mytree.jet1Btag,norm_factor)
+            if select_all_but_one("h_jet2Btag"):
+                h_QCD["h_jet2Btag"].Fill(mytree.jet2Btag,norm_factor)
+            if select_all_but_one("h_jet3Btag"):
+                h_QCD["h_jet3Btag"].Fill(mytree.jet3Btag,norm_factor)
+            if select_all_but_one("h_jet4Btag"):
+                h_QCD["h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)
         else:
             if select_all_but_one("h_jet1pt"):
                 h_base[name_sample+"h_jet1pt"].Fill(jet1pt,norm_factor)
@@ -256,6 +272,14 @@ for name_sample in samplename_list:
                 h_base[name_sample+"h_jet3eta"].Fill(jet3eta,norm_factor)
             if select_all_but_one("h_jet4eta"):
                 h_base[name_sample+"h_jet4eta"].Fill(jet4eta,norm_factor)
+            if select_all_but_one("h_jet1Btag"):
+                h_base[name_sample+"h_jet1Btag"].Fill(mytree.jet1Btag,norm_factor)
+            if select_all_but_one("h_jet2Btag"):
+                h_base[name_sample+"h_jet2Btag"].Fill(mytree.jet2Btag,norm_factor)
+            if select_all_but_one("h_jet3Btag"):
+                h_base[name_sample+"h_jet3Btag"].Fill(mytree.jet3Btag,norm_factor)
+            if select_all_but_one("h_jet4Btag"):
+                h_base[name_sample+"h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)
 
         if select_all_but_one("actually all"):
             if name_sample == myWF.sig_samplename:
