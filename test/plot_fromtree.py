@@ -1,4 +1,5 @@
 import ROOT
+import os
 import math
 import numpy as np
 
@@ -8,28 +9,21 @@ myWF = Workflow_Handler("Signal_H800_A300")
 ##Global constants
 
 ##This is for mH = 800 and mA = 300
-# PT1_MIN = 150.
-# PT2_MIN = 150.
-# PT3_MIN = 80.
-# PT4_MIN = 80.
-# ETA1_MAX = 5.
-# ETA2_MAX = 5.
-# ETA3_MAX = 5.
-# ETA4_MAX = 5.
-# DELTA_PHI_MIN = 2.4
-# DELTA_ETA_MAX = 10.
-# PT_PAIR1_MIN = 0.
-# PT_PAIR2_MIN = 0.
-# JET1_BTAG = 0.97
-# JET2_BTAG = 0.97
-# JET3_BTAG = 0.97
-# JET4_BTAG = 0.97
+#PT1_MIN = 150.
+#PT2_MIN = 150.
+#PT3_MIN = 80.
+#PT4_MIN = 80.
+#DELTA_PHI_MIN = 2.4
+#DELTA_ETA_MAX = 10.
+#PT_PAIR1_MIN = 0.
+#PT_PAIR2_MIN = 0.
+#TTTT
 
-##This is for loose preselection
-PT1_MIN = 45.
-PT2_MIN = 45.
-PT3_MIN = 45.
-PT4_MIN = 45.
+##This is for mH = 800 and mA = 300
+PT1_MIN = 50.
+PT2_MIN = 50.
+PT3_MIN = 50.
+PT4_MIN = 50.
 ETA1_MAX = 5.
 ETA2_MAX = 5.
 ETA3_MAX = 5.
@@ -39,17 +33,22 @@ DELTA_ETA_MAX = 10.
 PT_PAIR1_MIN = 0.
 PT_PAIR2_MIN = 0.
 
-JET1_BTAG = 0.89
-JET2_BTAG = 0.89
-JET3_BTAG = 0.89
-JET4_BTAG = 0.89
+JET1_BTAG = 0.89 #0.97
+JET2_BTAG = 0.89 #0.97
+JET3_BTAG = 0.89 #0.97
+JET4_BTAG = 0.89 #0.97
 
 ##Normalize to this luminsity, in fb-1
-luminosity_norm = 2.
+luminosity_norm = 5.
 ##Make signal histos larger
 signal_magnify = 100.
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34"]
+output_dir = "plots"
+
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag","h_nPv" ]
 
 def select_all_but_one(cutstring):
 
@@ -113,55 +112,44 @@ for sample_name in samplename_list:
     h_base[sample_name+list_histos[2]]  = ROOT.TH1F(sample_name+list_histos[2], "p_{t} of 3rd jet", 25, 50., 500.)
     h_base[sample_name+list_histos[3]]  = ROOT.TH1F(sample_name+list_histos[3], "p_{t} of 4th jet", 25, 50., 500.)
     h_base[sample_name+list_histos[4]]  = ROOT.TH1F(sample_name+list_histos[4], "#Delta_{#phi} of the two jet pairs", 15, 0., 3.14)
-    h_base[sample_name+list_histos[5]]  = ROOT.TH1F(sample_name+list_histos[5], "#Delta_{#eta} of the two jet pairs", 15, -5., 5.)
+    h_base[sample_name+list_histos[5]]  = ROOT.TH1F(sample_name+list_histos[5], "#Delta_{#eta} of the two jet pairs", 20, -5., 5.)
     h_base[sample_name+list_histos[6]]  = ROOT.TH1F(sample_name+list_histos[6], "p_T of the first jet pair", 50, 0., 500.)
     h_base[sample_name+list_histos[7]]  = ROOT.TH1F(sample_name+list_histos[7], "p_T of the second jet pair", 50, 0., 500.)
-    h_base[sample_name+list_histos[8]]  = ROOT.TH1F(sample_name+list_histos[8], "4jets invariant mass", 13, 250., 1000.)
+    h_base[sample_name+list_histos[8]]  = ROOT.TH1F(sample_name+list_histos[8], "4jets invariant mass", 40, 0., 1000.)
     h_base[sample_name+list_histos[9]]  = ROOT.TH1F(sample_name+list_histos[9], "#eta of 1st jet", 20, -7., 7.)
     h_base[sample_name+list_histos[10]] = ROOT.TH1F(sample_name+list_histos[10], "#eta of 2nd jet", 20, -7., 7.)
     h_base[sample_name+list_histos[11]] = ROOT.TH1F(sample_name+list_histos[11], "#eta of 3rd jet", 20, -7., 7.)
     h_base[sample_name+list_histos[12]] = ROOT.TH1F(sample_name+list_histos[12], "#eta of 4th jet", 20, -7., 7.)
-    h_base[sample_name+list_histos[13]] = ROOT.TH1F(sample_name+list_histos[13], "B-tag of 1st jet", 13, 0.89, 1.)
-    h_base[sample_name+list_histos[14]] = ROOT.TH1F(sample_name+list_histos[14], "B-tag of 2nd jet", 13, 0.89, 1.)
-    h_base[sample_name+list_histos[15]] = ROOT.TH1F(sample_name+list_histos[15], "B-tag of 3rd jet", 13, 0.89, 1.)
-    h_base[sample_name+list_histos[16]] = ROOT.TH1F(sample_name+list_histos[16], "B-tag of 4th jet", 13, 0.89, 1.)
-    h_base[sample_name+list_histos[17]] = ROOT.TH1F(sample_name+list_histos[17], "m_{12} invariant mass", 15, 0., 600.)
-    h_base[sample_name+list_histos[18]] = ROOT.TH1F(sample_name+list_histos[18], "m_{34} invariant mass", 15, 0., 600.)
+    h_base[sample_name+list_histos[13]] = ROOT.TH1F(sample_name+list_histos[13], "B-tag of 1st jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[14]] = ROOT.TH1F(sample_name+list_histos[14], "B-tag of 2nd jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[15]] = ROOT.TH1F(sample_name+list_histos[15], "B-tag of 3rd jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[16]] = ROOT.TH1F(sample_name+list_histos[16], "B-tag of 4th jet", 15, 0.89, 1.)
+    h_base[sample_name+list_histos[17]] = ROOT.TH1F(sample_name+list_histos[17], "No. of primary verticies", 30, 0., 30.)
 
 h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 25, 50., 500.)
 h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 25, 50., 500.)
 h_QCD[list_histos[2]]  = ROOT.TH1F(list_histos[2], "p_{t} of 3rd jet", 25, 50., 500.)
 h_QCD[list_histos[3]]  = ROOT.TH1F(list_histos[3], "p_{t} of 4th jet", 25, 50., 500.)
 h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "#Delta_{#phi} of the two jet pairs", 15, 0., 3.14)
-h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "#Delta_{#eta} of the two jet pairs", 15, -5., 5.)
+h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "#Delta_{#eta} of the two jet pairs", 20, -5., 5.)
 h_QCD[list_histos[6]]  = ROOT.TH1F(list_histos[6], "p_T of the first jet pair", 50, 0., 500.)
 h_QCD[list_histos[7]]  = ROOT.TH1F(list_histos[7], "p_T of the second jet pair", 50, 0., 500.)
-h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "4jets invariant mass", 13, 250., 1000.)
+h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "4jets invariant mass", 40, 0., 1000.)
 h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#eta of 1st jet", 20, -7., 7.)
 h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "#eta of 2nd jet", 20, -7., 7.)
 h_QCD[list_histos[11]] = ROOT.TH1F(list_histos[11], "#eta of 3rd jet", 20, -7., 7.)
 h_QCD[list_histos[12]] = ROOT.TH1F(list_histos[12], "#eta of 4th jet", 20, -7., 7.)
-h_QCD[list_histos[13]] = ROOT.TH1F(list_histos[13], "B-tag of 1st jet", 13, 0.89, 1.)
-h_QCD[list_histos[14]] = ROOT.TH1F(list_histos[14], "B-tag of 2nd jet", 13, 0.89, 1.)
-h_QCD[list_histos[15]] = ROOT.TH1F(list_histos[15], "B-tag of 3rd jet", 13, 0.89, 1.)
-h_QCD[list_histos[16]] = ROOT.TH1F(list_histos[16], "B-tag of 4th jet", 13, 0.89, 1.)
-h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "m_{12} invariant mass", 15, 0., 600.)
-h_QCD[list_histos[18]] = ROOT.TH1F(list_histos[18], "m_{34} invariant mass", 15, 0., 600.)
-
-h_ma1_ma2 = ROOT.TH2F("h_ma1_ma2", "m_{12} vs m_{34}", 15, 0., 600., 15, 0., 600.)
-h_mh_ma1  = ROOT.TH2F("h_mh_ma2", "m_{H} vs m_{34}", 20, 200., 1000., 15, 0., 600.)
-
-h_ma1_ma2_sig = ROOT.TH2F("h_ma1_ma2_sig", "m_{12} vs m_{34}", 15, 0., 600., 15, 0., 600.)
-h_mh_ma1_sig  = ROOT.TH2F("h_mh_ma2_sig", "m_{H} vs m_{34}", 20, 200., 1000., 15, 0., 600.)
+h_QCD[list_histos[13]] = ROOT.TH1F(list_histos[13], "B-tag of 1st jet", 15, 0.89, 1.)
+h_QCD[list_histos[14]] = ROOT.TH1F(list_histos[14], "B-tag of 2nd jet", 15, 0.89, 1.)
+h_QCD[list_histos[15]] = ROOT.TH1F(list_histos[15], "B-tag of 3rd jet", 15, 0.89, 1.)
+h_QCD[list_histos[16]] = ROOT.TH1F(list_histos[16], "B-tag of 4th jet", 15, 0.89, 1.)
+h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "No. of primary verticies", 30, 0., 30.)
 
 ##Graphics stuff
 canvas = dict()
-canvas_sig = dict()
 for hname in list_histos:
     canvas[hname] = ROOT.TCanvas(hname,hname)
-    canvas_sig[hname] = ROOT.TCanvas(hname+"_sig",hname+"_sig")
-#leg1 = ROOT.TLegend(0.6,0.6,0.9,0.9)
-leg1 = ROOT.TLegend(0.2,0.6,0.5,0.9)
+leg1 = ROOT.TLegend(0.6,0.6,0.9,0.9)
 leg1.SetHeader("Samples considered")
 
 Nsig_passed = 0.
@@ -181,7 +169,7 @@ for name_sample in samplename_list:
 
     norm_factor = Norm_Map[name_sample]*luminosity_norm
     mytree = root_file[name_sample].Get("HZZ4bAnalysis/mytree")
-
+ 
     for jentry in xrange(mytree.GetEntriesFast()):
         ientry = mytree.LoadTree( jentry )
         if ientry < 0:
@@ -265,10 +253,8 @@ for name_sample in samplename_list:
                 h_QCD["h_jet3Btag"].Fill(mytree.jet3Btag,norm_factor)
             if select_all_but_one("h_jet4Btag"):
                 h_QCD["h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)
-            if select_all_but_one("h_m12"):
-                h_QCD["h_m12"].Fill(p_pair1.M(),norm_factor)
-            if select_all_but_one("h_m34"):
-                h_QCD["h_m34"].Fill(p_pair2.M(),norm_factor)
+	    if select_all_but_one("h_nPv"):
+                h_QCD["h_nPv"].Fill(mytree.N_nPv,norm_factor) #added
         else:
             if select_all_but_one("h_jet1pt"):
                 h_base[name_sample+"h_jet1pt"].Fill(jet1pt,norm_factor)
@@ -304,24 +290,9 @@ for name_sample in samplename_list:
                 h_base[name_sample+"h_jet3Btag"].Fill(mytree.jet3Btag,norm_factor)
             if select_all_but_one("h_jet4Btag"):
                 h_base[name_sample+"h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)
-            if select_all_but_one("h_m12"):
-                h_base[name_sample+"h_m12"].Fill(p_pair1.M(),norm_factor)
-            if select_all_but_one("h_m34"):
-                h_base[name_sample+"h_m34"].Fill(p_pair2.M(),norm_factor)
+	    if select_all_but_one("h_nPv"):
+                h_base[name_sample+"h_nPv"].Fill(mytree.N_nPv,norm_factor)
 
-        ##Now the 2D plots
-        if select_all_but_one("h_mh_ma1"):
-            if name_sample == myWF.sig_samplename:
-                h_ma1_ma2_sig.Fill(p_pair1.M(),p_pair2.M(),norm_factor)
-            else:
-                h_ma1_ma2.Fill(p_pair1.M(),p_pair2.M(),norm_factor)
-        if select_all_but_one("h_mh_ma1"):
-            if name_sample == myWF.sig_samplename:
-                h_mh_ma1_sig.Fill(m4b,p_pair1.M(),norm_factor)   
-            else:
-                h_mh_ma1.Fill(m4b,p_pair1.M(),norm_factor)   
-
-        #Count the events
         if select_all_but_one("actually all"):
             if name_sample == myWF.sig_samplename:
                 Nsig_passed += norm_factor
@@ -352,50 +323,14 @@ for idx_histo,hname in enumerate(list_histos):
         leg1.AddEntry(h_QCD[hname],"QCD","f")
     hs[hname].Add(h_QCD[hname])
 
+
 for hname in list_histos:
     canvas[hname].cd()
-    #canvas[hname].SetLogy(1)
     hs[hname].Draw("histo")
     if signal_magnify != 1:
         h_base[myWF.sig_samplename+hname].Scale(signal_magnify)
     leg1.Draw()
-    canvas[hname].SaveAs("plots/tree_" + hname + ".gif")
-    canvas[hname].SaveAs("plots/tree_" + hname + ".C")
-
-##Signal only plots to be produced
-for hname in list_histos:
-    if hname == "h_m4b" or hname == "h_m12" or  hname == "h_m34":
-        canvas_sig[hname].cd()
-
-        ##Remove some style fancyness
-        h_base[myWF.sig_samplename+hname].SetFillColor(0)
-        h_base[myWF.sig_samplename+hname].SetLineStyle(0)
-
-        ROOT.gStyle.SetOptStat(1)
-        h_base[myWF.sig_samplename+hname].Draw("histo")
-        canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.gif")
-
-##Now the 2D plots
-ROOT.gStyle.SetOptStat(0)
-canvas_ma1_ma2 = ROOT.TCanvas("h_ma1_ma2","h_ma1_ma2")
-canvas_ma1_ma2.cd()
-h_ma1_ma2.Draw("COLZ")
-canvas_ma1_ma2.SaveAs("plots/tree_h_ma1_ma2.gif")
-
-canvas_ma1_ma2_sig = ROOT.TCanvas("h_ma1_ma2_sig","h_ma1_ma2_sig")
-canvas_ma1_ma2_sig.cd()
-h_ma1_ma2_sig.Draw("COLZ")
-canvas_ma1_ma2_sig.SaveAs("plots/tree_h_ma1_ma2_signal.gif")
-
-canvas_mh_ma1 = ROOT.TCanvas("h_mh_ma1","h_mh_ma1")
-canvas_mh_ma1.cd()
-h_mh_ma1.Draw("COLZ")
-canvas_mh_ma1.SaveAs("plots/tree_h_mh_ma1.gif")
-
-canvas_mh_ma1_sig = ROOT.TCanvas("h_mh_ma1_sig","h_mh_ma1_sig")
-canvas_mh_ma1_sig.cd()
-h_mh_ma1_sig.Draw("COLZ")
-canvas_mh_ma1_sig.SaveAs("plots/tree_h_mh_ma1_signal.gif")
+    canvas[hname].SaveAs("plots/tree_" + hname + ".pdf")
 
 print "Number of expected events for ", luminosity_norm, " fb-1"
 print "Number of signal events = ", Nsig_passed

@@ -14,10 +14,18 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(10)
 )
 
+
+# enable the TrigReport and TimeReport
+#process.options = cms.untracked.PSet(
+#    SkipEvent = cms.untracked.vstring('ProductNotFound')
+#)
+
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'),
-    secondaryFileNames = cms.untracked.vstring()
+     fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'),#When reunning on crab
+#     fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/data/Run2015D/BTagCSV/MINIAOD/16Dec2015-v1/50000/00AF8EB4-70AB-E511-9271-00266CFAE7AC.root'),#When running on data (for try only and comment it while submitting the crab job)
+#     fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AAD5298-DBB8-E511-8527-003048D2BD8E.root'),# When running on MC (for try only)
+secondaryFileNames = cms.untracked.vstring()
 )
 
 ## Output file

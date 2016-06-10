@@ -16,9 +16,9 @@ config.Data.inputDataset = '/HAA4b_AODSIM_76X_MH800_MA300/pellicci-HAA4b_MINIAOD
 config.Data.inputDBS = 'phys03'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 5
-config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
+config.Data.outLFNDirBase = '/store/user/aashah/'
 config.Data.publication = False
 
 config.section_('Site')
-config.Site.storageSite = 'T2_IT_Legnaro'
+config.Site.storageSite = 'T2_IN_TIFR'
 

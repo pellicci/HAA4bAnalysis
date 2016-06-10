@@ -94,23 +94,21 @@ out_file = open(output_filename,"w")
 
 
 for dirname in list_dirs:
-
     samplename = dirname.split("crab_HAA4bAnalysis_")[1]
+    print samplename
     print "Processing sample dir " + dirname
-    crab_command = "crab report -d " + dir_input + dirname + "| grep read"
-
+    crab_command = "crab report -d " + dir_input + dirname + " | grep read"
     if samplename == "QCD_15_30":
         number_events = 38425945.*186./187.
     #elif samplename == "WJetsToLNu":
     #    number_events = 72207128.0
     else :
         event_string = os.popen(crab_command).read()
-        number_events = float((event_string.split())[0])
-
-    xsection = float(get_xsec_fromsample(samplename))
-
-    scale_factor = xsection*1000./number_events
-
+        #number_events = float((event_string.split())[0])
+        number_events = float((event_string.split())[4])
+    #xsection = float(get_xsec_fromsample(samplename))
+    xsection = get_xsec_fromsample(samplename)  
+    scale_factor = float(xsection*1000./number_events)
     write_string = samplename + " " + str(scale_factor) + "\n"
     out_file.write(write_string)
 

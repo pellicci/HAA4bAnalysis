@@ -23,7 +23,13 @@ def reSetJet(process):
     bTagDiscriminators = [
         'pfCombinedInclusiveSecondaryVertexV2BJetTags'
     ]
-
+#################################################################
+    slimmedAddPileupInfo = cms.EDProducer(
+       'PileupSummaryInfoSlimmer',
+        src = cms.InputTag('addPileupInfo'),
+        keepDetailedInfoFor = cms.vint32(0)
+    )
+#######################################################
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
 
     ## Add PAT jet collection based on the above-defined ak5PFJetsCHS
@@ -32,6 +38,7 @@ def reSetJet(process):
         labelName = 'AK5PFCHS',
         jetSource = cms.InputTag('ak5PFJetsCHS'),
         pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+        bsSource = cms.InputTag('offlineBeamSpot'),
         pfCandidates = cms.InputTag('packedPFCandidates'),
         svSource = cms.InputTag('slimmedSecondaryVertices'),
         btagDiscriminators = bTagDiscriminators,
@@ -60,5 +67,7 @@ def reSetJet(process):
                              process.selectedPatJetsAK5PFCHS)
 
     from PhysicsTools.PatAlgos.tools.pfTools import adaptPVs
-    ## Adapt primary vertex collection
+    ## Adapt primary vertex collection and BeamSpot
     adaptPVs(process, pvCollection=cms.InputTag('offlineSlimmedPrimaryVertices'))
+    adaptBSs(process, bsCollection=cms.InputTag('offlineBeamSpot'))
+  
