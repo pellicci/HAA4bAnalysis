@@ -13,11 +13,20 @@ config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 
 config.section_('Data')
 config.Data.splitting = 'FileBased'
-config.Data.outLFNDirBase = '/store/user/aashah/'
+config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
+#config.Data.outLFNDirBase = '/store/user/aashah/'
 config.Data.publication = False
 
 config.section_('Site')
+#config.Site.storageSite = 'T2_IT_Legnaro'
 config.Site.storageSite = 'T2_IN_TIFR'
+
+#####################################################################################
+##################################  IMPORTANT  ######################################
+####################  Replace the line runningOnData=cms.bool(True)  ################
+#########################  with runningOnData=cms.bool(False) ####################### 
+################### in python/HAA4b_Analysis_cfi.py before submitting the job #######
+#####################################################################################
 
 if __name__ == '__main__':
 

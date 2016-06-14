@@ -48,7 +48,7 @@ output_dir = "plots"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag","h_nPv" ]
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" ]
 
 def select_all_but_one(cutstring):
 
@@ -124,7 +124,9 @@ for sample_name in samplename_list:
     h_base[sample_name+list_histos[14]] = ROOT.TH1F(sample_name+list_histos[14], "B-tag of 2nd jet", 15, 0.89, 1.)
     h_base[sample_name+list_histos[15]] = ROOT.TH1F(sample_name+list_histos[15], "B-tag of 3rd jet", 15, 0.89, 1.)
     h_base[sample_name+list_histos[16]] = ROOT.TH1F(sample_name+list_histos[16], "B-tag of 4th jet", 15, 0.89, 1.)
-    h_base[sample_name+list_histos[17]] = ROOT.TH1F(sample_name+list_histos[17], "No. of primary verticies", 30, 0., 30.)
+    h_base[sample_name+list_histos[17]] = ROOT.TH1F(sample_name+list_histos[17], "m_{12} invariant mass", 15, 0., 600.)
+    h_base[sample_name+list_histos[18]] = ROOT.TH1F(sample_name+list_histos[18], "m_{34} invariant mass", 15, 0., 600.)
+    h_base[sample_name+list_histos[19]] = ROOT.TH1F(sample_name+list_histos[19], "No. of primary verticies", 50, 0., 50.)
 
 h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 25, 50., 500.)
 h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 25, 50., 500.)
@@ -143,12 +145,23 @@ h_QCD[list_histos[13]] = ROOT.TH1F(list_histos[13], "B-tag of 1st jet", 15, 0.89
 h_QCD[list_histos[14]] = ROOT.TH1F(list_histos[14], "B-tag of 2nd jet", 15, 0.89, 1.)
 h_QCD[list_histos[15]] = ROOT.TH1F(list_histos[15], "B-tag of 3rd jet", 15, 0.89, 1.)
 h_QCD[list_histos[16]] = ROOT.TH1F(list_histos[16], "B-tag of 4th jet", 15, 0.89, 1.)
-h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "No. of primary verticies", 30, 0., 30.)
+h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "m_{12} invariant mass", 15, 0., 600.)
+h_QCD[list_histos[18]] = ROOT.TH1F(list_histos[18], "m_{34} invariant mass", 15, 0., 600.)
+h_QCD[list_histos[19]] = ROOT.TH1F(list_histos[19], "No. of primary verticies", 50, 0., 50.)
+
+#Defining 2D Histograms/Corelation's
+h_ma1_ma2 = ROOT.TH2F("h_ma1_ma2", "m_{12} vs m_{34}", 15, 0., 600., 15, 0., 600.)
+h_mh_ma1  = ROOT.TH2F("h_mh_ma2", "m_{H} vs m_{34}", 20, 200., 1000., 15, 0., 600.)
+h_ma1_ma2_sig = ROOT.TH2F("h_ma1_ma2_sig", "m_{12} vs m_{34}", 15, 0., 600., 15, 0., 600.)
+h_mh_ma1_sig  = ROOT.TH2F("h_mh_ma2_sig", "m_{H} vs m_{34}", 20, 200., 1000., 15, 0., 600.)
+
 
 ##Graphics stuff
 canvas = dict()
+canvas_sig = dict()
 for hname in list_histos:
     canvas[hname] = ROOT.TCanvas(hname,hname)
+    canvas_sig[hname] = ROOT.TCanvas(hname+"_sig",hname+"_sig")
 leg1 = ROOT.TLegend(0.6,0.6,0.9,0.9)
 leg1.SetHeader("Samples considered")
 
@@ -252,7 +265,11 @@ for name_sample in samplename_list:
             if select_all_but_one("h_jet3Btag"):
                 h_QCD["h_jet3Btag"].Fill(mytree.jet3Btag,norm_factor)
             if select_all_but_one("h_jet4Btag"):
-                h_QCD["h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)
+                h_QCD["h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)	
+            if select_all_but_one("h_m12"):
+                h_QCD["h_m12"].Fill(p_pair1.M(),norm_factor)
+            if select_all_but_one("h_m34"):
+                h_QCD["h_m34"].Fill(p_pair2.M(),norm_factor)
 	    if select_all_but_one("h_nPv"):
                 h_QCD["h_nPv"].Fill(mytree.N_nPv,norm_factor) #added
         else:
@@ -290,9 +307,26 @@ for name_sample in samplename_list:
                 h_base[name_sample+"h_jet3Btag"].Fill(mytree.jet3Btag,norm_factor)
             if select_all_but_one("h_jet4Btag"):
                 h_base[name_sample+"h_jet4Btag"].Fill(mytree.jet4Btag,norm_factor)
+            if select_all_but_one("h_m12"): 
+                h_base[name_sample+"h_m12"].Fill(p_pair1.M(),norm_factor)
+            if select_all_but_one("h_m34"):
+                h_base[name_sample+"h_m34"].Fill(p_pair2.M(),norm_factor)
 	    if select_all_but_one("h_nPv"):
                 h_base[name_sample+"h_nPv"].Fill(mytree.N_nPv,norm_factor)
 
+        ##Now the 2D plots
+        if select_all_but_one("h_mh_ma1"):
+            if name_sample == myWF.sig_samplename:
+                h_ma1_ma2_sig.Fill(p_pair1.M(),p_pair2.M(),norm_factor)
+            else:
+                h_ma1_ma2.Fill(p_pair1.M(),p_pair2.M(),norm_factor)
+        if select_all_but_one("h_mh_ma1"):
+            if name_sample == myWF.sig_samplename:
+                h_mh_ma1_sig.Fill(m4b,p_pair1.M(),norm_factor)   
+            else:
+                h_mh_ma1.Fill(m4b,p_pair1.M(),norm_factor)   
+
+        #Count the events
         if select_all_but_one("actually all"):
             if name_sample == myWF.sig_samplename:
                 Nsig_passed += norm_factor
@@ -323,14 +357,63 @@ for idx_histo,hname in enumerate(list_histos):
         leg1.AddEntry(h_QCD[hname],"QCD","f")
     hs[hname].Add(h_QCD[hname])
 
-
 for hname in list_histos:
     canvas[hname].cd()
+    #canvas[hname].SetLogy(1)
     hs[hname].Draw("histo")
     if signal_magnify != 1:
         h_base[myWF.sig_samplename+hname].Scale(signal_magnify)
     leg1.Draw()
+
+    canvas[hname].SaveAs("plots/tree_" + hname + ".gif")
+    #canvas[hname].SaveAs("plots/tree_" + hname + ".C")
     canvas[hname].SaveAs("plots/tree_" + hname + ".pdf")
+
+##Signal only plots to be produced
+for hname in list_histos:
+    if hname == "h_m4b" or hname == "h_m12" or  hname == "h_m34":
+        canvas_sig[hname].cd()
+
+        ##Remove some style fancyness
+        h_base[myWF.sig_samplename+hname].SetFillColor(0)
+        h_base[myWF.sig_samplename+hname].SetLineStyle(0)
+
+        ROOT.gStyle.SetOptStat(1)
+        h_base[myWF.sig_samplename+hname].Draw("histo")
+        canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.gif")
+        #canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.C")
+        canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.pdf")
+
+##Now the 2D plots
+ROOT.gStyle.SetOptStat(0)
+
+canvas_ma1_ma2 = ROOT.TCanvas("h_ma1_ma2","h_ma1_ma2")
+canvas_ma1_ma2.cd()
+h_ma1_ma2.Draw("COLZ")
+canvas_ma1_ma2.SaveAs("plots/tree_h_ma1_ma2.gif")
+#canvas_ma1_ma2.SaveAs("plots/tree_h_ma1_ma2.C")
+canvas_ma1_ma2.SaveAs("plots/tree_h_ma1_ma2.pdf")
+
+canvas_ma1_ma2_sig = ROOT.TCanvas("h_ma1_ma2_sig","h_ma1_ma2_sig")
+canvas_ma1_ma2_sig.cd()
+h_ma1_ma2_sig.Draw("COLZ")
+canvas_ma1_ma2_sig.SaveAs("plots/tree_h_ma1_ma2_signal.gif")
+#canvas_ma1_ma2_sig.SaveAs("plots/tree_h_ma1_ma2_signal.C")
+canvas_ma1_ma2_sig.SaveAs("plots/tree_h_ma1_ma2_signal.pfd")
+
+canvas_mh_ma1 = ROOT.TCanvas("h_mh_ma1","h_mh_ma1")
+canvas_mh_ma1.cd()
+h_mh_ma1.Draw("COLZ")
+canvas_mh_ma1.SaveAs("plots/tree_h_mh_ma1.gif")
+#canvas_mh_ma1.SaveAs("plots/tree_h_mh_ma1.C")
+canvas_mh_ma1.SaveAs("plots/tree_h_mh_ma1.pdf")
+
+canvas_mh_ma1_sig = ROOT.TCanvas("h_mh_ma1_sig","h_mh_ma1_sig")
+canvas_mh_ma1_sig.cd()
+h_mh_ma1_sig.Draw("COLZ")
+canvas_mh_ma1_sig.SaveAs("plots/tree_h_mh_ma1_signal.gif")
+#canvas_mh_ma1_sig.SaveAs("plots/tree_h_mh_ma1_signal.C")
+canvas_mh_ma1_sig.SaveAs("plots/tree_h_mh_ma1_signal.pdf")
 
 print "Number of expected events for ", luminosity_norm, " fb-1"
 print "Number of signal events = ", Nsig_passed
@@ -338,3 +421,8 @@ print "Number of background events = ", Nbkg_passed
 print "Significance S/sqrt(B) = ", Nsig_passed/math.sqrt(Nbkg_passed)
 print "Significance S/sqrt(B + deltaB^2) = ", Nsig_passed/(math.sqrt(Nbkg_passed) + 0.2*Nbkg_passed)
 print "Significance S/sqrt(S+B) = ", Nsig_passed/math.sqrt(Nsig_passed + Nbkg_passed)
+print "\nAll the intresting plots have been produced..!"
+message =raw_input('\nHit the Enter Key to exit the program! ')
+print(message)
+print "Thank You and Good Bye.!\n\n "
+exit()

@@ -108,12 +108,12 @@ private:
   TH1F* h_nPv;      // No. of primary verticies histogram
   TH1F* h_Rw_nPv;   //Reweighted No. of primary verticies
 
-  TH1D* TNPUInTime_;  //In time PileUp
-  TH1D* TNPUTrue_;    //True number of PileUp
+  TH1D* h_TNPUInTime;  //In time PileUp
+  TH1D* h_TNPUTrue;    //True number of PileUp
  // TH1D* TNVTX_;
-  TH1D* WGT_;         //Weight factor   
-  TH1D* RWTTrue_;     //Reweighted True number of PileUp Interactions
-  TH1D* RWTInTime_;   //Reweihted Intime PileUp
+  TH1D* h_WGT;         //Weight   
+  TH1D* h_RWTTrue;     //Reweighted True number of PileUp Interactions
+  TH1D* h_RWTInTime;   //Reweighted Intime PileUp
   
  //TTree stuff
   TTree *mytree;
@@ -140,7 +140,7 @@ private:
   //Few new counters and variables
   float npT;
   float npIT;
-  double MyWeight;
+  double PU_Weight;
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_;
@@ -204,13 +204,12 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
 
   h_nPv = fs->make<TH1F>("h_nPv", "No. of primary verticies", 50, 0., 50.);              //Few more Histogram inclusions
   h_Rw_nPv = fs->make<TH1F>("h_Rw_nPv", "Reweighted No. of primary verticies", 50, 0., 50.);
-  TNPUInTime_ = fs->make<TH1D>("TNPUInTime","Input No. in-time pileup interactions",50,0.,50.);
-  TNPUTrue_ = fs->make<TH1D>("TNPUTrue","Input True pileup interactions",50,0.,50.);
-  RWTTrue_ = fs->make<TH1D>("RWTTrue","Reweighted True pileup interactions",50,0.,50.);
-  RWTInTime_ = fs->make<TH1D>("RWTInTime","Reweighted in-time pileup interactions",50,0.,50.);
- // TNVTX_ = fs->make<TH1D>("TNVTX","No. reconstructed vertices",40,0.,40.);
-  WGT_ = fs->make<TH1D>("WGT","Event weight",50,0.,10.);
- // WeightVsNint_ = fs->make<TProfile>("WeightVsNint","Event weight vs N_int",50,0.,50.,0.,10.);
+  h_TNPUInTime= fs->make<TH1D>("h_TNPUInTime","Input No. in-time pileup interactions",50,0.,50.);
+  h_TNPUTrue= fs->make<TH1D>("h_TNPUTrue","Input True pileup interactions",50,0.,50.);
+  h_RWTTrue = fs->make<TH1D>("h_RWTTrue","Reweighted True pileup interactions",50,0.,50.);
+  h_RWTInTime = fs->make<TH1D>("h_RWTInTime","Reweighted in-time pileup interactions",50,0.,50.);
+  h_WGT = fs->make<TH1D>("h_WGT","Event weight",50,0.,10.);
+ //h_WeightVsNint = fs->make<TProfile>("h_WeightVsNint","Event weight vs N_int",50,0.,50.,0.,10.);
 
   jet1_4mom_tree = new TLorentzVector();
   jet2_4mom_tree = new TLorentzVector();
@@ -232,9 +231,9 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   // pileUp histograms
   mytree->Branch("TNPUTrue", &npT, "npT/F");
   mytree->Branch("TNPUInTime", &npIT, "npIT/F");
-  mytree->Branch("WGT", &MyWeight, "MyWeight/D");
+  mytree->Branch("WGT", &PU_Weight, "PU_Weight/D");
   
- //mytree->Branch("RWTTrue", &, ""RWTTrue_->Fill(npT, MyWeight)");
+ //mytree->Branch("RWTTrue", &, ""RWTTrue_->Fill(npT, PU_Weight)");
 
 }
 
@@ -280,7 +279,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   // PileUp code for examining the Pileup information
 
-MyWeight=1;
+PU_Weight=1;
 
 if (!runningOnData_){
   edm::Handle<std::vector< PileupSummaryInfo>>  PupInfo;
@@ -299,7 +298,7 @@ for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
 
 
  // calculate weight using above code
- MyWeight = Lumiweights_.weight(npT);
+ PU_Weight = Lumiweights_.weight(npT);
 
 }
 
@@ -453,17 +452,16 @@ for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
  
   // primary vertex collection
   h_nPv->Fill(_nPv); 
-  h_Rw_nPv->Fill(float(_nPv)-1, MyWeight);
+  h_Rw_nPv->Fill(float(_nPv)-1,PU_Weight);
   // fill the histograms
-  TNPUTrue_->Fill(npT);
-  TNPUInTime_->Fill(npIT);
+  h_TNPUTrue->Fill(npT);
+  h_TNPUInTime->Fill(npIT);
   
   // once you have the event weight, you can plot reweighted distributions of important event quantities 
-   WGT_->Fill(MyWeight);
-   RWTTrue_->Fill(npT, MyWeight);
-  // RWTInTime_->Fill(npIT, MyWeight);
-  // Rw_h_nPv->Fill(float(_nPv)-1, MyWeight);
-  // TNVTX_->Fill(float(NVtx)-1, MyWeight);  // subtract primary interaction
+  h_WGT->Fill(PU_Weight);
+  h_RWTTrue->Fill(npT, PU_Weight);
+  //h_RWTInTime->Fill(npIT, PU_Weight);
+  //h_TNVTX->Fill(float(NVtx)-1, PU_Weight);  // subtract primary interaction
   
   mytree->Fill();
 }

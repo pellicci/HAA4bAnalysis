@@ -15,10 +15,19 @@ config.Data.lumiMask = 'json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v
 #config.Data.unitsPerJob = 50
 config.Data.inputDBS = 'global' #'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'
 config.Data.splitting = 'LumiBased'
-config.Data.outLFNDirBase = '/store/user/aashah/'
+config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
+#config.Data.outLFNDirBase = '/store/user/aashah/'
 config.section_('User')
 config.section_('Site')
+#config.Site.storageSite = 'T2_IT_Legnaro'
 config.Site.storageSite = 'T2_IN_TIFR'
+
+#####################################################################################
+##################################  IMPORTANT  ######################################
+####################  Replace the line runningOnData=cms.bool(False) ################
+#########################  with runningOnData=cms.bool(True)  ####################### 
+################### in python/HAA4b_Analysis_cfi.py before submitting the job #######
+#####################################################################################
 
 if __name__ == '__main__':
 
