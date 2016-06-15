@@ -10,8 +10,9 @@ myWF = Workflow_Handler("Signal_H800_A300")
 
 def is_Event_selected(jet_btag,jet_pt):
     """Save events according to some basic selection criteria"""
-    btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
-    #btag_cut = jet_btag[0] > 0.89 and jet_btag[1] > 0.89 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
+    btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.89 and jet_btag[3] > 0.89
+    #btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
+    #btag_cut = jet_btag[0] > 0.89 and jet_btag[1] > 0.89 and jet_btag[2] > 0.89 and jet_btag[3] > 0.89
     #pt_cut = jet_pt[0] > 165. and jet_pt[1] > 130. and jet_pt[2] > 130. and jet_pt[3] > 110.
     #pt_cut = jet_pt[3] > 50.
 
@@ -21,11 +22,11 @@ def is_Event_selected(jet_btag,jet_pt):
 Norm_Map = myWF.get_normalizations_map()
 
 steps_cut1 = 20
-cut1_init = 70.
+cut1_init = 50.
 cut1_stepsize = 10.
 
 steps_cut2 = 20
-cut2_init = 70.
+cut2_init = 50.
 cut2_stepsize = 10.
 
 steps_cut3 = 20
@@ -33,10 +34,10 @@ cut3_init = 50.
 cut3_stepsize = 10.
 
 steps_cut4 = 20
-cut4_init = 50.
+cut4_init = 30.
 cut4_stepsize = 10.
 
-steps_cut5 = 20
+steps_cut5 = 10
 cut5_init = 0.
 cut5_stepsize = 10.
 
@@ -55,7 +56,7 @@ root_file = myWF.get_root_files()
 for name_sample in samplename_list:
 
     norm_factor = Norm_Map[name_sample]*luminosity_norm
-    mytree = root_file[name_sample].Get("HZZ4bAnalysis/mytree")
+    mytree = root_file[name_sample].Get("HAA4bAnalysis/mytree")
 
     if "Signal" in name_sample and not name_sample == myWF.sig_samplename:
         continue
@@ -103,6 +104,9 @@ for name_sample in samplename_list:
  
         if delta_Phi > 3.14:
             delta_Phi = 6.28 - delta_Phi
+
+        if p_pair1.M() < 130. or p_pair2.M() < 130.:
+            continue
 
         for icut1 in xrange(steps_cut1):
             cut1_value = cut1_init + cut1_stepsize*icut1

@@ -8,15 +8,26 @@ config.General.workArea = 'crab_projects/samples/'
 config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
+config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
+config.JobType.pyCfgParams = ['runningOnData=False']
 
 config.section_('Data')
 config.Data.splitting = 'FileBased'
-config.Data.outLFNDirBase = '/store/user/pellicci/'
+config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
+#config.Data.outLFNDirBase = '/store/user/aashah/'
 config.Data.publication = False
 
 config.section_('Site')
-config.Site.storageSite = 'T2_IT_Legnaro'
+#config.Site.storageSite = 'T2_IT_Legnaro'
+config.Site.storageSite = 'T2_IN_TIFR'
+
+#####################################################################################
+##################################  IMPORTANT  ######################################
+####################  Replace the line runningOnData=cms.bool(True)  ################
+#########################  with runningOnData=cms.bool(False) ####################### 
+################### in python/HAA4b_Analysis_cfi.py before submitting the job #######
+#####################################################################################
 
 if __name__ == '__main__':
 
