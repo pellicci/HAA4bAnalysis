@@ -1,7 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-from FWCore.ParameterSet.VarParsing import VarParsing
-
 process = cms.Process("USER")
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
@@ -45,7 +43,7 @@ process.selectedJets = cms.EDFilter("PATJetSelector",
 import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing()
 options.register('runningOnData',
-                 'True', #default value
+                 True, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "PU config flag")

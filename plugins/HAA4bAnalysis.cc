@@ -282,7 +282,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   // PileUp code for examining the Pileup information
 
-  PU_Weight=1;
+  PU_Weight=1.;
 
   if (!runningOnData_){
     edm::Handle<std::vector< PileupSummaryInfo>>  PupInfo;
