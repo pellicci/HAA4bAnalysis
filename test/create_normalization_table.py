@@ -5,6 +5,10 @@ import os
 dir_input = "crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
 
+# Just to write 1.0 for data to the output file for normalization
+dir_input_data = "crab_projects/data/"
+list_dirs_data = os.listdir(dir_input_data)
+
 if not os.path.exists("rootfiles"):
     os.makedirs("rootfiles")
 
@@ -13,53 +17,56 @@ output_filename = "rootfiles/Normalizations_table.txt"
 ##These are in pb
 def get_xsec_fromsample(samplename):
     
+#    if samplename == "ttbar":
+#        return 831.76
+
+#    if samplename == "DY_5_50":
+#        return 71310.0
+
+#    if samplename == "DY_50":
+#        return 6225.2
+
+#    if samplename == "QCD_15_30":
+#        return 1837410000.0
+
+#    if samplename == "QCD_30_50":
+#        return 140932000.0
+
+#    if samplename == "QCD_50_80":
+#        return 19204300.0
+
+#    if samplename == "QCD_80_120":
+#        return 2762530.0
+
+#    if samplename == "QCD_120_170":
+#        return 471100.0
+
+#    if samplename == "QCD_170_300":
+#        return 117276.0
+
+#    if samplename == "QCD_300_470":
+#        return 7823.0
+
+#    if samplename == "QCD_470_600":
+#        return 648.2
+
+#    if samplename == "QCD_600_800":
+#        return 186.9
+
+#    if samplename == "QCD_800_1000":
+#        return 32.293
+
+#    if samplename == "QCD_1000_1400":
+#        return 9.4183
+
+#    if samplename == "QCD_1400_1800":
+#        return 0.84265
+
+#    if samplename == "QCD_1800_2400":
+#        return 0.114943
+
     if samplename == "ttbar":
         return 831.76
-
-    if samplename == "DY_5_50":
-        return 71310.0
-
-    if samplename == "DY_50":
-        return 6225.2
-
-    if samplename == "QCD_15_30":
-        return 1837410000.0
-
-    if samplename == "QCD_30_50":
-        return 140932000.0
-
-    if samplename == "QCD_50_80":
-        return 19204300.0
-
-    if samplename == "QCD_80_120":
-        return 2762530.0
-
-    if samplename == "QCD_120_170":
-        return 471100.0
-
-    if samplename == "QCD_170_300":
-        return 117276.0
-
-    if samplename == "QCD_300_470":
-        return 7823.0
-
-    if samplename == "QCD_470_600":
-        return 648.2
-
-    if samplename == "QCD_600_800":
-        return 186.9
-
-    if samplename == "QCD_800_1000":
-        return 32.293
-
-    if samplename == "QCD_1000_1400":
-        return 9.4183
-
-    if samplename == "QCD_1400_1800":
-        return 0.84265
-
-    if samplename == "QCD_1800_2400":
-        return 0.114943
 
     if samplename == "SingleTop_tW":
         return 35.6
@@ -67,17 +74,92 @@ def get_xsec_fromsample(samplename):
     if samplename == "SingleAntiTop_tW":
         return 35.6
 
-    if samplename == "ZZ":
-        return 16.523
+#    if samplename == "ZZ":
+#        return 16.523
 
-    if samplename == "WW":
-        return 63.21
+#    if samplename == "WW":
+#        return 63.21
 
-    if samplename == "WZ":
-        return 47.13
+#    if samplename == "WZ":
+#        return 47.13
 
     if samplename == "WJetsToLNu":
         return 61526.7
+
+# Second Addition
+    if samplename == "ttbarW":
+        return 0.27
+
+    if samplename == "ttbarZ":
+        return 0.37
+
+    if samplename == "QCD_HT100to200":
+        return 27990000.0
+
+    if samplename == "QCD_HT200to300":
+        return 1712000.0
+
+    if samplename == "QCD_HT300to500":
+        return 347700.0
+
+    if samplename == "QCD_HT500to700":
+        return 32100.0
+
+    if samplename == "QCD_HT700to1000":
+        return 6831.0
+
+    if samplename == "QCD_HT1000to1500":
+        return 1207.0
+
+    if samplename == "QCD_HT1500to2000":
+        return 119.9
+
+    if samplename == "QCD_HT2000toInf":
+        return 25.24
+
+# Third Addition
+
+    if samplename == "QCD_MuEnriched_P20to30":
+        return 2960198.40 
+
+    if samplename == "QCD_MuEnriched_P30to50":
+        return 1652471.46
+
+    if samplename == "QCD_MuEnriched_P50to80":
+        return 437504.10
+
+    if samplename == "QCD_MuEnriched_P80to120":
+        return 106033.66
+
+    if samplename == "QCD_MuEnriched_P120to170":
+        return 25190.52
+
+    if samplename == "QCD_MuEnriched_P170to300":
+        return 8654.49
+
+    if samplename == "QCD_MuEnriched_P300to470":
+        return 797.35
+
+    if samplename == "QCD_MuEnriched_P470to600":
+        return 79.03
+
+    if samplename == "QCD_MuEnriched_P600to800":
+        return 25.10
+
+    if samplename == "QCD_MuEnriched_P800to1000":
+        return 4.71
+
+    if samplename == "QCD_MuEnriched_P1000toInf":
+        return 1.62
+
+    if samplename == "ZZ":
+        return 8.16
+
+    if samplename == "WW":
+        return 23.50
+
+    if samplename == "WZ":
+        return 2.48 
 
     if samplename == "Signal_H500_A200":
         return 1.96
@@ -96,20 +178,37 @@ for dirname in list_dirs:
     samplename = dirname.split("crab_HAA4bAnalysis_")[1]
     print "Processing sample dir " + dirname
     crab_command = "crab report -d " + dir_input + dirname + " | grep read"
+    print crab_command
     if samplename == "QCD_15_30":
         number_events = 38425945.*186./187.
-        print "No. of events to be processed = " + str (number_events) + "\n"
+        print "No. of events processed = " + str (number_events) + "\n"
     #elif samplename == "WJetsToLNu":
     #    number_events = 72207128.0
     else :
         event_string = os.popen(crab_command).read()
         #number_events = float((event_string.split())[0])
         number_events = float((event_string.split())[4])
-        print "No. of events to be processed = " + str (number_events) + "\n"
+        print "No. of events processed = " + str (number_events) + "\n"
     #xsection = float(get_xsec_fromsample(samplename))
     xsection = get_xsec_fromsample(samplename)  
     scale_factor = float(xsection*1000./number_events)
     write_string = samplename + " " + str(scale_factor) + "\n"
     out_file.write(write_string)
 
+#====================================================================================
+
+for dirname in list_dirs_data:
+    data_samplename = dirname.split("crab_HAA4bAnalysis_")[1]
+    print "Processing data sample dir " + dirname
+    crab_command = "crab report -d " + dir_input_data + dirname + " | grep read"
+    #if data_samplename:    
+    data_event_string = os.popen(crab_command).read()
+    data_number_events = float((data_event_string.split())[4])
+    print "No. of events processed = " + str (data_number_events) + "\n"
+    data_scale_factor = 1.0
+    write_data_string = data_samplename + " " + str(data_scale_factor) + "\n"
+    out_file.write(write_data_string)
 out_file.close()
+
+print "Data and Sample Normalizations saved in output file"
+print "All done!"

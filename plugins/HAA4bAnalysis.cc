@@ -74,11 +74,10 @@ private:
   double minPt_low_;
   double minCSV3_;
   bool runningOnData_;
-  const edm::InputTag pvCollection_;   //Global tag definitions for verticies
+  const edm::InputTag pvCollection_;  
   const edm::InputTag bsCollection_;  
-  const edm::InputTag PileupSrc_;      //And for PileUp
+  const edm::InputTag PileupSrc_;      
   edm::LumiReWeighting Lumiweights_; 
-
   edm::Service<TFileService> fs;
 
   TH1F* h_jet1pt;
@@ -109,12 +108,12 @@ private:
   TH1F* h_nPv;      // No. of primary verticies histogram
   TH1F* h_Rw_nPv;   //Reweighted No. of primary verticies
 
-  TH1D* h_TNPUInTime;  //In time PileUp
-  TH1D* h_TNPUTrue;    //True number of PileUp
+  TH1F* h_PUInTime;  //In time PileUp
+  TH1F* h_PUTrue;    //True number of PileUp
  // TH1D* TNVTX_;
-  TH1D* h_WGT;         //Weight   
-  TH1D* h_RWTTrue;     //Reweighted True number of PileUp Interactions
-  TH1D* h_RWTInTime;   //Reweighted Intime PileUp
+  TH1F* h_PUWeight;         //Weight   
+  TH1F* h_Rw_PUTrue;     //Reweighted True number of PileUp Interactions
+  TH1F* h_Rw_PUInTime;   //Reweighted Intime PileUp
   
  //TTree stuff
   TTree *mytree;
@@ -142,15 +141,16 @@ private:
   //Few new counters and variables
   float npT;
   float npIT;
-  double PU_Weight;
+  //double PU_Weight;
+  float PU_Weight;
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_;
   edm::EDGetTokenT<reco::VertexCollection> tok_Vertex_; 
   edm::EDGetTokenT<reco::BeamSpot>         tok_beamspot_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupSummaryToken_;
+  edm::EDGetTokenT<std::vector<bool>> tok_runningOnData_;
 };
-
 
 // constructors and destructor
 HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
@@ -159,8 +159,8 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   minPt_high_(iConfig.getParameter<double>("minPt_high")),
   minPt_low_(iConfig.getParameter<double>("minPt_low")),
   minCSV3_(iConfig.getParameter<double>("minCSV3")),
-  runningOnData_(iConfig.getParameter<bool>("runningOnData" )),         //Put this Flag False (In configuration) when running on Monte Carlo
-  pvCollection_(iConfig.getParameter<edm::InputTag>("pvCollection")),   //Added additional stuff 
+  runningOnData_(iConfig.getParameter<bool>("runningOnData")),   
+  pvCollection_(iConfig.getParameter<edm::InputTag>("pvCollection")),   
   bsCollection_(iConfig.getParameter<edm::InputTag>("bsCollection")),  
   PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc"))
 {
@@ -207,11 +207,11 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
 
   h_nPv = fs->make<TH1F>("h_nPv", "No. of primary verticies", 50, 0., 50.);              //Few more Histogram inclusions
   h_Rw_nPv = fs->make<TH1F>("h_Rw_nPv", "Reweighted No. of primary verticies", 50, 0., 50.);
-  h_TNPUInTime= fs->make<TH1D>("h_TNPUInTime","Input No. in-time pileup interactions",50,0.,50.);
-  h_TNPUTrue= fs->make<TH1D>("h_TNPUTrue","Input True pileup interactions",50,0.,50.);
-  h_RWTTrue = fs->make<TH1D>("h_RWTTrue","Reweighted True pileup interactions",50,0.,50.);
-  h_RWTInTime = fs->make<TH1D>("h_RWTInTime","Reweighted in-time pileup interactions",50,0.,50.);
-  h_WGT = fs->make<TH1D>("h_WGT","Event weight",50,0.,10.);
+  h_PUInTime= fs->make<TH1F>("h_PUInTime","Input No. in-time pileup interactions",50,0.,50.);
+  h_PUTrue= fs->make<TH1F>("h_PUTrue","Input True pileup interactions",50,0.,50.);
+  h_Rw_PUTrue = fs->make<TH1F>("h_Rw_PUTrue","Reweighted True pileup interactions",50,0.,50.);
+  h_Rw_PUInTime = fs->make<TH1F>("h_Rw_PUInTime","Reweighted in-time pileup interactions",50,0.,50.);
+  h_PUWeight = fs->make<TH1F>("h_PUWeight","Event weight",50,0.,50.);
  //h_WeightVsNint = fs->make<TProfile>("h_WeightVsNint","Event weight vs N_int",50,0.,50.,0.,10.);
 
   jet1_4mom_tree = new TLorentzVector();
@@ -232,11 +232,10 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   mytree->Branch("N_nPv", &_nPv, "_nPv/I");                                          //Filling Primary Verticies 
 
   // pileUp histograms
-  mytree->Branch("TNPUTrue", &npT, "npT/F");
-  mytree->Branch("TNPUInTime", &npIT, "npIT/F");
-  mytree->Branch("WGT", &PU_Weight, "PU_Weight/D");
-  
- //mytree->Branch("RWTTrue", &, ""RWTTrue_->Fill(npT, PU_Weight)");
+  mytree->Branch("PUTrue", &npT, "npT/F");
+  mytree->Branch("PUInTime", &npIT, "npIT/F");
+  mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
+ // mytree->Branch("RW_PUTrue", &, ""RWTTrue_->Fill(npT, PU_Weight)");
 
 }
 
@@ -255,8 +254,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // initializing few counters 
   _nPv=0;                                   
   _Nevents_processed++;
-  npT=0.0;
-  npIT=0.0;
+  npT=-1.0;
+  npIT=-1.0;
 
   // get the Handle of the primary vertex collection and remove the beamspot
   edm::Handle<reco::BeamSpot> bmspot;
@@ -285,6 +284,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   PU_Weight=1.;
 
   if (!runningOnData_){
+    std::cout<<"running on MC "<<std::endl;
     edm::Handle<std::vector< PileupSummaryInfo>>  PupInfo;
     iEvent.getByLabel(PileupSrc_, PupInfo);  
   
@@ -302,11 +302,13 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     // calculate weight using above code
     PU_Weight = Lumiweights_.weight(npT);
-
-  }
-
-
-  // no point to continue if there aren't 4 jets
+    std::cout<<"PU_Weight for MC is "<<PU_Weight<<std::endl;
+   }
+  if (runningOnData_){
+   std::cout<<"running on data "<<std::endl;
+   std::cout<<"PU_Weight for data is "<<PU_Weight<<std::endl;
+    }
+ // no point to continue if there aren't 4 jets
   if(jets->size() < 4) return;
 
   _Nevents_4jets++;
@@ -465,15 +467,15 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
  
   // primary vertex collection
   h_nPv->Fill(_nPv); 
-  h_Rw_nPv->Fill(float(_nPv)-1,PU_Weight);
+  h_Rw_nPv->Fill(float(_nPv)-1,float(PU_Weight)); // subtract primary interaction
   // fill the histograms
-  h_TNPUTrue->Fill(npT);
-  h_TNPUInTime->Fill(npIT);
+  h_PUTrue->Fill(npT);
+  h_PUInTime->Fill(npIT);
   
   // once you have the event weight, you can plot reweighted distributions of important event quantities 
-  h_WGT->Fill(PU_Weight);
-  h_RWTTrue->Fill(npT, PU_Weight);
-  //h_RWTInTime->Fill(npIT, PU_Weight);
+  h_PUWeight->Fill(PU_Weight);
+  h_Rw_PUTrue->Fill(npT, PU_Weight);
+  h_Rw_PUInTime->Fill(npIT, PU_Weight);
   //h_TNVTX->Fill(float(NVtx)-1, PU_Weight);  // subtract primary interaction
   
   mytree->Fill();
@@ -484,7 +486,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 void HAA4bAnalysis::beginJob()
 {
 
-// defining a flag which should be FALSE when runing on monte carlo and TRUE when running on data and also supply files for PileUp reweighting
+// Flag for PileUp reweighting
 if (!runningOnData_){
 
 Lumiweights_=edm::LumiReWeighting("MC_Recent_25ns_2015.root",

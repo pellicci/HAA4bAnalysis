@@ -43,7 +43,7 @@ process.selectedJets = cms.EDFilter("PATJetSelector",
 import FWCore.ParameterSet.VarParsing as VarParsing
 options = VarParsing.VarParsing()
 options.register('runningOnData',
-                 True, #default value
+                 False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "PU config flag")

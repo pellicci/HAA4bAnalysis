@@ -1,4 +1,5 @@
 from WMCore.Configuration import Configuration
+from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = Configuration()
 
 config.section_('General')
@@ -10,6 +11,8 @@ config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.allowUndistributedCMSSW = True
+config.JobType.pyCfgParams = ['runningOnData=True']
+
 config.section_('Data')
 config.Data.lumiMask = 'json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt'
 #config.Data.unitsPerJob = 50
@@ -21,13 +24,6 @@ config.section_('User')
 config.section_('Site')
 #config.Site.storageSite = 'T2_IT_Legnaro'
 config.Site.storageSite = 'T2_IN_TIFR'
-
-#####################################################################################
-##################################  IMPORTANT  ######################################
-####################  Replace the line runningOnData=cms.bool(False) ################
-#########################  with runningOnData=cms.bool(True)  ####################### 
-################### in python/HAA4b_Analysis_cfi.py before submitting the job #######
-#####################################################################################
 
 if __name__ == '__main__':
 
