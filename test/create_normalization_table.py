@@ -17,9 +17,6 @@ output_filename = "rootfiles/Normalizations_table.txt"
 ##These are in pb
 def get_xsec_fromsample(samplename):
     
-#    if samplename == "ttbar":
-#        return 831.76
-
 #    if samplename == "DY_5_50":
 #        return 71310.0
 

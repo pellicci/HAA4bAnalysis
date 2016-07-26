@@ -72,7 +72,7 @@ private:
   std::string bdiscr_;
   double minPt_high_;
   double minPt_low_;
-  double minCSV3_;
+  double minCSV_;
   bool runningOnData_;
   const edm::InputTag pvCollection_;  
   const edm::InputTag bsCollection_;  
@@ -131,7 +131,7 @@ private:
   //A few counters
   float _Nevents_processed;
   float _Nevents_4jets;
-  float _Nevents_3bjets;
+  float _Nevents_4bjets;
   float _Nevents_ptpass;
   float _Nevents_mpairs;
   float _Nevents_deltaM;
@@ -158,7 +158,7 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   bdiscr_(iConfig.getParameter<std::string>("BTagAlgo")),
   minPt_high_(iConfig.getParameter<double>("minPt_high")),
   minPt_low_(iConfig.getParameter<double>("minPt_low")),
-  minCSV3_(iConfig.getParameter<double>("minCSV3")),
+  minCSV_(iConfig.getParameter<double>("minCSV")),
   runningOnData_(iConfig.getParameter<bool>("runningOnData")),   
   pvCollection_(iConfig.getParameter<edm::InputTag>("pvCollection")),   
   bsCollection_(iConfig.getParameter<edm::InputTag>("bsCollection")),  
@@ -172,7 +172,7 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
 
   _Nevents_processed = 0.;
   _Nevents_4jets    = 0.;
-  _Nevents_3bjets    = 0.;
+  _Nevents_4bjets    = 0.;
   _Nevents_ptpass    = 0.;
   _Nevents_mpairs    = 0.;
   _Nevents_deltaM    = 0.;
@@ -189,10 +189,10 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   h_jet3eta = fs->make<TH1F>("h_jet3eta", "#eta of the 3rd jet", 50, -10., 10.);
   h_jet4eta = fs->make<TH1F>("h_jet4eta", "#eta of the 4th jet", 50, -10., 10.);
 
-  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, minCSV3_, 1.);
-  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, minCSV3_, 1.);
-  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, minCSV3_, 1.);
-  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, 0., 1.);
+  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, minCSV_, 1.);
+  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, minCSV_, 1.);
+  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, minCSV_, 1.);
+  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, minCSV_, 1.);
 
   h_m_pair1 = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
   h_m_pair2 = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
@@ -319,51 +319,54 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   int nj4 = -1;
   int nCounter = 0;
 
-  float jetcsv1max = -999.;
-  float jetcsv2max = -999.;
-  float jetcsv3max = -999.;
-  float jetcsv4max = -999.;
+  float jetpt1max = -999.;
+  float jetpt2max = -999.;
+  float jetpt3max = -999.;
+  float jetpt4max = -999.;
   
   // loop over jets and determine the ranking
-  // jets in decreasing CSV from 1 to 3
+  // based on pt from 1 to 4
 
   for(auto jet = jets->begin(); jet != jets->end(); ++jet){
+    float thept = jet->p4().Pt();
     float thecsv = jet->bDiscriminator(bdiscr_);
 
-    if(thecsv > jetcsv1max){
-      jetcsv4max = jetcsv3max;
-      jetcsv3max = jetcsv2max;
-      jetcsv2max = jetcsv1max;
-      jetcsv1max = thecsv;
+    if(thecsv < minCSV_) continue;
+
+    if(thept > jetpt1max){
+      jetpt4max = jetpt3max;
+      jetpt3max = jetpt2max;
+      jetpt2max = jetpt1max;
+      jetpt1max = thept;
       nj4 = nj3;
       nj3 = nj2;
       nj2 = nj1;
       nj1 = nCounter;
     }
-    else if(thecsv > jetcsv2max){
-      jetcsv4max = jetcsv3max;
-      jetcsv3max = jetcsv2max;
-      jetcsv2max = thecsv;
+    else if(thept > jetpt2max){
+      jetpt4max = jetpt3max;
+      jetpt3max = jetpt2max;
+      jetpt2max = thept;
       nj4 = nj3;
       nj3 = nj2;
       nj2 = nCounter;
     }
-    else if(thecsv > jetcsv3max){
-      jetcsv4max = jetcsv3max;
-      jetcsv3max = thecsv;
+    else if(thept > jetpt3max){
+      jetpt4max = jetpt3max;
+      jetpt3max = thept;
       nj4 = nj3;
       nj3 = nCounter;
     }
-    else if(thecsv > jetcsv4max){
-      jetcsv4max = thecsv;
+    else if(thept > jetpt4max){
+      jetpt4max = thept;
       nj4 = nCounter;
     }
 
     nCounter++;
   }
 
-  if(jetcsv3max < minCSV3_) return;
-  _Nevents_3bjets++;
+  if(nj4 < 0) return;
+  _Nevents_4bjets++;
 
   //Select the highest csv jets
   pat::Jet jet1 = jets->at(nj1);
@@ -376,13 +379,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   LorentzVector jet3_4mom = jet3.p4();
   LorentzVector jet4_4mom = jet4.p4();
  
-  if(jet1_4mom.Pt() < minPt_low_) return;
-  if(jet2_4mom.Pt() < minPt_low_) return;
-  if(jet3_4mom.Pt() < minPt_low_) return;
-  if(jet4_4mom.Pt() < minPt_low_) return;
-
-  if(jet1_4mom.Pt() < minPt_high_ && jet2_4mom.Pt() < minPt_high_ && jet3_4mom.Pt() < minPt_high_) return;
-  if(nj4 < 0) return;
+  if(jet1_4mom.Pt() < minPt_high_ || jet4_4mom.Pt() < minPt_low_) return;
  
   _Nevents_ptpass++;
 
@@ -390,8 +387,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   jet2_4mom_tree->SetPxPyPzE(jet2_4mom.Px(),jet2_4mom.Py(),jet2_4mom.Pz(),jet2_4mom.E());
   jet3_4mom_tree->SetPxPyPzE(jet3_4mom.Px(),jet3_4mom.Py(),jet3_4mom.Pz(),jet3_4mom.E());
   jet4_4mom_tree->SetPxPyPzE(jet4_4mom.Px(),jet4_4mom.Py(),jet4_4mom.Pz(),jet4_4mom.E());
-
-  _Nevents_ptpass++;
 
   // Refuse to continue if no combination is above 120 GeV
   if( !check_combinations(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom) ) return;
@@ -502,7 +497,7 @@ void HAA4bAnalysis::endJob()
 {
   h_Events->Fill(0.5,_Nevents_processed);
   h_Events->Fill(1.5,_Nevents_4jets);
-  h_Events->Fill(2.5,_Nevents_3bjets);
+  h_Events->Fill(2.5,_Nevents_4bjets);
   h_Events->Fill(3.5,_Nevents_ptpass);
   h_Events->Fill(4.5,_Nevents_mpairs);
   h_Events->Fill(5.5,_Nevents_deltaM);
@@ -512,7 +507,7 @@ void HAA4bAnalysis::endJob()
   std::cout << "EVENT SUMMARY" << std::endl;
   std::cout << "Number of events processed = " << _Nevents_processed << std::endl;
   std::cout << "Number of events with 4 jets = " << _Nevents_4jets << std::endl;
-  std::cout << "Number of events with 3 bjets = " << _Nevents_3bjets << std::endl;
+  std::cout << "Number of events with 3 bjets = " << _Nevents_4bjets << std::endl;
   std::cout << "Number of events passing pt cuts = " << _Nevents_ptpass << std::endl;
   std::cout << "Number of events with m_12/34 > 120 GeV = " << _Nevents_mpairs << std::endl;
   std::cout << "Number of events with delta_m_12/34 < 100 GeV = " << _Nevents_deltaM << std::endl;
