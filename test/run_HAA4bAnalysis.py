@@ -49,7 +49,7 @@ options.register('runningOnData',
                  VarParsing.VarParsing.varType.bool,
                  "PU config flag")
 options.parseArguments()
-print "running after second parse optional parameter ", process.HAA4bAnalysis.runningOnData
+#print "running after second parse optional parameter ", process.HAA4bAnalysis.runningOnData
 process.HAA4bAnalysis.runningOnData = options.runningOnData
 
 # Applying Jet Energy Corrections
