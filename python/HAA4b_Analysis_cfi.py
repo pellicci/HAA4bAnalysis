@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 HAA4bAnalysis = cms.EDAnalyzer('HAA4bAnalysis',
                                jets = cms.InputTag("slimmedJets"),
+                               #jetCorr = cms.InputTag("updatedPatJetsUpdatedJEC"),
                                BTagAlgo = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
                                minPt_high = cms.double(50.),
                                minPt_low = cms.double(20.),
@@ -9,5 +10,5 @@ HAA4bAnalysis = cms.EDAnalyzer('HAA4bAnalysis',
                                runningOnData = cms.bool(False),  #Must be TRUE when running on data if running locally to test the code
                                pvCollection = cms.InputTag("offlineSlimmedPrimaryVertices"), #New Stuff 
                                bsCollection = cms.InputTag("offlineBeamSpot"),
-                               PileupSrc = cms.InputTag("slimmedAddPileupInfo")
+                               PileupSrc = cms.InputTag("slimmedAddPileupInfo") # ,
 )

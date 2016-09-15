@@ -10,7 +10,8 @@ config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
-config.JobType.pyCfgParams = ['runningOnData=False']
+#config.JobType.pyCfgParams = ['runningOnData=True']
+config.JobType.pyCfgParams = ['process.HAA4bAnalysis.runningOnData=True'] #Temporarily 'True', because there is no PileUp info in the input file
 
 config.section_('Data')
 #config.Data.inputDataset = '/HAA4b_AODSIM_76X_MH800_MA300/pellicci-HAA4b_MINIAODSIM_76X_MH800_MA300-b640eb3109575ebf90f337afac3d4f41/USER'

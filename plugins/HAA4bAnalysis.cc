@@ -45,9 +45,12 @@
 // pileUp inclusions
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+// Jet Energy corrections
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
 
 typedef math::XYZTLorentzVector LorentzVector;
-
 
 //---------- class declaration----------
 
@@ -68,7 +71,8 @@ private:
   bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
 
   // ----------member data ---------------------------
-  const edm::InputTag jets_;
+  const edm::InputTag jets_; 
+
   std::string bdiscr_;
   double minPt_high_;
   double minPt_low_;
@@ -76,7 +80,7 @@ private:
   bool runningOnData_;
   const edm::InputTag pvCollection_;  
   const edm::InputTag bsCollection_;  
-  const edm::InputTag PileupSrc_;      
+  const edm::InputTag PileupSrc_;
   edm::LumiReWeighting Lumiweights_; 
   edm::Service<TFileService> fs;
 
@@ -145,7 +149,7 @@ private:
   float PU_Weight;
 
   //Tokens
-  edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_;
+  edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
   edm::EDGetTokenT<reco::VertexCollection> tok_Vertex_; 
   edm::EDGetTokenT<reco::BeamSpot>         tok_beamspot_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupSummaryToken_;
@@ -154,7 +158,7 @@ private:
 
 // constructors and destructor
 HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
-  jets_(iConfig.getParameter<edm::InputTag>("jets")),
+  jets_(iConfig.getParameter<edm::InputTag>("jets")), 
   bdiscr_(iConfig.getParameter<std::string>("BTagAlgo")),
   minPt_high_(iConfig.getParameter<double>("minPt_high")),
   minPt_low_(iConfig.getParameter<double>("minPt_low")),
@@ -162,14 +166,15 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   runningOnData_(iConfig.getParameter<bool>("runningOnData")),   
   pvCollection_(iConfig.getParameter<edm::InputTag>("pvCollection")),   
   bsCollection_(iConfig.getParameter<edm::InputTag>("bsCollection")),  
-  PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc"))
+  PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc")) //,
 {
 
-  jetstoken_     = consumes<std::vector<pat::Jet> >(jets_);
+  jetstoken_     = consumes<std::vector<pat::Jet> >(jets_); //original
   tok_Vertex_    = consumes<reco::VertexCollection>(pvCollection_);      //Few inclusions
   tok_beamspot_  = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
   pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag(PileupSrc_)); 
 
+   //Few Counters
   _Nevents_processed = 0.;
   _Nevents_4jets    = 0.;
   _Nevents_4bjets    = 0.;
@@ -275,22 +280,20 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   } 
 
   // define a jet handle
-  edm::Handle<std::vector<pat::Jet> > jets;
+  edm::Handle<std::vector<pat::Jet> > jets;  
   // get jets from the event
   iEvent.getByLabel(jets_, jets);
 
   // PileUp code for examining the Pileup information
-
   PU_Weight=1.;
 
   if (!runningOnData_){
-    std::cout<<"running on MC "<<std::endl;
+    std::cout<<"Running on Mote Carlo "<<std::endl;
     edm::Handle<std::vector< PileupSummaryInfo>>  PupInfo;
     iEvent.getByLabel(PileupSrc_, PupInfo);  
   
     std::vector<PileupSummaryInfo>::const_iterator PVI; 
  
-
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       int BX = PVI->getBunchCrossing();
       if(BX == 0) {
@@ -304,10 +307,11 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     PU_Weight = Lumiweights_.weight(npT);
     std::cout<<"PU_Weight for MC is "<<PU_Weight<<std::endl;
    }
-  if (runningOnData_){
-   std::cout<<"running on data "<<std::endl;
-   std::cout<<"PU_Weight for data is "<<PU_Weight<<std::endl;
+   if (runningOnData_){
+   std::cout<<"Running on Data "<<std::endl;
+   std::cout<<"PU_Weight for Data is "<<PU_Weight<<std::endl;
     }
+
  // no point to continue if there aren't 4 jets
   if(jets->size() < 4) return;
 
@@ -326,10 +330,12 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // loop over jets and determine the ranking
   // based on pt from 1 to 4
-
+  std::cout<<"Processing event number "<<_Nevents_processed<<" with equal to or more than 4 Jets "<<std::endl;
   for(auto jet = jets->begin(); jet != jets->end(); ++jet){
     float thept = jet->p4().Pt();
     float thecsv = jet->bDiscriminator(bdiscr_);
+
+    std::cout<<"Momentum is "<<thept<<std::endl;
 
     if(thecsv < minCSV_) continue;
 
@@ -378,7 +384,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   LorentzVector jet2_4mom = jet2.p4();
   LorentzVector jet3_4mom = jet3.p4();
   LorentzVector jet4_4mom = jet4.p4();
- 
+   
   if(jet1_4mom.Pt() < minPt_high_ || jet4_4mom.Pt() < minPt_low_) return;
  
   _Nevents_ptpass++;
