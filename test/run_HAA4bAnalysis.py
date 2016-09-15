@@ -20,15 +20,36 @@ process.maxEvents = cms.untracked.PSet(
 #    SkipEvent = cms.untracked.vstring('ProductNotFound')
 #)
 
-# Input source
-process.source = cms.Source("PoolSource",
-     fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing()
+options.register('runningOnData',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "PU config flag")
+
+options.parseArguments()
+
+#Input source
+if options.runningOnData:
+   print "Data Sample will be taken as input for check up of the code working "
+   inputFiles="root://xrootd.unl.edu//store/data/Run2015D/BTagCSV/MINIAOD/16Dec2015-v1/50000/00AF8EB4-70AB-E511-9271-00266CFAE7AC.root"
+else:
+   print "MC Sample will be taken as input for check up of the code working "
+   inputFiles="root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AAD5298-DBB8-E511-8527-003048D2BD8E.root" 
+  
+#process.source = cms.Source("PoolSource",
+#     fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 #     fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/data/Run2015D/BTagCSV/MINIAOD/16Dec2015-v1/50000/00AF8EB4-70AB-E511-9271-00266CFAE7AC.root'),  #When running on data (for try only and comment it while submitting the crab job)
 #     fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AAD5298-DBB8-E511-8527-003048D2BD8E.root'),# When running on MC (for try only)
-secondaryFileNames = cms.untracked.vstring()
+#secondaryFileNames = cms.untracked.vstring()
+#)
+############################################
+process.source = cms.Source ("PoolSource",
+	  fileNames = cms.untracked.vstring (inputFiles),
 )
 
-## Output file
+# Output file
 process.TFileService = cms.Service("TFileService",
    fileName = cms.string("HAA4bAnalysis_output.root")
 )
@@ -41,20 +62,18 @@ process.selectedJets = cms.EDFilter("PATJetSelector",
                                      )
 
 process.load("HiggsAnalysis.HAA4bAnalysis.HAA4b_Analysis_cfi")
-import FWCore.ParameterSet.VarParsing as VarParsing
-options = VarParsing.VarParsing()
-options.register('runningOnData',
-                 False, #default value
-                 VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.bool,
-                 "PU config flag")
-options.parseArguments()
-#print "running after second parse optional parameter ", process.HAA4bAnalysis.runningOnData
+#import FWCore.ParameterSet.VarParsing as VarParsing
+#options = VarParsing.VarParsing()
+#options.register('runningOnData',
+#                 False, #default value
+#                 VarParsing.VarParsing.multiplicity.singleton,
+#                 VarParsing.VarParsing.varType.bool,
+#                 "PU config flag")
+
 process.HAA4bAnalysis.runningOnData = options.runningOnData
 
 # Applying Jet Energy Corrections
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-#print "Before applying Jet energy corrections ", process.HAA4bAnalysis.runningOnData
 if not process.HAA4bAnalysis.runningOnData:      #This loop is for MC
         print "Jet Energy Corrections on Monte Carlo will be applied "
 	updateJetCollection(
@@ -78,7 +97,6 @@ else:                                             #this loop is for data
 process.JetCorr = process.selectedJets.clone(src=cms.InputTag("updatedPatJetsUpdatedJEC"), cut = cms.string("pt > 30 && abs(eta) < 2.5"))
 process.HAA4bAnalysis.jets = cms.InputTag("JetCorr") #Pass on updated Jets with the required cuts.
 
-#process.selectedJets.src = cms.InputTag("updatedPatJetsUpdatedJEC")
 process.HAA4bAnalysis.minPt_low = cms.double(30.)
 #process.HAA4bAnalysis.minPt_low = cms.double(30.)
 
