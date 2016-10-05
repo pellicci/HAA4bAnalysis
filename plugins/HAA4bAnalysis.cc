@@ -39,6 +39,12 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
+// Kinematic fitter
+#include "PhysicsTools/KinFitter/interface/TFitConstraintM.h"
+#include "PhysicsTools/KinFitter/interface/TFitParticleEtEtaPhi.h"
+#include "PhysicsTools/KinFitter/interface/TKinFitter.h"
+
 // vertex inclusions
 #include "DataFormats/VertexReco/interface/Vertex.h" 
 #include "DataFormats/BeamSpot/interface/BeamSpot.h" 
@@ -69,7 +75,8 @@ private:
   virtual void endJob() override;
 
   int get_best_combination(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
-  bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
+  bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4, float mcut);
+  TKinFitter get_fitted_candidate(pat::Jet Jet1, pat::Jet Jet2, pat::Jet Jet3, pat::Jet Jet4, int best_combination);
 
   // ----------member data ---------------------------
   const edm::InputTag jets_;
@@ -111,6 +118,7 @@ private:
   TH1F* h_m_pair1;
   TH1F* h_m_pair2;
   TH1F* h_m_4b;
+  TH1F* h_m_4b_fitted;
   TH2F* h_m4b_m12;
   TH2F* h_m4b_m34;
 
@@ -123,7 +131,6 @@ private:
 
   TH1F* h_PUInTime;  //In time PileUp
   TH1F* h_PUTrue;    //True number of PileUp
- // TH1D* TNVTX_;
   TH1F* h_PUWeight;         //Weight   
   TH1F* h_Rw_PUTrue;     //Reweighted True number of PileUp Interactions
   TH1F* h_Rw_PUInTime;   //Reweighted Intime PileUp
@@ -135,6 +142,10 @@ private:
   TLorentzVector *jet2_4mom_tree;
   TLorentzVector *jet3_4mom_tree;
   TLorentzVector *jet4_4mom_tree;
+  TLorentzVector *jet1_4mom_tree_fit;
+  TLorentzVector *jet2_4mom_tree_fit;
+  TLorentzVector *jet3_4mom_tree_fit;
+  TLorentzVector *jet4_4mom_tree_fit;
 
   float var_jet1Btag;
   float var_jet2Btag;
@@ -151,10 +162,11 @@ private:
   float _Nevents_passed;
   unsigned int _nPv; 
 
-  //Few new counters and variables
   float npT;
   float npIT;
   float PU_Weight;
+
+  unsigned int _Noutputs; //to limit the couts of debug info
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
@@ -192,6 +204,8 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   _Nevents_deltaM    = 0.;
   _Nevents_passed    = 0.;
 
+  _Noutputs = 0;
+
   //Create the histograms and let TFileService handle them
   h_jet1pt = fs->make<TH1F>("h_jet1pt", "P_t of the 1st jet", 200, 0., 500.);
   h_jet2pt = fs->make<TH1F>("h_jet2pt", "P_t of the 2nd jet", 200, 0., 500.);
@@ -208,11 +222,12 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, minCSV_, 1.);
   h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, minCSV_, 1.);
 
-  h_m_pair1 = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
-  h_m_pair2 = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
-  h_m_4b    = fs->make<TH1F>("h_m_4b", "Invariant mass of the four b jets", 200, 130., 1000.);
-  h_m4b_m12 = fs->make<TH2F>("h_m4b_m12", "Invariant mass of 4b vs m12", 200, 130., 1000.,200,130.,800.);
-  h_m4b_m34 = fs->make<TH2F>("h_m4b_m34", "Invariant mass of 4b vs m34", 200, 130., 1000.,200,130.,800.);
+  h_m_pair1     = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
+  h_m_pair2     = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
+  h_m_4b        = fs->make<TH1F>("h_m_4b", "Invariant mass of the four b jets", 200, 130., 1000.);
+  h_m_4b_fitted = fs->make<TH1F>("h_m_4b_fitted", "Invariant mass of the four b jets after fit", 200, 130., 1000.);
+  h_m4b_m12     = fs->make<TH2F>("h_m4b_m12", "Invariant mass of 4b vs m12", 200, 130., 1000.,200,130.,800.);
+  h_m4b_m34     = fs->make<TH2F>("h_m4b_m34", "Invariant mass of 4b vs m34", 200, 130., 1000.,200,130.,800.);
 
   h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 50, 0., 6.28);
   h_delta_Eta_pair = fs->make<TH1F>("h_delta_Eta_pair", "#Delta_{#eta} between the two jet pairs", 50, -10., 10.);
@@ -233,16 +248,28 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   jet3_4mom_tree = new TLorentzVector();
   jet4_4mom_tree = new TLorentzVector();
 
+  jet1_4mom_tree_fit = new TLorentzVector();
+  jet2_4mom_tree_fit = new TLorentzVector();
+  jet3_4mom_tree_fit = new TLorentzVector();
+  jet4_4mom_tree_fit = new TLorentzVector();
+
   // create the tree and let TFileService handle it
   mytree = fs->make<TTree>("mytree", "Tree containing events after presel");
   mytree->Branch("jet1_4mom","TLorentzVector",&jet1_4mom_tree);
   mytree->Branch("jet2_4mom","TLorentzVector",&jet2_4mom_tree);
   mytree->Branch("jet3_4mom","TLorentzVector",&jet3_4mom_tree);
   mytree->Branch("jet4_4mom","TLorentzVector",&jet4_4mom_tree);
+
+  mytree->Branch("jet1_4mom_fit","TLorentzVector",&jet1_4mom_tree_fit);
+  mytree->Branch("jet2_4mom_fit","TLorentzVector",&jet2_4mom_tree_fit);
+  mytree->Branch("jet3_4mom_fit","TLorentzVector",&jet3_4mom_tree_fit);
+  mytree->Branch("jet4_4mom_fit","TLorentzVector",&jet4_4mom_tree_fit);
+
   mytree->Branch("jet1Btag",&var_jet1Btag,"jet1Btag/F");
   mytree->Branch("jet2Btag",&var_jet2Btag,"jet2Btag/F");
   mytree->Branch("jet3Btag",&var_jet3Btag,"jet3Btag/F");
   mytree->Branch("jet4Btag",&var_jet4Btag,"jet4Btag/F");
+
   mytree->Branch("N_nPv", &_nPv, "_nPv/I");                                          //Filling Primary Verticies 
 
   // pileUp histograms
@@ -250,6 +277,8 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   mytree->Branch("PUInTime", &npIT, "npIT/F");
   mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
  // mytree->Branch("RW_PUTrue", &, ""RWTTrue_->Fill(npT, PU_Weight)");
+
+}
 
 
 HAA4bAnalysis::~HAA4bAnalysis()
@@ -261,13 +290,15 @@ HAA4bAnalysis::~HAA4bAnalysis()
 // ------------ method called for each event  ------------
 void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  using namespace edm;
- 
-  // initializing few counters 
-  _nPv=0;                                   
   _Nevents_processed++;
-  npT=-1.0;
-  npIT=-1.0;
+
+  // initializing few counters 
+  _nPv =    0;
+  npT  = -1.0;
+  npIT = -1.0;
+
+  bool _show_output(true);
+  _Noutputs < 11 ? _Noutputs++ : _show_output = false;
 
   // get the Handle of the primary vertex collection and remove the beamspot
   edm::Handle<reco::BeamSpot> bmspot;
@@ -285,8 +316,9 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       _nPv++;
     }
   } 
+
+  // define a jet handle and get the jets
   edm::Handle<std::vector<pat::Jet> > jets;  
-  // get jets from the event
   iEvent.getByLabel(jets_, jets);
 
   // PileUp code for examining the Pileup information
@@ -310,14 +342,14 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     // calculate weight using above code
     PU_Weight = Lumiweights_.weight(npT);
-    std::cout<<"PU_Weight for MC is "<<PU_Weight<<std::endl;
-   }
-   if (runningOnData_){
-   std::cout<<"Running on Data "<<std::endl;
-   std::cout<<"PU_Weight for Data is "<<PU_Weight<<std::endl;
-    }
+    if(_show_output) std::cout<<"PU_Weight for MC is "<<PU_Weight<<std::endl;
+  }
+  if (runningOnData_ && _show_output){
+    std::cout<<"Running on Data "<<std::endl;
+    std::cout<<"PU_Weight for Data is "<<PU_Weight<<std::endl;
+  }
 
- // no point to continue if there aren't 4 jets
+  // no point to continue if there aren't 4 jets
   if(jets->size() < 4) return;
 
   _Nevents_4jets++;
@@ -340,7 +372,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     float thept = jet->p4().Pt();
     float thecsv = jet->bDiscriminator(bdiscr_);
 
-    std::cout<<"Momentum is "<<thept<<std::endl;
+    if(_show_output) std::cout<<"Momentum is " << thept << std::endl;
 
     if(thecsv < minCSV_) continue;
 
@@ -399,8 +431,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   jet3_4mom_tree->SetPxPyPzE(jet3_4mom.Px(),jet3_4mom.Py(),jet3_4mom.Pz(),jet3_4mom.E());
   jet4_4mom_tree->SetPxPyPzE(jet4_4mom.Px(),jet4_4mom.Py(),jet4_4mom.Pz(),jet4_4mom.E());
 
-  // Refuse to continue if no combination is above 120 GeV
-  if( !check_combinations(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom) ) return;
+  // Refuse to continue if no combination is above 130 GeV
+  if( !check_combinations(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom,130.) ) return;
   _Nevents_mpairs++;
 
   // Get the best pairing possible of two by two bjets, according to invariant mass
@@ -439,6 +471,24 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   _Nevents_passed++;
 
+  //Make a mass constrained fit
+  TKinFitter fitted_Cand = get_fitted_candidate(jet1, jet2, jet3, jet4, combination_flag);
+
+  TLorentzVector jet1_fit = *(fitted_Cand.get4Vec(0));
+  TLorentzVector jet2_fit = *(fitted_Cand.get4Vec(1));
+  TLorentzVector jet3_fit = *(fitted_Cand.get4Vec(2));
+  TLorentzVector jet4_fit = *(fitted_Cand.get4Vec(3));
+  
+  float_t total_Mass_4b_fitted = (jet1_fit + jet2_fit + jet3_fit + jet4_fit).M();
+
+  std::cout << "4b mass before fit = " << total_Mass_4b << std::endl;
+  std::cout << "4b mass after  fit = " << total_Mass_4b_fitted << std::endl;
+
+  jet1_4mom_tree_fit->SetPxPyPzE(jet1_fit.Px(),jet1_fit.Py(),jet1_fit.Pz(),jet1_fit.E());
+  jet2_4mom_tree_fit->SetPxPyPzE(jet2_fit.Px(),jet2_fit.Py(),jet2_fit.Pz(),jet2_fit.E());
+  jet3_4mom_tree_fit->SetPxPyPzE(jet3_fit.Px(),jet3_fit.Py(),jet3_fit.Pz(),jet3_fit.E());
+  jet4_4mom_tree_fit->SetPxPyPzE(jet4_fit.Px(),jet4_fit.Py(),jet4_fit.Pz(),jet4_fit.E());
+
   // now plot a few quantities for the jets
   var_jet1Btag = jet1.bDiscriminator(bdiscr_);
   var_jet2Btag = jet2.bDiscriminator(bdiscr_);
@@ -464,6 +514,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   h_m_pair1->Fill(p_pair1.M());
   h_m_pair2->Fill(p_pair2.M());
   h_m_4b->Fill(total_Mass_4b);
+  h_m_4b_fitted->Fill(total_Mass_4b_fitted);
   h_m4b_m12->Fill(total_Mass_4b,p_pair1.M());
   h_m4b_m34->Fill(total_Mass_4b,p_pair2.M());
 
@@ -471,10 +522,9 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   h_delta_Phi_pair->Fill(var_delta_Phi_pair);
   h_delta_Eta_pair->Fill(var_delta_Eta_pair);
  
-  // primary vertex collection
+  // and the PU info
   h_nPv->Fill(_nPv); 
   h_Rw_nPv->Fill(float(_nPv)-1,float(PU_Weight)); // subtract primary interaction
-  // fill the histograms
   h_PUTrue->Fill(npT);
   h_PUInTime->Fill(npIT);
   
@@ -482,27 +532,17 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   h_PUWeight->Fill(PU_Weight);
   h_Rw_PUTrue->Fill(npT, PU_Weight);
   h_Rw_PUInTime->Fill(npIT, PU_Weight);
-  //h_TNVTX->Fill(float(NVtx)-1, PU_Weight);  // subtract primary interaction
   
   mytree->Fill();
 }
 
-
 // ------------ method called once each job just before starting event loop  ------------
 void HAA4bAnalysis::beginJob()
 {
-
-// Flag for PileUp reweighting
-if (!runningOnData_){
-
-Lumiweights_=edm::LumiReWeighting("MC_Recent_25ns_2015.root",
-                                      "pileUpData_fromJson.root",
-                                      "pileup",
-                                      "pileup");
-
+  // Flag for PileUp reweighting
+  if (!runningOnData_) Lumiweights_=edm::LumiReWeighting("MC_Recent_25ns_2015.root", "pileUpData_fromJson.root", "pileup", "pileup");
 }
 
-}
 // ------------ method called once each job just after ending the event loop  ------------
 void HAA4bAnalysis::endJob() 
 {
@@ -547,16 +587,143 @@ int HAA4bAnalysis::get_best_combination(LorentzVector m1, LorentzVector m2, Lore
   return -1;
 }
 
-bool HAA4bAnalysis::check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4){
+bool HAA4bAnalysis::check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4, float mcut){
 
-  bool b12 = (m1+m2).M() > 130.;
-  bool b13 = (m1+m3).M() > 130.;
-  bool b14 = (m1+m4).M() > 130.;
-  bool b34 = (m3+m4).M() > 130.;
-  bool b24 = (m2+m4).M() > 130.;
-  bool b23 = (m2+m3).M() > 130.;
+  bool b12 = (m1+m2).M() > mcut;
+  bool b13 = (m1+m3).M() > mcut;
+  bool b14 = (m1+m4).M() > mcut;
+  bool b34 = (m3+m4).M() > mcut;
+  bool b24 = (m2+m4).M() > mcut;
+  bool b23 = (m2+m3).M() > mcut;
 
   return b12 || b13 || b14 || b34 || b24 || b23;
+}
+
+TKinFitter HAA4bAnalysis::get_fitted_candidate(pat::Jet Jet1, pat::Jet Jet2, pat::Jet Jet3, pat::Jet Jet4, int best_combination)
+{
+  static int debug_counter = 0;
+
+  TLorentzVector jet1_4mom(Jet1.px(),Jet1.py(),Jet1.pz(),Jet1.energy()) ;
+  TLorentzVector jet2_4mom(Jet2.px(),Jet2.py(),Jet2.pz(),Jet2.energy()) ;
+  TLorentzVector jet3_4mom(Jet3.px(),Jet3.py(),Jet3.pz(),Jet3.energy()) ;
+  TLorentzVector jet4_4mom(Jet4.px(),Jet4.py(),Jet4.pz(),Jet4.energy()) ;
+
+  //Covariance matrix on get uncertainties
+  TMatrixD m1(3,3);
+  TMatrixD m2(3,3);
+  TMatrixD m3(3,3);
+  TMatrixD m4(3,3);
+  m1.Zero();
+  m2.Zero();
+  m3.Zero();
+  m4.Zero();
+
+  //FIXME: for now, just put 5% to test, but we need to put the proper jet energy resolution
+  m1(0,0) = 0.08 * Jet1.p4().Et();
+  m1(1,1) = 0.01 * Jet1.p4().Eta();
+  m1(2,2) = 0.01 * Jet1.p4().Phi();
+
+  m2(0,0) = 0.08 * Jet2.p4().Et();
+  m2(1,1) = 0.01 * Jet2.p4().Eta();
+  m2(2,2) = 0.01 * Jet2.p4().Phi();
+
+  m3(0,0) = 0.08 * Jet3.p4().Et();
+  m3(1,1) = 0.01 * Jet3.p4().Eta();
+  m3(2,2) = 0.01 * Jet3.p4().Phi();
+
+  m4(0,0) = 0.08 * Jet4.p4().Et();
+  m4(1,1) = 0.01 * Jet4.p4().Eta();
+  m4(2,2) = 0.01 * Jet4.p4().Phi();
+
+  if(debug_counter < 5){
+    std::cout << "Jet1 resolution pt  = " << m1(0,0) << std::endl;
+    std::cout << "Jet1 resolution eta = " << m1(1,1) << std::endl;
+    std::cout << "Jet1 resolution phi = " << m1(2,2) << std::endl;
+  }
+
+  TFitParticleEtEtaPhi jet1( "Jet1", "Jet1", &jet1_4mom, &m1 );
+  TFitParticleEtEtaPhi jet2( "Jet2", "Jet2", &jet2_4mom, &m2 );
+  TFitParticleEtEtaPhi jet3( "Jet3", "Jet3", &jet3_4mom, &m3 );
+  TFitParticleEtEtaPhi jet4( "Jet4", "Jet4", &jet4_4mom, &m4 );
+
+  TLorentzVector p_pair1;
+  TLorentzVector p_pair2;
+  if(best_combination == 1){
+    p_pair1 = jet1_4mom + jet2_4mom;
+    p_pair2 = jet3_4mom + jet4_4mom;
+  }
+  else if(best_combination == 2){
+    p_pair1 = jet1_4mom + jet3_4mom;
+    p_pair2 = jet2_4mom + jet4_4mom;
+  }
+  else if(best_combination == 3){
+    p_pair1 = jet1_4mom + jet4_4mom;
+    p_pair2 = jet2_4mom + jet3_4mom;
+  }
+
+  //Best estimate of A->bb is given by the average of the two
+  float mA_estimate = (p_pair1.M()+p_pair2.M())/2.;
+  if(debug_counter < 5) std::cout << "mA estimate = " << mA_estimate << std::endl;
+
+  //Create the constraints
+  TFitConstraintM mCons1( "A1MassConstraint", "A1Mass-Constraint", 0, 0 , 0.); //request to have mass difference = 0
+
+  if(best_combination == 1){
+    mCons1.addParticles1( &jet1, &jet2 );
+    mCons1.addParticles2( &jet3, &jet4 );
+  }
+  else if(best_combination == 2){
+    mCons1.addParticles1( &jet1, &jet3 );
+    mCons1.addParticles2( &jet2, &jet4 );
+  }
+  else if(best_combination == 3){
+    mCons1.addParticles1( &jet1, &jet4 );
+    mCons1.addParticles2( &jet2, &jet3 );
+  }
+
+  //Definition of the fitter
+  //Add four measured particles(jets)
+  //Add two constraints
+  TKinFitter fitter("fitter", "fitter");
+  fitter.addMeasParticle( &jet1 );
+  fitter.addMeasParticle( &jet2 );
+  fitter.addMeasParticle( &jet3 );
+  fitter.addMeasParticle( &jet4 );
+  fitter.addConstraint( &mCons1 );
+
+  //Set convergence criteria
+  fitter.setMaxNbIter( 40 );
+  fitter.setMaxDeltaS( 1e-2 );
+  fitter.setMaxF( 1e-1 );
+  fitter.setVerbosity(1);
+
+  //Perform the fit
+  if(debug_counter < 5) std::cout << "Performing kinematic fit..." << std::endl;
+  fitter.fit();
+  if(debug_counter < 5) std::cout << "Done." << std::endl;
+
+  if(debug_counter < 5){
+    std::cout << "=============================================" << std ::endl;
+    std::cout << "-> Number of measured Particles  : " << fitter.nbMeasParticles() << std::endl;
+    std::cout << "-> Number of unmeasured particles: " << fitter.nbUnmeasParticles() << std::endl;
+    std::cout << "-> Number of constraints         : " << fitter.nbConstraints() << std::endl;
+    std::cout << "-> Number of degrees of freedom  : " << fitter.getNDF() << std::endl;
+    std::cout << "-> Number of parameters A        : " << fitter.getNParA() << std::endl;
+    std::cout << "-> Number of parameters B        : " << fitter.getNParB() << std::endl;
+    std::cout << "-> Maximum number of iterations  : " << fitter.getMaxNumberIter() << std::endl;
+    std::cout << "-> Maximum deltaS                : " << fitter.getMaxDeltaS() << std::endl;
+    std::cout << "-> Maximum F                     : " << fitter.getMaxF() << std::endl;
+    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++" << std ::endl;
+    std::cout << "-> Status                        : " << fitter.getStatus() << std::endl;
+    std::cout << "-> Number of iterations          : " << fitter.getNbIter() << std::endl;
+    std::cout << "-> S                             : " << fitter.getS() << std::endl;
+    std::cout << "-> F                             : " << fitter.getF() << std::endl;
+    std::cout << "=============================================" << std ::endl;
+  }
+
+  debug_counter++;
+
+  return fitter;
 }
 
 
