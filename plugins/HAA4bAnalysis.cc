@@ -45,6 +45,7 @@
 // pileUp inclusions
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
 // Jet Energy corrections
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
@@ -71,7 +72,15 @@ private:
   bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
 
   // ----------member data ---------------------------
-  const edm::InputTag jets_; 
+  const edm::InputTag jets_;
+  std::string bdiscr_;
+  double minPt1_;
+  double minPt4_;
+  bool runningOnData_;
+  const edm::InputTag pvCollection_;   //Global tag definitions for verticies
+  const edm::InputTag bsCollection_;  
+  const edm::InputTag PileupSrc_;      //And for PileUp
+  edm::LumiReWeighting Lumiweights_; 
 
   std::string bdiscr_;
   double minPt_high_;
@@ -145,7 +154,6 @@ private:
   //Few new counters and variables
   float npT;
   float npIT;
-  //double PU_Weight;
   float PU_Weight;
 
   //Tokens
@@ -172,7 +180,8 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   jetstoken_     = consumes<std::vector<pat::Jet> >(jets_); //original
   tok_Vertex_    = consumes<reco::VertexCollection>(pvCollection_);      //Few inclusions
   tok_beamspot_  = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
-  pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag(PileupSrc_)); 
+  pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag(PileupSrc_));
+
 
    //Few Counters
   _Nevents_processed = 0.;
@@ -242,8 +251,6 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
  // mytree->Branch("RW_PUTrue", &, ""RWTTrue_->Fill(npT, PU_Weight)");
 
-}
-
 
 HAA4bAnalysis::~HAA4bAnalysis()
 {
@@ -278,8 +285,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       _nPv++;
     }
   } 
-
-  // define a jet handle
   edm::Handle<std::vector<pat::Jet> > jets;  
   // get jets from the event
   iEvent.getByLabel(jets_, jets);
