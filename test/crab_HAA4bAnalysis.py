@@ -26,5 +26,3 @@ config.Data.publication = False
 config.section_('Site')
 #config.Site.storageSite = 'T2_IT_Legnaro'
 config.Site.storageSite = 'T2_IN_TIFR'
-
-
