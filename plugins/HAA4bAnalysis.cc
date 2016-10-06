@@ -53,6 +53,7 @@
 // pileUp inclusions
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
 // Jet Energy corrections
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
@@ -76,7 +77,6 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   bsCollection_(iConfig.getParameter<edm::InputTag>("bsCollection")),  
   PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc")) //,
 {
-
   jetstoken_         = consumes<std::vector<pat::Jet> >(jets_); //original
   globaljetstoken_   = consumes<std::vector<pat::Jet> >(globaljets_);
   genParticlestoken_ = consumes<std::vector<reco::GenParticle> >(genParticles_);
