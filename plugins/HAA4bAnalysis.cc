@@ -32,6 +32,8 @@
 
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -58,118 +60,13 @@
 
 typedef math::XYZTLorentzVector LorentzVector;
 
-//---------- class declaration----------
-
-class HAA4bAnalysis : public edm::EDAnalyzer {
-public:
-  explicit HAA4bAnalysis(const edm::ParameterSet&);
-  ~HAA4bAnalysis();
-
-  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
-
-private:
-  virtual void beginJob() override;
-  virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-  virtual void endJob() override;
-
-  int get_best_combination(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4);
-  bool check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4, float mcut);
-  TKinFitter get_fitted_candidate(pat::Jet Jet1, pat::Jet Jet2, pat::Jet Jet3, pat::Jet Jet4, int best_combination);
-
-  // ----------member data ---------------------------
-  const edm::InputTag jets_; 
-
-  std::string bdiscr_;
-  double minPt_high_;
-  double minPt_low_;
-  double minCSV_;
-  bool runningOnData_;
-  const edm::InputTag pvCollection_;  
-  const edm::InputTag bsCollection_;  
-  const edm::InputTag PileupSrc_;
-  edm::LumiReWeighting Lumiweights_; 
-  edm::Service<TFileService> fs;
-
-  TH1F* h_jet1pt;
-  TH1F* h_jet2pt;
-  TH1F* h_jet3pt;
-  TH1F* h_jet4pt;
-
-  TH1F* h_jet1eta;
-  TH1F* h_jet2eta;
-  TH1F* h_jet3eta;
-  TH1F* h_jet4eta;
-
-  TH1F* h_jet1Btag;
-  TH1F* h_jet2Btag;
-  TH1F* h_jet3Btag;
-  TH1F* h_jet4Btag;
-
-  TH1F* h_m_pair1;
-  TH1F* h_m_pair2;
-  TH1F* h_m_4b;
-  TH1F* h_m_4b_fitted;
-  TH2F* h_m4b_m12;
-  TH2F* h_m4b_m34;
-
-  TH1F* h_delta_Phi_pair;
-  TH1F* h_delta_Eta_pair;
-
-  TH1F* h_Events;
-  TH1F* h_nPv;      // No. of primary verticies histogram
-  TH1F* h_Rw_nPv;   //Reweighted No. of primary verticies
-
-  TH1F* h_PUInTime;  //In time PileUp
-  TH1F* h_PUTrue;    //True number of PileUp
-  TH1F* h_PUWeight;         //Weight   
-  TH1F* h_Rw_PUTrue;     //Reweighted True number of PileUp Interactions
-  TH1F* h_Rw_PUInTime;   //Reweighted Intime PileUp
-  
- //TTree stuff
-  TTree *mytree;
-
-  TLorentzVector *jet1_4mom_tree;
-  TLorentzVector *jet2_4mom_tree;
-  TLorentzVector *jet3_4mom_tree;
-  TLorentzVector *jet4_4mom_tree;
-  TLorentzVector *jet1_4mom_tree_fit;
-  TLorentzVector *jet2_4mom_tree_fit;
-  TLorentzVector *jet3_4mom_tree_fit;
-  TLorentzVector *jet4_4mom_tree_fit;
-
-  float var_jet1Btag;
-  float var_jet2Btag;
-  float var_jet3Btag;
-  float var_jet4Btag;
-
-  //A few counters
-  float _Nevents_processed;
-  float _Nevents_4jets;
-  float _Nevents_4bjets;
-  float _Nevents_ptpass;
-  float _Nevents_mpairs;
-  float _Nevents_deltaM;
-  float _Nevents_passed;
-  unsigned int _nPv; 
-
-  float npT;
-  float npIT;
-  float PU_Weight;
-
-  unsigned int _Noutputs; //to limit the couts of debug info
-
-  //Tokens
-  edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
-  edm::EDGetTokenT<reco::VertexCollection> tok_Vertex_; 
-  edm::EDGetTokenT<reco::BeamSpot>         tok_beamspot_;
-  edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupSummaryToken_;
-  edm::EDGetTokenT<std::vector<bool>> tok_runningOnData_;
-};
+#include "HAA4bAnalysis.h"
 
 // constructors and destructor
 HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   jets_(iConfig.getParameter<edm::InputTag>("jets")), 
+  globaljets_(iConfig.getParameter<edm::InputTag>("globaljets")), 
+  genParticles_(iConfig.getParameter<edm::InputTag>("genParticles")), 
   bdiscr_(iConfig.getParameter<std::string>("BTagAlgo")),
   minPt_high_(iConfig.getParameter<double>("minPt_high")),
   minPt_low_(iConfig.getParameter<double>("minPt_low")),
@@ -180,9 +77,11 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc")) //,
 {
 
-  jetstoken_     = consumes<std::vector<pat::Jet> >(jets_); //original
-  tok_Vertex_    = consumes<reco::VertexCollection>(pvCollection_);      //Few inclusions
-  tok_beamspot_  = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
+  jetstoken_         = consumes<std::vector<pat::Jet> >(jets_); //original
+  globaljetstoken_   = consumes<std::vector<pat::Jet> >(globaljets_);
+  genParticlestoken_ = consumes<std::vector<reco::GenParticle> >(genParticles_);
+  tok_Vertex_        = consumes<reco::VertexCollection>(pvCollection_);      //Few inclusions
+  tok_beamspot_      = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
   pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag(PileupSrc_)); 
 
    //Few Counters
@@ -197,96 +96,27 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   _Noutputs = 0;
 
   //Create the histograms and let TFileService handle them
-  h_jet1pt = fs->make<TH1F>("h_jet1pt", "P_t of the 1st jet", 200, 0., 500.);
-  h_jet2pt = fs->make<TH1F>("h_jet2pt", "P_t of the 2nd jet", 200, 0., 500.);
-  h_jet3pt = fs->make<TH1F>("h_jet3pt", "P_t of the 3rd jet", 200, 0., 500.);
-  h_jet4pt = fs->make<TH1F>("h_jet4pt", "P_t of the 4th jet", 200, 0., 500.);
-
-  h_jet1eta = fs->make<TH1F>("h_jet1eta", "#eta of the 1st jet", 50, -10., 10.);
-  h_jet2eta = fs->make<TH1F>("h_jet2eta", "#eta of the 2nd jet", 50, -10., 10.);
-  h_jet3eta = fs->make<TH1F>("h_jet3eta", "#eta of the 3rd jet", 50, -10., 10.);
-  h_jet4eta = fs->make<TH1F>("h_jet4eta", "#eta of the 4th jet", 50, -10., 10.);
-
-  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, minCSV_, 1.);
-  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, minCSV_, 1.);
-  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, minCSV_, 1.);
-  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, minCSV_, 1.);
-
-  h_m_pair1     = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
-  h_m_pair2     = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
-  h_m_4b        = fs->make<TH1F>("h_m_4b", "Invariant mass of the four b jets", 200, 130., 1000.);
-  h_m_4b_fitted = fs->make<TH1F>("h_m_4b_fitted", "Invariant mass of the four b jets after fit", 200, 130., 1000.);
-  h_m4b_m12     = fs->make<TH2F>("h_m4b_m12", "Invariant mass of 4b vs m12", 200, 130., 1000.,200,130.,800.);
-  h_m4b_m34     = fs->make<TH2F>("h_m4b_m34", "Invariant mass of 4b vs m34", 200, 130., 1000.,200,130.,800.);
-
-  h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 50, 0., 6.28);
-  h_delta_Eta_pair = fs->make<TH1F>("h_delta_Eta_pair", "#Delta_{#eta} between the two jet pairs", 50, -10., 10.);
-
-  h_Events = fs->make<TH1F>("h_Events", "Event counting in different steps", 7, 0., 7.);
-
-  h_nPv = fs->make<TH1F>("h_nPv", "No. of primary verticies", 50, 0., 50.);              //Few more Histogram inclusions
-  h_Rw_nPv = fs->make<TH1F>("h_Rw_nPv", "Reweighted No. of primary verticies", 50, 0., 50.);
-  h_PUInTime= fs->make<TH1F>("h_PUInTime","Input No. in-time pileup interactions",50,0.,50.);
-  h_PUTrue= fs->make<TH1F>("h_PUTrue","Input True pileup interactions",50,0.,50.);
-  h_Rw_PUTrue = fs->make<TH1F>("h_Rw_PUTrue","Reweighted True pileup interactions",50,0.,50.);
-  h_Rw_PUInTime = fs->make<TH1F>("h_Rw_PUInTime","Reweighted in-time pileup interactions",50,0.,50.);
-  h_PUWeight = fs->make<TH1F>("h_PUWeight","Event weight",50,0.,50.);
- //h_WeightVsNint = fs->make<TProfile>("h_WeightVsNint","Event weight vs N_int",50,0.,50.,0.,10.);
-
-  jet1_4mom_tree = new TLorentzVector();
-  jet2_4mom_tree = new TLorentzVector();
-  jet3_4mom_tree = new TLorentzVector();
-  jet4_4mom_tree = new TLorentzVector();
-
-  jet1_4mom_tree_fit = new TLorentzVector();
-  jet2_4mom_tree_fit = new TLorentzVector();
-  jet3_4mom_tree_fit = new TLorentzVector();
-  jet4_4mom_tree_fit = new TLorentzVector();
-
-  // create the tree and let TFileService handle it
-  mytree = fs->make<TTree>("mytree", "Tree containing events after presel");
-  mytree->Branch("jet1_4mom","TLorentzVector",&jet1_4mom_tree);
-  mytree->Branch("jet2_4mom","TLorentzVector",&jet2_4mom_tree);
-  mytree->Branch("jet3_4mom","TLorentzVector",&jet3_4mom_tree);
-  mytree->Branch("jet4_4mom","TLorentzVector",&jet4_4mom_tree);
-
-  mytree->Branch("jet1_4mom_fit","TLorentzVector",&jet1_4mom_tree_fit);
-  mytree->Branch("jet2_4mom_fit","TLorentzVector",&jet2_4mom_tree_fit);
-  mytree->Branch("jet3_4mom_fit","TLorentzVector",&jet3_4mom_tree_fit);
-  mytree->Branch("jet4_4mom_fit","TLorentzVector",&jet4_4mom_tree_fit);
-
-  mytree->Branch("jet1Btag",&var_jet1Btag,"jet1Btag/F");
-  mytree->Branch("jet2Btag",&var_jet2Btag,"jet2Btag/F");
-  mytree->Branch("jet3Btag",&var_jet3Btag,"jet3Btag/F");
-  mytree->Branch("jet4Btag",&var_jet4Btag,"jet4Btag/F");
-
-  mytree->Branch("N_nPv", &_nPv, "_nPv/I");                                          //Filling Primary Verticies 
-
-  // pileUp histograms
-  mytree->Branch("PUTrue", &npT, "npT/F");
-  mytree->Branch("PUInTime", &npIT, "npIT/F");
-  mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
+  create_Histos_and_Trees();
 }
-
 
 HAA4bAnalysis::~HAA4bAnalysis()
 {
 }
-
-// member functions
 
 // ------------ method called for each event  ------------
 void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   _Nevents_processed++;
 
-  // initializing few counters 
-  _nPv =    0;
-  npT  = -1.0;
-  npIT = -1.0;
-
   bool _show_output(true);
   _Noutputs < 11 ? _Noutputs++ : _show_output = false;
+
+  // define a jet handle and get the jets
+  edm::Handle<std::vector<pat::Jet> > jets;  
+  iEvent.getByLabel(jets_, jets);
+
+  // no point to continue if there aren't 4 jets
+  if(jets->size() < 4) return;
 
   // get the Handle of the primary vertex collection and remove the beamspot
   edm::Handle<reco::BeamSpot> bmspot;
@@ -296,18 +126,17 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(pvCollection_,pvcoll);
 
   // require in the event that there is at least one reconstructed vertex
-  if(pvcoll->size()<=0) return;
+  _nPv =    0;
+  npT  = -1.0;
+  npIT = -1.0;
 
+  if(pvcoll->size()<=0) return;
   for(reco::VertexCollection::const_iterator vtx=pvcoll->begin();vtx!=pvcoll->end();++vtx) {
     // check that the primary vertex is not a fake one, that is the beamspot (it happens when no primary vertex is reconstructed)
     if(!vtx->isFake()) {
       _nPv++;
     }
   } 
-
-  // define a jet handle and get the jets
-  edm::Handle<std::vector<pat::Jet> > jets;  
-  iEvent.getByLabel(jets_, jets);
 
   // PileUp code for examining the Pileup information
   PU_Weight=1.;
@@ -327,18 +156,15 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
     } 
 
-
     // calculate weight using above code
     PU_Weight = Lumiweights_.weight(npT);
     if(_show_output) std::cout<<"PU_Weight for MC is "<<PU_Weight<<std::endl;
   }
-  if (runningOnData_ && _show_output){
+
+  if(runningOnData_ && _show_output){
     std::cout<<"Running on Data "<<std::endl;
     std::cout<<"PU_Weight for Data is "<<PU_Weight<<std::endl;
   }
-
-  // no point to continue if there aren't 4 jets
-  if(jets->size() < 4) return;
 
   _Nevents_4jets++;
 
@@ -399,6 +225,15 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   if(nj4 < 0) return;
   _Nevents_4bjets++;
 
+  //Fill the tree for QCD background studies
+  // define a jet handle and get the jets without special selections
+  edm::Handle<std::vector<pat::Jet> > globaljets;
+  iEvent.getByLabel(globaljets_, globaljets);
+
+  edm::Handle<std::vector<reco::GenParticle> > genParticles;
+  if(!runningOnData_) iEvent.getByLabel(genParticles_, genParticles);
+  fill_global_Tree(globaljets, genParticles);
+
   //Select the highest csv jets
   pat::Jet jet1 = jets->at(nj1);
   pat::Jet jet2 = jets->at(nj2);
@@ -411,7 +246,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   LorentzVector jet4_4mom = jet4.p4();
    
   if(jet1_4mom.Pt() < minPt_high_ || jet4_4mom.Pt() < minPt_low_) return;
- 
   _Nevents_ptpass++;
 
   jet1_4mom_tree->SetPxPyPzE(jet1_4mom.Px(),jet1_4mom.Py(),jet1_4mom.Pz(),jet1_4mom.E());
@@ -447,7 +281,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   // avoid a case in which the difference between the masses is above 100 GeV
   if(fabs (p_pair1.M() - p_pair2.M() ) > 100.) return;
-
   _Nevents_deltaM++;
 
   // angular distributions between the two pairs
@@ -554,7 +387,7 @@ void HAA4bAnalysis::endJob()
   std::cout << "#######################" << std::endl;
 }
 
-int HAA4bAnalysis::get_best_combination(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4){
+int HAA4bAnalysis::get_best_combination(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4){
 
   float diff_m_12_34 = fabs( (m1+m2).M() - (m3+m4).M() );
   float diff_m_13_24 = fabs( (m1+m3).M() - (m2+m4).M() );
@@ -575,7 +408,7 @@ int HAA4bAnalysis::get_best_combination(LorentzVector m1, LorentzVector m2, Lore
   return -1;
 }
 
-bool HAA4bAnalysis::check_combinations(LorentzVector m1, LorentzVector m2, LorentzVector m3, LorentzVector m4, float mcut){
+bool HAA4bAnalysis::check_combinations(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4, float mcut){
 
   bool b12 = (m1+m2).M() > mcut;
   bool b13 = (m1+m3).M() > mcut;
@@ -587,7 +420,7 @@ bool HAA4bAnalysis::check_combinations(LorentzVector m1, LorentzVector m2, Loren
   return b12 || b13 || b14 || b34 || b24 || b23;
 }
 
-TKinFitter HAA4bAnalysis::get_fitted_candidate(pat::Jet Jet1, pat::Jet Jet2, pat::Jet Jet3, pat::Jet Jet4, int best_combination)
+TKinFitter HAA4bAnalysis::get_fitted_candidate(pat::Jet& Jet1, pat::Jet& Jet2, pat::Jet& Jet3, pat::Jet& Jet4, int best_combination)
 {
   static int debug_counter = 0;
 
@@ -683,7 +516,7 @@ TKinFitter HAA4bAnalysis::get_fitted_candidate(pat::Jet Jet1, pat::Jet Jet2, pat
   fitter.setMaxNbIter( 40 );
   fitter.setMaxDeltaS( 1e-2 );
   fitter.setMaxF( 1e-1 );
-  fitter.setVerbosity(1);
+  if(debug_counter < 5) fitter.setVerbosity(1);
 
   //Perform the fit
   if(debug_counter < 5) std::cout << "Performing kinematic fit..." << std::endl;
@@ -722,6 +555,138 @@ void HAA4bAnalysis::fillDescriptions(edm::ConfigurationDescriptions& description
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   descriptions.addDefault(desc);
+}
+
+void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles){
+
+  //Clean up the vectors to contain the jet information
+  Jet_pt.clear();
+  Jet_eta.clear();
+  Jet_phi.clear();
+  Jet_mass.clear();
+  Jet_btag.clear();
+
+  for(auto jet = globaljets->begin(); jet != globaljets->end(); ++jet){
+    float thept = jet->p4().Pt();
+    float theeta = jet->p4().Eta();
+    float thephi = jet->p4().Phi();
+    float themass = jet->p4().M();
+    float thecsv = jet->bDiscriminator(bdiscr_);
+
+    Jet_pt.push_back(thept);
+    Jet_eta.push_back(theeta);
+    Jet_phi.push_back(thephi);
+    Jet_mass.push_back(themass);
+    Jet_btag.push_back(thecsv);
+  }
+
+  Genb_pt.clear();
+  Genb_eta.clear();
+  Genb_phi.clear();
+  Genb_mass.clear();
+
+  if(genParticles->size() != 0){
+    //std::cout << "Number of genparticles = " << genParticles->size() << std::endl;
+
+    for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
+
+      //std::cout << "Id of genparticle = " << genpart->pdgId() << std::endl;
+      if( abs(genpart->pdgId()) != 5) continue;
+      if( abs(genpart->mother(0)->pdgId()) != 36) continue; //A -> bb
+
+      Genb_pt.push_back(genpart->pt());
+      Genb_eta.push_back(genpart->eta());
+      Genb_phi.push_back(genpart->phi());
+      Genb_mass.push_back(genpart->mass());
+    }
+  }
+
+  globalTree->Fill();
+}
+
+void HAA4bAnalysis::create_Histos_and_Trees(){
+  h_jet1pt = fs->make<TH1F>("h_jet1pt", "P_t of the 1st jet", 200, 0., 500.);
+  h_jet2pt = fs->make<TH1F>("h_jet2pt", "P_t of the 2nd jet", 200, 0., 500.);
+  h_jet3pt = fs->make<TH1F>("h_jet3pt", "P_t of the 3rd jet", 200, 0., 500.);
+  h_jet4pt = fs->make<TH1F>("h_jet4pt", "P_t of the 4th jet", 200, 0., 500.);
+
+  h_jet1eta = fs->make<TH1F>("h_jet1eta", "#eta of the 1st jet", 50, -10., 10.);
+  h_jet2eta = fs->make<TH1F>("h_jet2eta", "#eta of the 2nd jet", 50, -10., 10.);
+  h_jet3eta = fs->make<TH1F>("h_jet3eta", "#eta of the 3rd jet", 50, -10., 10.);
+  h_jet4eta = fs->make<TH1F>("h_jet4eta", "#eta of the 4th jet", 50, -10., 10.);
+
+  h_jet1Btag = fs->make<TH1F>("h_jet1Btag", "B-tag discriminant of the 1st jet", 50, minCSV_, 1.);
+  h_jet2Btag = fs->make<TH1F>("h_jet2Btag", "B-tag discriminant of the 2nd jet", 50, minCSV_, 1.);
+  h_jet3Btag = fs->make<TH1F>("h_jet3Btag", "B-tag discriminant of the 3rd jet", 50, minCSV_, 1.);
+  h_jet4Btag = fs->make<TH1F>("h_jet4Btag", "B-tag discriminant of the 4th jet", 50, minCSV_, 1.);
+
+  h_m_pair1     = fs->make<TH1F>("h_m_pair1", "Invariant mass of the first jet pair", 200, 130., 800.);
+  h_m_pair2     = fs->make<TH1F>("h_m_pair2", "Invariant mass of the second jet pair", 200, 130., 800.);
+  h_m_4b        = fs->make<TH1F>("h_m_4b", "Invariant mass of the four b jets", 200, 130., 1000.);
+  h_m_4b_fitted = fs->make<TH1F>("h_m_4b_fitted", "Invariant mass of the four b jets after fit", 200, 130., 1000.);
+  h_m4b_m12     = fs->make<TH2F>("h_m4b_m12", "Invariant mass of 4b vs m12", 200, 130., 1000.,200,130.,800.);
+  h_m4b_m34     = fs->make<TH2F>("h_m4b_m34", "Invariant mass of 4b vs m34", 200, 130., 1000.,200,130.,800.);
+
+  h_delta_Phi_pair = fs->make<TH1F>("h_delta_Phi_pair", "#Delta_{#phi} between the two jet pairs", 50, 0., 6.28);
+  h_delta_Eta_pair = fs->make<TH1F>("h_delta_Eta_pair", "#Delta_{#eta} between the two jet pairs", 50, -10., 10.);
+
+  h_Events = fs->make<TH1F>("h_Events", "Event counting in different steps", 7, 0., 7.);
+
+  h_nPv = fs->make<TH1F>("h_nPv", "No. of primary verticies", 50, 0., 50.);              //Few more Histogram inclusions
+  h_Rw_nPv = fs->make<TH1F>("h_Rw_nPv", "Reweighted No. of primary verticies", 50, 0., 50.);
+  h_PUInTime= fs->make<TH1F>("h_PUInTime","Input No. in-time pileup interactions",50,0.,50.);
+  h_PUTrue= fs->make<TH1F>("h_PUTrue","Input True pileup interactions",50,0.,50.);
+  h_Rw_PUTrue = fs->make<TH1F>("h_Rw_PUTrue","Reweighted True pileup interactions",50,0.,50.);
+  h_Rw_PUInTime = fs->make<TH1F>("h_Rw_PUInTime","Reweighted in-time pileup interactions",50,0.,50.);
+  h_PUWeight = fs->make<TH1F>("h_PUWeight","Event weight",50,0.,50.);
+ //h_WeightVsNint = fs->make<TProfile>("h_WeightVsNint","Event weight vs N_int",50,0.,50.,0.,10.);
+
+  jet1_4mom_tree = new TLorentzVector();
+  jet2_4mom_tree = new TLorentzVector();
+  jet3_4mom_tree = new TLorentzVector();
+  jet4_4mom_tree = new TLorentzVector();
+
+  jet1_4mom_tree_fit = new TLorentzVector();
+  jet2_4mom_tree_fit = new TLorentzVector();
+  jet3_4mom_tree_fit = new TLorentzVector();
+  jet4_4mom_tree_fit = new TLorentzVector();
+
+  // create the tree and let TFileService handle it
+  mytree = fs->make<TTree>("mytree", "Tree containing events after presel");
+  mytree->Branch("jet1_4mom","TLorentzVector",&jet1_4mom_tree);
+  mytree->Branch("jet2_4mom","TLorentzVector",&jet2_4mom_tree);
+  mytree->Branch("jet3_4mom","TLorentzVector",&jet3_4mom_tree);
+  mytree->Branch("jet4_4mom","TLorentzVector",&jet4_4mom_tree);
+
+  mytree->Branch("jet1_4mom_fit","TLorentzVector",&jet1_4mom_tree_fit);
+  mytree->Branch("jet2_4mom_fit","TLorentzVector",&jet2_4mom_tree_fit);
+  mytree->Branch("jet3_4mom_fit","TLorentzVector",&jet3_4mom_tree_fit);
+  mytree->Branch("jet4_4mom_fit","TLorentzVector",&jet4_4mom_tree_fit);
+
+  mytree->Branch("jet1Btag",&var_jet1Btag,"jet1Btag/F");
+  mytree->Branch("jet2Btag",&var_jet2Btag,"jet2Btag/F");
+  mytree->Branch("jet3Btag",&var_jet3Btag,"jet3Btag/F");
+  mytree->Branch("jet4Btag",&var_jet4Btag,"jet4Btag/F");
+
+  mytree->Branch("N_nPv", &_nPv, "_nPv/I");                                          //Filling Primary Verticies 
+
+  // pileUp histograms
+  mytree->Branch("PUTrue", &npT, "npT/F");
+  mytree->Branch("PUInTime", &npIT, "npIT/F");
+  mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
+
+  globalTree = fs->make<TTree>("globalTree", "Tree containing most of the event info to study background");
+  globalTree->Branch("Jet_pt",&Jet_pt);
+  globalTree->Branch("Jet_eta",&Jet_eta);
+  globalTree->Branch("Jet_phi",&Jet_phi);
+  globalTree->Branch("Jet_mass",&Jet_mass);
+  globalTree->Branch("Jet_btag",&Jet_btag);
+  if(!runningOnData_){
+    globalTree->Branch("Genb_pt",&Genb_pt);
+    globalTree->Branch("Genb_eta",&Genb_eta);
+    globalTree->Branch("Genb_phi",&Genb_phi);
+    globalTree->Branch("Genb_mass",&Genb_mass);
+  }
 }
 
 //define this as a plug-in
