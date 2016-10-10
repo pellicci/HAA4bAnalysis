@@ -585,7 +585,7 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
   Genb_phi.clear();
   Genb_mass.clear();
 
-  if(genParticles->size() != 0){
+  if(!runningOnData_){
     //std::cout << "Number of genparticles = " << genParticles->size() << std::endl;
 
     for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){

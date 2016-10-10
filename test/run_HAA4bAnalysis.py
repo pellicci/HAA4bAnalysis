@@ -40,8 +40,8 @@ else:
    inputFiles="root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AAD5298-DBB8-E511-8527-003048D2BD8E.root" 
 
 process.source = cms.Source ("PoolSource",
-#	  fileNames = cms.untracked.vstring (inputFiles),
-                             fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
+                             fileNames = cms.untracked.vstring (inputFiles),
+                             #fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 )
 
 # Output file
