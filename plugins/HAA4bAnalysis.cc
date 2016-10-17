@@ -77,10 +77,10 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   bsCollection_(iConfig.getParameter<edm::InputTag>("bsCollection")),  
   PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc")) //,
 {
-  jetstoken_         = consumes<std::vector<pat::Jet> >(jets_); //original
+  jetstoken_         = consumes<std::vector<pat::Jet> >(jets_); 
   globaljetstoken_   = consumes<std::vector<pat::Jet> >(globaljets_);
   genParticlestoken_ = consumes<std::vector<reco::GenParticle> >(genParticles_);
-  tok_Vertex_        = consumes<reco::VertexCollection>(pvCollection_);      //Few inclusions
+  tok_Vertex_        = consumes<reco::VertexCollection>(pvCollection_);  
   tok_beamspot_      = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
   pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag(PileupSrc_)); 
 

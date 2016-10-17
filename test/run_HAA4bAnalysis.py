@@ -25,23 +25,19 @@ options.register('runningOnData',
                  "PU config flag")
 options.parseArguments()
 
-#which conditions to use
-if options.runningOnData:
-   process.GlobalTag = GlobalTag(process.GlobalTag, '76X_dataRun2_v15')
-else:
-   process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
-
 #Input source
-if options.runningOnData:
+if options.runningOnData: 
+   process.GlobalTag = GlobalTag(process.GlobalTag, '76X_dataRun2_v15') #which conditions to use
    print "Data Sample will be taken as input for check up of the code working "
    inputFiles="root://xrootd.unl.edu//store/data/Run2015D/BTagCSV/MINIAOD/16Dec2015-v1/50000/00AF8EB4-70AB-E511-9271-00266CFAE7AC.root"
 else:
+   process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
    print "MC Sample will be taken as input for check up of the code working "
    inputFiles="root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AAD5298-DBB8-E511-8527-003048D2BD8E.root" 
 
 process.source = cms.Source ("PoolSource",
-                             fileNames = cms.untracked.vstring (inputFiles),
-                             #fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
+                             #fileNames = cms.untracked.vstring (inputFiles),
+                             fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 )
 
 # Output file
@@ -76,7 +72,7 @@ else:                                             #this loop is for data
 	   process,
 	   jetSource = cms.InputTag('slimmedJets'),
 	   labelName = 'UpdatedJEC',
-	   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')# Add 'L2L3Residual'for data!
+	   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')# Added 'L2L3Residual'for data!
 	)	
 process.JetCorr = process.selectedJets.clone(src=cms.InputTag("updatedPatJetsUpdatedJEC"), cut = cms.string("pt > 30 && abs(eta) < 2.5"))
 
