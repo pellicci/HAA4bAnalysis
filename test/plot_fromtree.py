@@ -49,7 +49,7 @@ output_dir = "plots"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv"  ] #"h_njetE"
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" , "h_abs_massRatio_jetpair", "h_abs_massRatio_jetpair_afterfit"  ] #"h_njetE" 
 
 def select_all_but_one(cutstring):
 
@@ -150,7 +150,8 @@ for sample_name in combined_list:      #for data + background
     h_base[sample_name+list_histos[18]] = ROOT.TH1F(sample_name+list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
     h_base[sample_name+list_histos[19]] = ROOT.TH1F(sample_name+list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
     h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of primary verticies",25 , 0., 25.)
-
+    h_base[sample_name+list_histos[21]] = ROOT.TH1F(sample_name+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
+    h_base[sample_name+list_histos[22]] = ROOT.TH1F(sample_name+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
     #h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of jet entries", 10, 0., 10.)
 
 h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{T} of the 1st jet", 25, PT1_MIN, 390.)
@@ -174,8 +175,9 @@ h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "B-tag of 4th jet", 25, JET4
 h_QCD[list_histos[18]] = ROOT.TH1F(list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
 h_QCD[list_histos[19]] = ROOT.TH1F(list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
 h_QCD[list_histos[20]] = ROOT.TH1F(list_histos[20], "No. of primary verticies", 25, 0., 25.)
+h_QCD[list_histos[21]] = ROOT.TH1F(list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
+h_QCD[list_histos[22]] = ROOT.TH1F(list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
 
-#h_QCD[list_histos[20]] = ROOT.TH1F(list_histos[20], "No. of jet entries", 50, 0., 50.)
 
 #Defining 2D Histograms/Correlation's
 h_ma1_ma2 = ROOT.TH2F("h_ma1_ma2", "m_{12} vs m_{34}", 15, 0., 600., 15, 0., 600.)
@@ -238,10 +240,12 @@ for  name_sample in combined_list:    # for data + background
             norm_factor_data = 1.0
             norm_factor = norm_factor_data                                        #to take care for data normalization
             PU_Weight = 1.0 
-            Event_Weight = norm_factor *  PU_Weight                               #Event_Weight = 1.0 for data
+            Event_Weight = norm_factor * PU_Weight                               #Event_Weight = 1.0 for data
             
         elif name_sample == "Signal_H800_A300":
-             continue   #temporary, because there is no pileUp information in signal right now.
+             PU_Weight = 1.0            #temporary, because there is no pileUp information in signal sample right now.
+             Event_Weight = norm_factor * PU_Weight      
+             #continue  
         else:
             PU_Weight = mytree.PUWeight
             Event_Weight = norm_factor * PU_Weight
@@ -310,6 +314,27 @@ for  name_sample in combined_list:    # for data + background
         totaljets_4mom_fitted = p_pair1_fit + p_pair2_fit
         m4b_fitted = totaljets_4mom_fitted.M()
 
+        #abs(mass_diff_pair1/mass_add_pair2) variable before fit
+        diff_p_pair1 = p_pair1 - p_pair2
+        add_p_pair2 = p_pair1 + p_pair2
+        mass_diff_pair1 = diff_p_pair1.M()
+        mass_add_pair2 = add_p_pair2.M()
+
+        if not mass_add_pair2==0:
+           abs_massRatio_jetpair = abs(mass_diff_pair1/mass_add_pair2)
+    
+        #abs(mass_diff_pair1/mass_add_pair2) variable after fit
+        diff_p_pair1_fit = p_pair1_fit - p_pair2_fit
+        add_p_pair2_fit = p_pair1_fit + p_pair2_fit
+        mass_diff_pair1_fit = diff_p_pair1_fit.M()
+        mass_add_pair2_fit = add_p_pair2_fit.M()
+
+        if not mass_add_pair2_fit==0:
+           abs_massRatio_jetpair_afterfit = abs(mass_diff_pair1_fit/mass_add_pair2_fit)
+
+        #p_pair1_fit = jet1_4mom_fit + jet3_4mom_fit
+        #p_pair2_fit = jet2_4mom_fit + jet4_4mom_fit
+
 
 
         if QCDflag:
@@ -354,7 +379,11 @@ for  name_sample in combined_list:    # for data + background
             if select_all_but_one("h_m34"):
                 h_QCD["h_m34"].Fill(p_pair2.M(),Event_Weight)
 	    if select_all_but_one("h_nPv"):
-                h_QCD["h_nPv"].Fill(mytree.N_nPv,Event_Weight) 
+                h_QCD["h_nPv"].Fill(mytree.N_nPv,Event_Weight)
+            if select_all_but_one("h_abs_massRatio_jetpair"):
+                h_QCD["h_abs_massRatio_jetpair"].Fill(abs_massRatio_jetpair,Event_Weight)
+            if select_all_but_one("h_abs_massRatio_jetpair_afterfit"):
+                h_QCD["h_abs_massRatio_jetpair_afterfit"].Fill(abs_massRatio_jetpair_afterfit,Event_Weight)   
 
         else:
             if select_all_but_one("h_jet1pt"):
@@ -399,6 +428,11 @@ for  name_sample in combined_list:    # for data + background
                 h_base[name_sample+"h_m34"].Fill(p_pair2.M(),Event_Weight)
 	    if select_all_but_one("h_nPv"):
                 h_base[name_sample+"h_nPv"].Fill(mytree.N_nPv,Event_Weight)
+	    if select_all_but_one("h_abs_massRatio_jetpair"):
+                h_base[name_sample+"h_abs_massRatio_jetpair"].Fill(abs_massRatio_jetpair,Event_Weight)
+	    if select_all_but_one("h_abs_massRatio_jetpair_afterfit"):
+                h_base[name_sample+"h_abs_massRatio_jetpair_afterfit"].Fill(abs_massRatio_jetpair_afterfit, Event_Weight)
+
 
         ##Now the 2D plots
         if select_all_but_one("h_mh_ma1"):
@@ -546,6 +580,8 @@ for hname in list_histos:
     ROOT.gPad.SetGridy(1)
     h_ratio[hname].GetXaxis().CenterTitle()
     h_ratio[hname].GetYaxis().CenterTitle()
+    h_ratio[hname].SetMinimum(-1.0)
+    h_ratio[hname].SetMaximum(4.0)
     
     #Switch back to first Canvas to draw the legend
     pad1[hname].cd()                       
@@ -559,7 +595,8 @@ for hname in list_histos:
 
 ##   Signal plots to be produced
 for hname in list_histos:
-    if hname == "h_m4b" or hname == "h_m12" or  hname == "h_m34":
+    #if hname == "h_m4b" or hname == "h_m12" or  hname == "h_m34":
+    if hname == "h_m4b" or hname == "h_m4b_fitted" or hname == "h_m12" or  hname == "h_m34" or hname == "h_abs_massRatio_jetpair" or hname == "h_abs_massRatio_jetpair_afterfit":
         canvas_sig[hname].cd()
 
         ##Remove some style fancyness
