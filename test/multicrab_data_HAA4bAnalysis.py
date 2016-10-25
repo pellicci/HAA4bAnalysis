@@ -25,7 +25,6 @@ config.section_('Site')
 #config.Site.storageSite = 'T2_IT_Legnaro'
 config.Site.storageSite = 'T2_IN_TIFR'
 
-
 if __name__ == '__main__':
 
     from CRABAPI.RawCommand import crabCommand
@@ -60,8 +59,8 @@ if __name__ == '__main__':
     #p.join()
 
  
-    config.General.requestName = 'HAA4bAnalysis_BTagCSV_C'
-    config.Data.inputDataset = '/BTagCSV/Run2015C_25ns-16Dec2015-v1/MINIAOD'
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_B'
+    config.Data.inputDataset = '//BTagCSV/Run2016B-01Jul2016-v2/MINIAOD'
     config.Data.unitsPerJob = 5
     from multiprocessing import Process
     p = Process(target=submit, args=(config,))
@@ -69,10 +68,66 @@ if __name__ == '__main__':
     p.join()
 
 
-    config.General.requestName = 'HAA4bAnalysis_BTagCSV_D'
-    config.Data.inputDataset = '/BTagCSV/Run2015D-16Dec2015-v1/MINIAOD'
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_BP'
+    config.Datai.inputDataset = '/BTagCSV/Run2016B-PromptReco-v2/MINIAOD'
     config.Data.unitsPerJob = 5
     from multiprocessing import Process
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
+
+
+
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_CP'
+    config.Datai.inputDataset = '/BTagCSV/Run2016C-PromptReco-v2/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_DP'
+    config.Datai.inputDataset = '/BTagCSV/Run2016D-PromptReco-v2/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_EP'
+    config.Datai.inputDataset = '/BTagCSV/Run2016E-PromptReco-v2/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_FP'
+    config.Datai.inputDataset = '/BTagCSV/Run2016F-PromptReco-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_GP'
+    config.Datai.inputDataset = '/BTagCSV/Run2016G-PromptReco-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+
+
+
+
+
+
+
+
+
+
+
+
+

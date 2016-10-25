@@ -150,8 +150,8 @@ for sample_name in combined_list:      #for data + background
     h_base[sample_name+list_histos[18]] = ROOT.TH1F(sample_name+list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
     h_base[sample_name+list_histos[19]] = ROOT.TH1F(sample_name+list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
     h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of primary verticies",25 , 0., 25.)
-    h_base[sample_name+list_histos[21]] = ROOT.TH1F(sample_name+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
-    h_base[sample_name+list_histos[22]] = ROOT.TH1F(sample_name+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
+    h_base[sample_name+list_histos[21]] = ROOT.TH1F(sample_name+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
+    h_base[sample_name+list_histos[22]] = ROOT.TH1F(sample_name+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
     #h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of jet entries", 10, 0., 10.)
 
 h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{T} of the 1st jet", 25, PT1_MIN, 390.)
@@ -175,8 +175,8 @@ h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "B-tag of 4th jet", 25, JET4
 h_QCD[list_histos[18]] = ROOT.TH1F(list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
 h_QCD[list_histos[19]] = ROOT.TH1F(list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
 h_QCD[list_histos[20]] = ROOT.TH1F(list_histos[20], "No. of primary verticies", 25, 0., 25.)
-h_QCD[list_histos[21]] = ROOT.TH1F(list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
-h_QCD[list_histos[22]] = ROOT.TH1F(list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b1b2])",15 , 0., 1.1)
+h_QCD[list_histos[21]] = ROOT.TH1F(list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
+h_QCD[list_histos[22]] = ROOT.TH1F(list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
 
 
 #Defining 2D Histograms/Correlation's
@@ -275,22 +275,22 @@ for  name_sample in combined_list:    # for data + background
             p_pair1 = jet1_4mom + jet2_4mom
             p_pair2 = jet3_4mom + jet4_4mom
 
-            p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
-            p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
+            #p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
+            #p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
 
         elif combination_flag == 2:
             p_pair1 = jet1_4mom + jet3_4mom
             p_pair2 = jet2_4mom + jet4_4mom
 
-            p_pair1_fit = jet1_4mom_fit + jet3_4mom_fit
-            p_pair2_fit = jet2_4mom_fit + jet4_4mom_fit
+            #p_pair1_fit = jet1_4mom_fit + jet3_4mom_fit
+            #p_pair2_fit = jet2_4mom_fit + jet4_4mom_fit
 
         elif combination_flag == 3:
             p_pair1 = jet1_4mom + jet4_4mom
             p_pair2 = jet2_4mom + jet3_4mom
 
-            p_pair1_fit = jet1_4mom_fit + jet4_4mom_fit
-            p_pair2_fit = jet2_4mom_fit + jet3_4mom_fit
+            #p_pair1_fit = jet1_4mom_fit + jet4_4mom_fit
+            #p_pair2_fit = jet2_4mom_fit + jet3_4mom_fit
 
         delta_Phi = abs(p_pair1.Phi() - p_pair2.Phi())
         delta_Eta = p_pair1.Eta() - p_pair2.Eta()
@@ -303,6 +303,9 @@ for  name_sample in combined_list:    # for data + background
 
         totaljets_4mom = p_pair1 + p_pair2
         m4b = totaljets_4mom.M()
+
+        p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
+        p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
 
         pt_pair1_fit = p_pair1_fit.Pt()
         pt_pair2_fit = p_pair2_fit.Pt()

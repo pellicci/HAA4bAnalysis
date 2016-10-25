@@ -27,17 +27,17 @@ options.parseArguments()
 
 #Input source
 if options.runningOnData: 
-   process.GlobalTag = GlobalTag(process.GlobalTag, '76X_dataRun2_v15') #which conditions to use
+   process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14') #which conditions to use
    print "Data Sample will be taken as input for check up of the code working "
-   inputFiles="root://xrootd.unl.edu//store/data/Run2015D/BTagCSV/MINIAOD/16Dec2015-v1/50000/00AF8EB4-70AB-E511-9271-00266CFAE7AC.root"
+   inputFiles="root://cms-xrd-global.cern.ch//store/data/Run2016C/BTagCSV/MINIAOD/PromptReco-v2/000/275/658/00000/44E4677E-8C3B-E611-866F-02163E012354.root"
 else:
    process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
    print "MC Sample will be taken as input for check up of the code working "
-   inputFiles="root://xrootd.unl.edu//store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/0AAD5298-DBB8-E511-8527-003048D2BD8E.root" 
+   inputFiles="root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/TTbarDMJets_scalar_Mchi-1_Mphi-10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/70000/F06E80C4-BB3A-E611-A166-008CFA1980B8.root" 
 
 process.source = cms.Source ("PoolSource",
-                             #fileNames = cms.untracked.vstring (inputFiles),
-                             fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
+                             fileNames = cms.untracked.vstring (inputFiles),
+                             #fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 )
 
 # Output file
@@ -84,8 +84,14 @@ process.HAA4bAnalysis.minPt_low = cms.double(30.)
 
 import HLTrigger.HLTfilters.triggerResultsFilter_cfi as hlt
 process.trigger_filter = hlt.triggerResultsFilter.clone()
-process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v*', 'HLT_QuadJet45_TripleBTagCSV0p67_v*')
-process.trigger_filter.hltResults = cms.InputTag( "TriggerResults", "", "HLT" )
+if not options.runningOnData:
+        #process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v*', 'HLT_QuadJet45_TripleBTagCSV0p67_v*') 
+        process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')
+
+        process.trigger_filter.hltResults = cms.InputTag( "TriggerResults", "", "HLT2" )
+else:
+        process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')
+        process.trigger_filter.hltResults = cms.InputTag("TriggerResults", "", "HLT")
 process.trigger_filter.l1tResults = cms.InputTag("")
 process.trigger_filter.throw = cms.bool( False )
 
