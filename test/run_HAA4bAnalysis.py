@@ -33,7 +33,7 @@ if options.runningOnData:
 else:
    process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
    print "MC Sample will be taken as input for check up of the code working "
-   inputFiles="root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv2/TTbarDMJets_scalar_Mchi-1_Mphi-10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/70000/F06E80C4-BB3A-E611-A166-008CFA1980B8.root" 
+   inputFiles="root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/00000/026D7146-DC1E-E611-9EBA-A0000420FE80.root" 
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (inputFiles),
@@ -84,17 +84,19 @@ process.HAA4bAnalysis.minPt_low = cms.double(30.)
 
 import HLTrigger.HLTfilters.triggerResultsFilter_cfi as hlt
 process.trigger_filter = hlt.triggerResultsFilter.clone()
-if not options.runningOnData:
-        #process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v*', 'HLT_QuadJet45_TripleBTagCSV0p67_v*') 
-        process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')
 
-        process.trigger_filter.hltResults = cms.InputTag( "TriggerResults", "", "HLT2" )
-else:
-        process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')
+if options.runningOnData:
+        process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')   #new path for 8X samples
+        #process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v*', 'HLT_QuadJet45_TripleBTagCSV0p67_v*')  #Old trigger path and it doesn't work now for new samples
         process.trigger_filter.hltResults = cms.InputTag("TriggerResults", "", "HLT")
+
 process.trigger_filter.l1tResults = cms.InputTag("")
 process.trigger_filter.throw = cms.bool( False )
 
 #process.seq = cms.Path(process.trigger_filter* process.selectedJets * process.HAA4bAnalysis ) #Only for Uncorrected Jets
-process.seq = cms.Path(process.trigger_filter * process.selectedJets * process.patJetCorrFactorsUpdatedJEC*process.updatedPatJetsUpdatedJEC * process.JetCorr* process.HAA4bAnalysis )
+
+if options.runningOnData:       #For MC 8X samples,just to remove the trigger path
+    process.seq = cms.Path(process.trigger_filter * process.selectedJets * process.patJetCorrFactorsUpdatedJEC*process.updatedPatJetsUpdatedJEC * process.JetCorr* process.HAA4bAnalysis )
+else:
+    process.seq = cms.Path(process.selectedJets * process.patJetCorrFactorsUpdatedJEC*process.updatedPatJetsUpdatedJEC * process.JetCorr* process.HAA4bAnalysis )
 process.schedule = cms.Schedule(process.seq)

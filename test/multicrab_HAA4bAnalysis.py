@@ -44,15 +44,14 @@ if __name__ == '__main__':
 
     config.General.requestName = 'HAA4bAnalysis_ttbar'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/TTbarDMJets_scalar_Mchi-1_Mphi-10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM'  
-    #config.Data.inputDataset = '/TTbarDMJets_pseudoscalar_Mchi-10_Mphi-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM'
+    config.Data.inputDataset = '/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM'  
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
 
     config.General.requestName = 'HAA4bAnalysis_ttbarW'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM'
+    config.Data.inputDataset = '/TTWJetsToQQ_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
@@ -60,14 +59,28 @@ if __name__ == '__main__':
 
     config.General.requestName = 'HAA4bAnalysis_ttbarZ'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v3/MINIAODSIM'
+    config.Data.inputDataset = '/TTZToQQ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
 
     config.General.requestName = 'HAA4bAnalysis_WJetsToLNu'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/WJetsToLNu_BGenFilter_Wpt-40toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM'
+    config.Data.inputDataset = '/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_DY_5_50'
+    config.Data.unitsPerJob = 5
+    config.Data.inputDataset = '/DYJetsToLL_M-5to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_DY_50'
+    config.Data.unitsPerJob = 5
+    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
@@ -78,6 +91,14 @@ if __name__ == '__main__':
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
+
+    config.General.requestName = 'HAA4bAnalysis_DY_200_400'
+    config.Data.unitsPerJob = 5
+    config.Data.inputDataset = '/DYJetsToLL_M-200to400_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext2-v1/MINIAODSIM'
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
+
 ############################################################################
     config.General.requestName = 'HAA4bAnalysis_QCD_Pt100to200'
     config.Data.unitsPerJob = 5
@@ -138,7 +159,7 @@ if __name__ == '__main__':
 
     config.General.requestName = 'HAA4bAnalysis_SingleTop_tW'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM'
+    config.Data.inputDataset = '/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
@@ -146,7 +167,7 @@ if __name__ == '__main__':
 
     config.General.requestName = 'HAA4bAnalysis_SingleAntiTop_tW'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM'
+    config.Data.inputDataset = '/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
@@ -160,14 +181,14 @@ if __name__ == '__main__':
 
     config.General.requestName = 'HAA4bAnalysis_WW'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/WWTo4Q_4f_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM'
+    config.Data.inputDataset = '/WWTo4Q_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
 
     config.General.requestName = 'HAA4bAnalysis_WZ'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = '/WZJToLLLNu_TuneCUETP8M1_13TeV-amcnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM'
+    config.Data.inputDataset = '/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
