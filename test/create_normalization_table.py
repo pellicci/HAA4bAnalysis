@@ -17,11 +17,17 @@ output_filename = "rootfiles/Normalizations_table.txt"
 ##These are in pb
 def get_xsec_fromsample(samplename):
     
-#    if samplename == "DY_5_50":
-#        return 71310.0
+    if samplename == "DY_5_50":
+        return 7160.0
 
-#    if samplename == "DY_50":
-#        return 6225.2
+    if samplename == "DY_50":
+        return 4895.0
+
+    if samplename == "DY_100_200":
+        return 226.0
+
+    if samplename == "DY_200_400":
+        return 7.67
 
 #    if samplename == "QCD_15_30":
 #        return 1837410000.0

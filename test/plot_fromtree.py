@@ -38,6 +38,18 @@ JET2_BTAG = 0.80
 JET3_BTAG = 0.80 
 JET4_BTAG = 0.80 
 
+# Dataset names
+dataSet_1 = "BTagCSV_B"
+dataSet_2 = "BTagCSV_C"
+dataSet_3 = "BTagCSV_D"
+dataSet_4 = "BTagCSV_E"
+dataSet_5 = "BTagCSV_F"
+dataSet_6 = "BTagCSV_G"
+dataSet_7 = "BTagCSV_H"
+
+#data legend name
+data_legend_name = "Data"
+
 ##Normalize to this luminsity, in fb-1
 luminosity_norm = 2.178
 
@@ -49,7 +61,7 @@ output_dir = "plots"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" , "h_abs_massRatio_jetpair", "h_abs_massRatio_jetpair_afterfit"  ] #"h_njetE" 
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" , "h_abs_massRatio_jetpair_beforefit", "h_abs_massRatio_jetpair_afterfit"  ] #"h_njetE" 
 
 def select_all_but_one(cutstring):
 
@@ -236,7 +248,7 @@ for  name_sample in combined_list:    # for data + background
         nb = mytree.GetEntry(jentry )
         if nb <= 0:
             continue
-        if name_sample == "BTagCSV_D" or name_sample == "BTagCSV_C":
+        if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7:
             norm_factor_data = 1.0
             norm_factor = norm_factor_data                                        #to take care for data normalization
             PU_Weight = 1.0 
@@ -269,28 +281,31 @@ for  name_sample in combined_list:    # for data + background
         jet3eta = jet3_4mom.Eta()
         jet4eta = jet4_4mom.Eta()
 
+        #get best combinations of jets before fit
         combination_flag = myWF.get_best_combination(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom);
-
         if combination_flag == 1:
             p_pair1 = jet1_4mom + jet2_4mom
             p_pair2 = jet3_4mom + jet4_4mom
-
-            #p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
-            #p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
 
         elif combination_flag == 2:
             p_pair1 = jet1_4mom + jet3_4mom
             p_pair2 = jet2_4mom + jet4_4mom
 
-            #p_pair1_fit = jet1_4mom_fit + jet3_4mom_fit
-            #p_pair2_fit = jet2_4mom_fit + jet4_4mom_fit
-
         elif combination_flag == 3:
             p_pair1 = jet1_4mom + jet4_4mom
             p_pair2 = jet2_4mom + jet3_4mom
 
-            #p_pair1_fit = jet1_4mom_fit + jet4_4mom_fit
-            #p_pair2_fit = jet2_4mom_fit + jet3_4mom_fit
+        #get best combinations of jets after fit
+        combination_flag_fit = myWF.get_best_combination(jet1_4mom_fit,jet2_4mom_fit,jet3_4mom_fit,jet4_4mom_fit);
+        if combination_flag_fit==1:
+            p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
+            p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
+        elif combination_flag_fit == 2:
+            p_pair1_fit = jet1_4mom_fit + jet3_4mom_fit
+            p_pair2_fit = jet2_4mom_fit + jet4_4mom_fit
+        elif combination_flag_fit == 3:
+            p_pair1_fit = jet1_4mom_fit + jet4_4mom_fit
+            p_pair2_fit = jet2_4mom_fit + jet3_4mom_fit
 
         delta_Phi = abs(p_pair1.Phi() - p_pair2.Phi())
         delta_Eta = p_pair1.Eta() - p_pair2.Eta()
@@ -304,8 +319,8 @@ for  name_sample in combined_list:    # for data + background
         totaljets_4mom = p_pair1 + p_pair2
         m4b = totaljets_4mom.M()
 
-        p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
-        p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
+        #p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
+        #p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
 
         pt_pair1_fit = p_pair1_fit.Pt()
         pt_pair2_fit = p_pair2_fit.Pt()
@@ -383,8 +398,8 @@ for  name_sample in combined_list:    # for data + background
                 h_QCD["h_m34"].Fill(p_pair2.M(),Event_Weight)
 	    if select_all_but_one("h_nPv"):
                 h_QCD["h_nPv"].Fill(mytree.N_nPv,Event_Weight)
-            if select_all_but_one("h_abs_massRatio_jetpair"):
-                h_QCD["h_abs_massRatio_jetpair"].Fill(abs_massRatio_jetpair,Event_Weight)
+            if select_all_but_one("h_abs_massRatio_jetpair_beforefit"):
+                h_QCD["h_abs_massRatio_jetpair_beforefit"].Fill(abs_massRatio_jetpair,Event_Weight)
             if select_all_but_one("h_abs_massRatio_jetpair_afterfit"):
                 h_QCD["h_abs_massRatio_jetpair_afterfit"].Fill(abs_massRatio_jetpair_afterfit,Event_Weight)   
 
@@ -431,8 +446,8 @@ for  name_sample in combined_list:    # for data + background
                 h_base[name_sample+"h_m34"].Fill(p_pair2.M(),Event_Weight)
 	    if select_all_but_one("h_nPv"):
                 h_base[name_sample+"h_nPv"].Fill(mytree.N_nPv,Event_Weight)
-	    if select_all_but_one("h_abs_massRatio_jetpair"):
-                h_base[name_sample+"h_abs_massRatio_jetpair"].Fill(abs_massRatio_jetpair,Event_Weight)
+	    if select_all_but_one("h_abs_massRatio_jetpair_beforefit"):
+                h_base[name_sample+"h_abs_massRatio_jetpair_beforefit"].Fill(abs_massRatio_jetpair,Event_Weight)
 	    if select_all_but_one("h_abs_massRatio_jetpair_afterfit"):
                 h_base[name_sample+"h_abs_massRatio_jetpair_afterfit"].Fill(abs_massRatio_jetpair_afterfit, Event_Weight)
 
@@ -453,7 +468,7 @@ for  name_sample in combined_list:    # for data + background
         if select_all_but_one("actually all"):
             if name_sample == myWF.sig_samplename:
                 Nsig_passed += norm_factor
-            elif name_sample == "BTagCSV_D" or name_sample == "BTagCSV_C":
+            elif name_sample == "BTagCSV_B" or name_sample == "BTagCSV_C" or name_sample == "BTagCSV_D" or name_sample == "BTagCSV_E" or name_sample == "BTagCSV_F" or name_sample == "BTagCSV_G":
                 Ndata_passed += norm_factor
             else:
                 Nbkg_passed += norm_factor
@@ -463,10 +478,7 @@ for  name_sample in combined_list:    # for data + background
 
     for idx_histo,hname in enumerate(list_histos):
         h_base[name_sample+hname].SetFillColor(idx_sample+3)
-        str1 = "BTagCSV_D"
-        str2 = "BTagCSV_C"
-        str3 = "Data"
-        if name_sample ==  str1 or name_sample == str2:
+        if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7:
                  h_base[name_sample+hname].SetMarkerStyle(20)
                  h_base[name_sample+hname].SetMarkerColor(1)
                  h_base[name_sample+hname].SetMarkerSize(1)
@@ -476,16 +488,15 @@ for  name_sample in combined_list:    # for data + background
                 h_base[name_sample+hname].SetLineWidth(4)   #kind of thik
 
         if idx_histo == 0:
-            if name_sample == str1 or name_sample ==str2: 
-               if name_sample ==str1 :
-                  leg1.AddEntry(h_base[name_sample+hname],str3,"p")   
+            if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7: 
+                 leg1.AddEntry(h_base[name_sample+hname],data_legend_name,"p")
+                     
             elif name_sample == myWF.sig_samplename:
-                 str4 = "100 x " + name_sample
-                 leg1.AddEntry(h_base[name_sample+hname],str4,"f")  #To comment when signal is has to be excluded.
+                 sample_legend_name = "100 x " + name_sample
+                 leg1.AddEntry(h_base[name_sample+hname], sample_legend_name,"f")  #To comment when signal is has to be excluded.
             else:
                  leg1.AddEntry(h_base[name_sample+hname],name_sample,"f")
-
-        if name_sample == str1 or name_sample == str2:
+        if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7: 
            hs_data[hname].Add(h_base[name_sample+hname])
            h_sum_data[hname]=ROOT.TH1F(h_base[name_sample+hname])
            h_sum_data[hname].Add(h_base[name_sample+hname])
@@ -598,8 +609,8 @@ for hname in list_histos:
 
 ##   Signal plots to be produced
 for hname in list_histos:
-    #if hname == "h_m4b" or hname == "h_m12" or  hname == "h_m34":
-    if hname == "h_m4b" or hname == "h_m4b_fitted" or hname == "h_m12" or  hname == "h_m34" or hname == "h_abs_massRatio_jetpair" or hname == "h_abs_massRatio_jetpair_afterfit":
+    if hname == "h_m4b" or hname == "h_m4b_fitted" or hname == "h_m12" or  hname == "h_m34" or hname == "h_abs_massRatio_jetpair_beforefit" or hname == "h_abs_massRatio_jetpair_afterfit":
+
         canvas_sig[hname].cd()
 
         ##Remove some style fancyness

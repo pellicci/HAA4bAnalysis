@@ -12,6 +12,7 @@ config.JobType.pluginName = 'Analysis'
 config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False']
+config.JobType.allowUndistributedCMSSW = True
 
 config.section_('Data')
 config.Data.splitting = 'FileBased'
@@ -100,7 +101,7 @@ if __name__ == '__main__':
     p.join()
 
 ############################################################################
-    config.General.requestName = 'HAA4bAnalysis_QCD_Pt100to200'
+    config.General.requestName = 'HAA4bAnalysis_QCD_HT100to200'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))

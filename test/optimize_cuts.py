@@ -3,16 +3,16 @@ import math
 import numpy as np
 
 ##normalize to the 2016 lumi
-luminosity_norm = 5.
+luminosity_norm = 30.0 #2.178
 
 from Workflow_Handler import Workflow_Handler
 myWF = Workflow_Handler("Signal_H800_A300")
 
 def is_Event_selected(jet_btag,jet_pt):
     """Save events according to some basic selection criteria"""
-    btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.89 and jet_btag[3] > 0.89
-    #btag_cut = jet_btag[0] > 0.97 and jet_btag[1] > 0.97 and jet_btag[2] > 0.97 and jet_btag[3] > 0.97
-    #btag_cut = jet_btag[0] > 0.89 and jet_btag[1] > 0.89 and jet_btag[2] > 0.89 and jet_btag[3] > 0.89
+    #btag_cut = jet_btag[0] > 0.460 and jet_btag[1] > 0.460 and jet_btag[2] > 0.460 and jet_btag[3] > 0.460 #Loose
+    #btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.800  #Medium
+    btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.460  #Tight + Medium
     #pt_cut = jet_pt[0] > 165. and jet_pt[1] > 130. and jet_pt[2] > 130. and jet_pt[3] > 110.
     #pt_cut = jet_pt[3] > 50.
 
@@ -200,8 +200,8 @@ print "The cut3 value is ", cut3_init + cut3_stepsize*cut3_max
 print "The cut4 value is ", cut4_init + cut4_stepsize*cut4_max
 print "The cut5 value is ", cut5_init + cut5_stepsize*cut5_max
 print "The cut6 value is ", cut6_init + cut6_stepsize*cut6_max
-print "Number of signal events is ", cut_Nsig[cut1_max][cut2_max][cut3_max][cut4_max][cut5_max][cut6_max]
-print "Number of background events is ", cut_Nbkg[cut1_max][cut2_max][cut3_max][cut4_max][cut5_max][cut6_max]
+print "Number of signal events are ", cut_Nsig[cut1_max][cut2_max][cut3_max][cut4_max][cut5_max][cut6_max]
+print "Number of background events are ", cut_Nbkg[cut1_max][cut2_max][cut3_max][cut4_max][cut5_max][cut6_max]
 print "Max significance is ", signif_max
 
 ##Plot the significance as function of the cuts
