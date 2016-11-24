@@ -12,10 +12,10 @@ config.JobType.pluginName = 'Analysis'
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.allowUndistributedCMSSW = True
 config.JobType.pyCfgParams = ['runningOnData=True']
-#config.JobType.allowUndistributedCMSSW = True
 
 config.section_('Data')
-config.Data.lumiMask = 'json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt'
+#config.Data.lumiMask = 'json/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt'
+config.Data.lumiMask = 'json/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
 #config.Data.unitsPerJob = 50
 config.Data.inputDBS = 'global' #'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet'
 config.Data.splitting = 'LumiBased'
@@ -60,13 +60,13 @@ if __name__ == '__main__':
     #p.join()
 
  
-    config.General.requestName = 'HAA4bAnalysis_BTagCSV_B'
-    config.Data.inputDataset = '/BTagCSV/Run2016B-01Jul2016-v2/MINIAOD'
-    config.Data.unitsPerJob = 5
-    from multiprocessing import Process
-    p = Process(target=submit, args=(config,))
-    p.start()
-    p.join()
+#    config.General.requestName = 'HAA4bAnalysis_BTagCSV_B'
+#    config.Data.inputDataset = '/BTagCSV/Run2016B-01Jul2016-v2/MINIAOD'
+#    config.Data.unitsPerJob = 5
+#    from multiprocessing import Process
+#    p = Process(target=submit, args=(config,))
+#    p.start()
+#    p.join()
 
 
     config.General.requestName = 'HAA4bAnalysis_BTagCSV_C'

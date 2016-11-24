@@ -29,15 +29,15 @@ options.parseArguments()
 if options.runningOnData: 
    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14') #which conditions to use
    print "Data Sample will be taken as input for check up of the code working "
-   inputFiles="root://cms-xrd-global.cern.ch//store/data/Run2016C/BTagCSV/MINIAOD/PromptReco-v2/000/275/658/00000/44E4677E-8C3B-E611-866F-02163E012354.root"
+   inputFiles="root://cms-xrd-global.cern.ch//store/data/Run2016C/BTagCSV/MINIAOD/23Sep2016-v1/70000/00B6A0EA-A783-E611-8973-02163E0165C4.root"
 else:
    process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
    print "MC Sample will be taken as input for check up of the code working "
    inputFiles="root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/00000/026D7146-DC1E-E611-9EBA-A0000420FE80.root" 
 
 process.source = cms.Source ("PoolSource",
-                             #fileNames = cms.untracked.vstring (inputFiles),
-                             fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
+                             fileNames = cms.untracked.vstring (inputFiles),
+                             #fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 )
 
 # Output file

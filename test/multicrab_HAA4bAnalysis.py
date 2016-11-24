@@ -16,8 +16,8 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.section_('Data')
 config.Data.splitting = 'FileBased'
-config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
-#config.Data.outLFNDirBase = '/store/user/aashah/'
+#config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
+config.Data.outLFNDirBase = '/store/user/aashah/'
 config.Data.publication = False
 
 config.section_('Site')

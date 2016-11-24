@@ -182,16 +182,19 @@ for dirname in list_dirs:
     print "Processing sample dir " + dirname
     crab_command = "crab report -d " + dir_input + dirname + " | grep read"
     print crab_command
-    if samplename == "QCD_15_30":
-        number_events = 38425945.*186./187.
-        print "No. of events processed = " + str (number_events) + "\n"
+    #if samplename == "QCD_15_30":
+    #    number_events = 38425945.*186./187.
+    #    print "No. of events processed = " + str (number_events) + "\n"
     #elif samplename == "WJetsToLNu":
     #    number_events = 72207128.0
-    else :
-        event_string = os.popen(crab_command).read()
-        #number_events = float((event_string.split())[0])
-        number_events = float((event_string.split())[4])
-        print "No. of events processed = " + str (number_events) + "\n"
+    #else :
+    #    event_string = os.popen(crab_command).read()
+    #    #number_events = float((event_string.split())[0])
+    #    number_events = float((event_string.split())[4])
+    #    print "No. of events processed = " + str (number_events) + "\n"
+    event_string = os.popen(crab_command).read()
+    number_events = float((event_string.split())[4])
+    print "No. of events processed = " + str (number_events) + "\n"
     #xsection = float(get_xsec_fromsample(samplename))
     xsection = get_xsec_fromsample(samplename)  
     scale_factor = float(xsection*1000./number_events)
