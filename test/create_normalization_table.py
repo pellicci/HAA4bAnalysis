@@ -29,45 +29,6 @@ def get_xsec_fromsample(samplename):
     if samplename == "DY_200_400":
         return 7.67
 
-#    if samplename == "QCD_15_30":
-#        return 1837410000.0
-
-#    if samplename == "QCD_30_50":
-#        return 140932000.0
-
-#    if samplename == "QCD_50_80":
-#        return 19204300.0
-
-#    if samplename == "QCD_80_120":
-#        return 2762530.0
-
-#    if samplename == "QCD_120_170":
-#        return 471100.0
-
-#    if samplename == "QCD_170_300":
-#        return 117276.0
-
-#    if samplename == "QCD_300_470":
-#        return 7823.0
-
-#    if samplename == "QCD_470_600":
-#        return 648.2
-
-#    if samplename == "QCD_600_800":
-#        return 186.9
-
-#    if samplename == "QCD_800_1000":
-#        return 32.293
-
-#    if samplename == "QCD_1000_1400":
-#        return 9.4183
-
-#    if samplename == "QCD_1400_1800":
-#        return 0.84265
-
-#    if samplename == "QCD_1800_2400":
-#        return 0.114943
-
     if samplename == "ttbar":
         return 831.76
 
@@ -77,14 +38,6 @@ def get_xsec_fromsample(samplename):
     if samplename == "SingleAntiTop_tW":
         return 35.6
 
-#    if samplename == "ZZ":
-#        return 16.523
-
-#    if samplename == "WW":
-#        return 63.21
-
-#    if samplename == "WZ":
-#        return 47.13
 
     if samplename == "WJetsToLNu":
         return 61526.7
@@ -206,11 +159,6 @@ for dirname in list_dirs:
 for dirname in list_dirs_data:
     data_samplename = dirname.split("crab_HAA4bAnalysis_")[1]
     print "Processing data sample dir " + dirname
-    crab_command = "crab report -d " + dir_input_data + dirname + " | grep read"
-    #if data_samplename:    
-    data_event_string = os.popen(crab_command).read()
-    data_number_events = float((data_event_string.split())[4])
-    print "No. of events processed = " + str (data_number_events) + "\n"
     data_scale_factor = 1.0
     write_data_string = data_samplename + " " + str(data_scale_factor) + "\n"
     out_file.write(write_data_string)

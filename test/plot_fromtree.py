@@ -1,7 +1,12 @@
 import ROOT
 import os
 import math
-#import numpy as np
+import numpy as np
+#import matplotlib.pyplot as plt
+from ROOT import TLatex as latex
+
+#Supress the opening of many Canvas's
+ROOT.gROOT.SetBatch(True)   
 
 from Workflow_Handler import Workflow_Handler
 myWF = Workflow_Handler("Signal_H800_A300")
@@ -38,22 +43,16 @@ JET2_BTAG = 0.80
 JET3_BTAG = 0.80 
 JET4_BTAG = 0.80 
 
-# Dataset names
-dataSet_1 = "BTagCSV_B"
-dataSet_2 = "BTagCSV_C"
-dataSet_3 = "BTagCSV_D"
-dataSet_4 = "BTagCSV_E"
-dataSet_5 = "BTagCSV_F"
-dataSet_6 = "BTagCSV_G"
-dataSet_7 = "BTagCSV_H"
-
 #data legend name
 data_legend_name = "Data"
 
-##Normalize to this luminsity, in fb-1
+#Normalize to this luminsity, in fb-1
 luminosity_norm = 2.178
 
-##Make signal histos larger
+#Stop the loop after one data entry in the legend
+data_flag = 1
+
+#Make signal histos larger
 signal_magnify = 100.
 
 output_dir = "plots"
@@ -62,6 +61,12 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" , "h_abs_massRatio_jetpair_beforefit", "h_abs_massRatio_jetpair_afterfit"  ] #"h_njetE" 
+
+# Dataset names, and add new data samples as many as available
+data_samples = ["BTagCSV_B", "BTagCSV_C", "BTagCSV_D", "BTagCSV_E", "BTagCSV_F", "BTagCSV_G"] 
+
+signal_histos = ["h_m4b","h_m4b_fitted", "h_m12", "h_m34", "h_abs_massRatio_jetpair_beforefit", "h_abs_massRatio_jetpair_afterfit"] # This is just to plot the signal histograms separately.
+   
 
 def select_all_but_one(cutstring):
 
@@ -111,6 +116,9 @@ root_file_data = myWF.get_data_root_files()
 combined_list = dict()
 combined_list = samplename_list + dataName_list
 
+# Sorting list
+combined_list.sort()  # Just to add the data entries at the top of the legend
+
 #Store root file in a common list
 rootfiles_combined_list = dict()
 rootfiles_combined_list = dict(root_file, **root_file_data)
@@ -126,6 +134,12 @@ h_ratio=dict()
 h_QCD = dict()
 h_base = dict()
 h_Signal = dict()
+
+
+
+#TLatex text
+#latex.SetTextAlign(20)
+#latex.SetTextSize(0.025)
 
 for hname in list_histos:
     hs[hname] = ROOT.THStack("hs_" + hname,"")
@@ -204,16 +218,24 @@ pad1 = dict()
 pad2 = dict()
 
 for hname in list_histos:
-    canvas[hname] = ROOT.TCanvas(hname,hname,200,50,600, 600)
-    canvas_sig[hname] = ROOT.TCanvas(hname+"_sig",hname+"_sig", 200,50, 600, 600)
+    canvas[hname] = ROOT.TCanvas(hname,hname,200,106,600,600)
+    canvas_sig[hname] = ROOT.TCanvas(hname+"_sig",hname+"_sig",200,106,600,600)
 
-    pad1[hname] = ROOT.TPad(hname, hname, 0,0.288,0.9984,0.9972)   #changes from here
-    pad2[hname] = ROOT.TPad(hname, hname, 0,0.004,0.9983,0.3321)    
+    #pad1[hname] = ROOT.TPad(hname, hname, 0,0.288,0.9984,0.9972)   #changes from here
+    pad1[hname] = ROOT.TPad(hname, hname,0,0.2097902,0.9966443,0.9667832)   #changes from here
+
+    #pad2[hname] = ROOT.TPad(hname, hname, 0,0.004,0.9983,0.3321)
+    pad2[hname] = ROOT.TPad(hname, hname, 0,0.005244755,0.9966443,0.2465035)    
     
-leg1 = ROOT.TLegend(0.6,0.55,0.88,0.88)
-leg1.SetHeader("Data and MC Samples")
+#leg1 = ROOT.TLegend(0.6,0.55,0.88,0.88)
+leg1 = ROOT.TLegend(0.6868687,0.6120093,0.9511784,0.9491917)
+leg1.SetHeader(" ")
 leg1.SetFillColor(0)
 leg1.SetBorderSize(0)
+leg1.SetLineColor(1)
+leg1.SetLineStyle(1)
+leg1.SetLineWidth(1)
+leg1.SetFillStyle(1001)
 
 Nsig_passed = 0.
 Nbkg_passed = 0.
@@ -248,14 +270,15 @@ for  name_sample in combined_list:    # for data + background
         nb = mytree.GetEntry(jentry )
         if nb <= 0:
             continue
-        if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7:
+        if name_sample in data_samples:
+            #continue                              #temporary till data is also included in it.
             norm_factor_data = 1.0
-            norm_factor = norm_factor_data                                        #to take care for data normalization
+            norm_factor = norm_factor_data         #to take care for data normalization
             PU_Weight = 1.0 
-            Event_Weight = norm_factor * PU_Weight                               #Event_Weight = 1.0 for data
+            Event_Weight = norm_factor * PU_Weight #Event_Weight = 1.0 for data
             
         elif name_sample == "Signal_H800_A300":
-             PU_Weight = 1.0            #temporary, because there is no pileUp information in signal sample right now.
+             PU_Weight = 1.0                       #temporary, because there is no pileUp information in signal sample right now.
              Event_Weight = norm_factor * PU_Weight      
              #continue  
         else:
@@ -319,15 +342,8 @@ for  name_sample in combined_list:    # for data + background
         totaljets_4mom = p_pair1 + p_pair2
         m4b = totaljets_4mom.M()
 
-        #p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
-        #p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
-
         pt_pair1_fit = p_pair1_fit.Pt()
         pt_pair2_fit = p_pair2_fit.Pt()
-
-
-        #pt_pair1 = p_pair1.Pt()
-        #pt_pair2 = p_pair2.Pt()
 
         totaljets_4mom_fitted = p_pair1_fit + p_pair2_fit
         m4b_fitted = totaljets_4mom_fitted.M()
@@ -349,11 +365,6 @@ for  name_sample in combined_list:    # for data + background
 
         if not mass_add_pair2_fit==0:
            abs_massRatio_jetpair_afterfit = abs(mass_diff_pair1_fit/mass_add_pair2_fit)
-
-        #p_pair1_fit = jet1_4mom_fit + jet3_4mom_fit
-        #p_pair2_fit = jet2_4mom_fit + jet4_4mom_fit
-
-
 
         if QCDflag:
             if select_all_but_one("h_jet1pt"):
@@ -468,7 +479,7 @@ for  name_sample in combined_list:    # for data + background
         if select_all_but_one("actually all"):
             if name_sample == myWF.sig_samplename:
                 Nsig_passed += norm_factor
-            elif name_sample == "BTagCSV_B" or name_sample == "BTagCSV_C" or name_sample == "BTagCSV_D" or name_sample == "BTagCSV_E" or name_sample == "BTagCSV_F" or name_sample == "BTagCSV_G":
+            elif name_sample in data_samples:
                 Ndata_passed += norm_factor
             else:
                 Nbkg_passed += norm_factor
@@ -478,7 +489,7 @@ for  name_sample in combined_list:    # for data + background
 
     for idx_histo,hname in enumerate(list_histos):
         h_base[name_sample+hname].SetFillColor(idx_sample+3)
-        if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7:
+        if name_sample in data_samples:
                  h_base[name_sample+hname].SetMarkerStyle(20)
                  h_base[name_sample+hname].SetMarkerColor(1)
                  h_base[name_sample+hname].SetMarkerSize(1)
@@ -488,22 +499,23 @@ for  name_sample in combined_list:    # for data + background
                 h_base[name_sample+hname].SetLineWidth(4)   #kind of thik
 
         if idx_histo == 0:
-            if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7: 
-                 leg1.AddEntry(h_base[name_sample+hname],data_legend_name,"p")
-                     
+            if name_sample in data_samples:
+                if data_flag == 1:               
+                    leg1.AddEntry(h_base[name_sample+hname],data_legend_name,"elp")               
+                    data_flag += 1  # To add data entry only once
             elif name_sample == myWF.sig_samplename:
                  sample_legend_name = "100 x " + name_sample
                  leg1.AddEntry(h_base[name_sample+hname], sample_legend_name,"f")  #To comment when signal is has to be excluded.
             else:
                  leg1.AddEntry(h_base[name_sample+hname],name_sample,"f")
-        if name_sample == dataSet_1 or name_sample == dataSet_2 or name_sample == dataSet_3 or name_sample == dataSet_4 or name_sample == dataSet_5 or name_sample == dataSet_6 or name_sample == dataSet_7: 
+
+        if name_sample in data_samples: 
            hs_data[hname].Add(h_base[name_sample+hname])
            h_sum_data[hname]=ROOT.TH1F(h_base[name_sample+hname])
            h_sum_data[hname].Add(h_base[name_sample+hname])
                      
         #elif name_sample == myWF.sig_samplename:    #To uncomment it when the signal needs to be excluded
         #     continue
-
         else:
            hs[hname].Add(h_base[name_sample+hname])
            h_sum_mc[hname]=ROOT.TH1F(h_base[name_sample+hname])
@@ -512,7 +524,6 @@ for  name_sample in combined_list:    # for data + background
     idx_sample += 1
     if idx_sample == 1:
         idx_sample += 1
-
 for idx_histo,hname in enumerate(list_histos):
     h_QCD[hname].SetFillColor(2) #Red
     if idx_histo == 0:
@@ -527,17 +538,25 @@ for hname in list_histos:
 
     #Draw two pads pad1 and pad2
     pad1[hname].Draw()                      
-    pad2[hname].Draw()
     pad1[hname].SetFillColor(0)
-    pad2[hname].SetFillColor(0)
     pad1[hname].SetFrameFillColor(0)
+    pad1[hname].SetBorderSize(2)
+    pad1[hname].SetRightMargin(0.04545)
+    pad1[hname].SetTopMargin(0.0369)
+    pad1[hname].SetFrameBorderMode(0)
+   
+    pad2[hname].Draw()
+    pad2[hname].SetBorderMode(0)
+    pad2[hname].SetBorderSize(2)
+    pad2[hname].SetGridy()
+    pad2[hname].SetRightMargin(0.04545)
+    pad2[hname].SetTopMargin(0.01493)
+    pad2[hname].SetBottomMargin(0.269)
+    pad2[hname].SetFrameBorderMode(0)
+    
     pad2[hname].SetFrameFillColor(0)
-    pad2[hname].SetTopMargin(0.02069)
-    pad1[hname].SetBottomMargin(0.10)  
-    pad2[hname].SetBottomMargin(0.26)
-    pad1[hname].SetFrameBorderMode(0)
-    pad1[hname].SetFrameBorderMode(0)
-
+    pad2[hname].SetFillColor(0)
+    
     #Switching to first pad in the same canvas
     pad1[hname].cd()                          
     hs[hname].Draw("histo")
@@ -554,9 +573,11 @@ for hname in list_histos:
     hs_data[hname].SetMaximum(200 + hmax)
       
     #Grapic names
+    hs[hname].SetTitle(" ")
     hs[hname].GetXaxis().SetTickLength(0.03) 
     hs[hname].GetXaxis().SetLabelOffset(0.006)
     hs[hname].GetYaxis().SetLabelOffset(0.007)
+    hs[hname].GetYaxis().SetTitleOffset(1.077) #####
     hs[hname].GetYaxis().SetLabelSize(0.048)
     hs_data[hname].GetYaxis().SetLabelSize(0.048)
     hs[hname].GetYaxis().SetNdivisions(506)
@@ -574,28 +595,29 @@ for hname in list_histos:
 
     #Take the ratio between data and MC and draw it
     h_ratio[hname]= ROOT.TH1F(h_sum_data[hname])
-    h_ratio[hname].Divide(h_sum_total[hname])                      
-    h_ratio[hname].Draw("elp")
+    h_ratio[hname].Divide(h_sum_total[hname])                     
+    h_ratio[hname].Draw("elp")                  
 
     #Graphic names 
     h_ratio[hname].GetXaxis().SetTitle(h_base[name_sample+hname].GetTitle())
-    h_ratio[hname].SetTitle("")
+    h_ratio[hname].SetTitle(" ")
     h_ratio[hname].GetXaxis().SetTickLength(0.04)    
     h_ratio[hname].GetXaxis().SetLabelFont(0)     
     h_ratio[hname].GetYaxis().SetNdivisions(506)     
-    h_ratio[hname].GetYaxis().SetLabelSize(0.088)   
-    h_ratio[hname].GetXaxis().SetLabelSize(0.088)     
-    h_ratio[hname].GetXaxis().SetTickLength(0.09)
+    h_ratio[hname].GetYaxis().SetLabelSize(0.12)
+    #h_ratio[hname].GetXaxis().SetLabelSize(0.50)   
+    h_ratio[hname].GetXaxis().SetLabelSize(0.125)     
+    h_ratio[hname].GetXaxis().SetTickLength(0.11)
     h_ratio[hname].GetYaxis().SetTitle("Data/MC")
-    h_ratio[hname].GetYaxis().SetTitleSize(0.08)
-    h_ratio[hname].GetYaxis().SetTitleOffset(0.55)
-    h_ratio[hname].GetXaxis().SetTitleOffset(1.077)
-    h_ratio[hname].GetXaxis().SetTitleSize(0.097)
+    h_ratio[hname].GetYaxis().SetTitleSize(0.125)
+    h_ratio[hname].GetYaxis().SetTitleOffset(0.30)
+    h_ratio[hname].GetXaxis().SetTitleOffset(0.80)
+    h_ratio[hname].GetXaxis().SetTitleSize(0.15)
     ROOT.gPad.SetGridy(1)
     h_ratio[hname].GetXaxis().CenterTitle()
     h_ratio[hname].GetYaxis().CenterTitle()
-    h_ratio[hname].SetMinimum(-1.0)
-    h_ratio[hname].SetMaximum(4.0)
+    h_ratio[hname].SetMinimum(0.0)
+    h_ratio[hname].SetMaximum(2.0)
     
     #Switch back to first Canvas to draw the legend
     pad1[hname].cd()                       
@@ -609,8 +631,7 @@ for hname in list_histos:
 
 ##   Signal plots to be produced
 for hname in list_histos:
-    if hname == "h_m4b" or hname == "h_m4b_fitted" or hname == "h_m12" or  hname == "h_m34" or hname == "h_abs_massRatio_jetpair_beforefit" or hname == "h_abs_massRatio_jetpair_afterfit":
-
+    if hname in signal_histos: 
         canvas_sig[hname].cd()
 
         ##Remove some style fancyness
@@ -619,6 +640,21 @@ for hname in list_histos:
 
         ROOT.gStyle.SetOptStat(1)
         h_base[myWF.sig_samplename+hname].Draw("histo")
+        ##################Naming
+        ##h_base[myWF.sig_samplename+hname].SetTitle("Signal Plots")
+        h_base[myWF.sig_samplename+hname].GetYaxis().SetTitle("Events")
+        h_base[myWF.sig_samplename+hname].GetXaxis().SetTitle(h_base[myWF.sig_samplename+hname].GetTitle())
+        h_base[myWF.sig_samplename+hname].SetTitle("Signal")
+        h_base[myWF.sig_samplename+hname].GetXaxis().CenterTitle()
+        h_base[myWF.sig_samplename+hname].GetYaxis().CenterTitle()
+        h_base[myWF.sig_samplename+hname].GetXaxis().SetTickLength(0.03) 
+        h_base[myWF.sig_samplename+hname].GetXaxis().SetLabelOffset(0.006)
+        h_base[myWF.sig_samplename+hname].GetYaxis().SetLabelOffset(0.007)
+        h_base[myWF.sig_samplename+hname].GetYaxis().SetLabelSize(0.048)
+        h_base[myWF.sig_samplename+hname].GetYaxis().SetNdivisions(506)
+        h_base[myWF.sig_samplename+hname].GetYaxis().SetTitleSize(0.045)
+      
+        #####################
         canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.gif")
         #canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.C")
         canvas_sig[hname].SaveAs("plots/tree_" + hname + "_signal.pdf")
