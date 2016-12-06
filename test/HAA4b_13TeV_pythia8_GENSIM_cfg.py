@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Pythia8CardFragment.py --fileout file:HAA4b_pythia8_FULLSIM.root --mc --eventcontent AODSIM --datatier GEN-SIM --conditions auto:run2_mc --step GEN,SIM,DIGI,L1,DIGI2RAW,HLT,RAW2DIGI,L1Reco,RECO --python_filename HAA4b_13TeV_pythia8_FULLSIM_3_cfg_2.py --no_exec --era Run2_2016 -n 100 --pileup=2016_25ns_Moriond17MC_PoissonOOTPU
+# with command line options: Pythia8CardFragment.py --fileout file:HAA4b_pythia8_GENSIM.root --mc --eventcontent RAWSIM --datatier GEN-SIM --conditions auto:run2_mc --step GEN,SIM,DIGI,L1,DIGI2RAW,HLT --python_filename HAA4b_13TeV_pythia8_GENSIM_2_cfg.py --no_exec --era Run2_2016 -n 10 --pileup=2016_25ns_Moriond17MC_PoissonOOTPU
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
@@ -26,9 +26,6 @@ process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('HLTrigger.Configuration.HLT_GRun_cff')
-process.load('Configuration.StandardSequences.RawToDigi_cff')
-process.load('Configuration.StandardSequences.L1Reco_cff')
-process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -45,26 +42,25 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('Pythia8CardFragment.py nevts:100'),
+    annotation = cms.untracked.string('Pythia8CardFragment.py nevts:10'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
 
 # Output definition
 
-process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('generation_step')
     ),
-    compressionAlgorithm = cms.untracked.string('LZMA'),
-    compressionLevel = cms.untracked.int32(4),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fileName = cms.untracked.string('file:HAA4b_pythia8_FULLSIM.root'),
-    outputCommands = process.AODSIMEventContent.outputCommands
+    eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
+    fileName = cms.untracked.string('file:HAA4b_pythia8_GENSIM.root'),
+    outputCommands = process.RAWSIMEventContent.outputCommands,
+    splitLevel = cms.untracked.int32(0)
 )
 
 # Additional output definition
@@ -121,17 +117,14 @@ process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.pdigi)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
 process.digi2raw_step = cms.Path(process.DigiToRaw)
-process.raw2digi_step = cms.Path(process.RawToDigi)
-process.L1Reco_step = cms.Path(process.L1Reco)
-process.reconstruction_step = cms.Path(process.reconstruction)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
+process.RAWSIMoutput_step = cms.EndPath(process.RAWSIMoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.L1simulation_step,process.digi2raw_step)
 process.schedule.extend(process.HLTSchedule)
-process.schedule.extend([process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step,process.AODSIMoutput_step])
+process.schedule.extend([process.endjob_step,process.RAWSIMoutput_step])
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.ProductionFilterSequence * getattr(process,path)._seq 
