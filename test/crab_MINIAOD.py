@@ -11,7 +11,7 @@ config.JobType.psetName = 'HAA4b_13TeV_pythia8_MINIAOD_cfg.py'
 config.JobType.pluginName = 'Analysis'
 
 config.section_('Data')
-config.Data.inputDataset = '/HAA4b_AODSIM_80XV1_MH800_MA300/pellicci-HAA4b_AODSIM_76X_MH800_MA300-c09b256969202ffd10a2850ddfecd290/USER'
+config.Data.inputDataset = '/HAA4b_GENSIM_80XV1_MH800_MA300/pellicci-HAA4b_RECOSIM_80XV1_MH800_MA300-8cf88868cf066f834b46562c885350ae/USER'
 config.Data.inputDBS = 'phys03'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 5
