@@ -1,7 +1,7 @@
 import ROOT
 import os
 
-dir_input = "crab_projects_MC/samples/"
+dir_input = "crab_projects/samples/"
 dir_output_bkg = "rootfiles/backgrounds/"
 dir_output_sig = "rootfiles/signals/"
 
