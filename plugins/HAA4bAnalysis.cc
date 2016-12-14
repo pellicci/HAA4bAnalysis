@@ -77,16 +77,16 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   bsCollection_(iConfig.getParameter<edm::InputTag>("bsCollection")),  
   PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc")) //,
 {
-  jetstoken_         = consumes<std::vector<pat::Jet> >(jets_); 
-  globaljetstoken_   = consumes<std::vector<pat::Jet> >(globaljets_);
-  genParticlestoken_ = consumes<std::vector<reco::GenParticle> >(genParticles_);
-  tok_Vertex_        = consumes<reco::VertexCollection>(pvCollection_);  
-  tok_beamspot_      = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
+  jetstoken_          = consumes<std::vector<pat::Jet> >(jets_); 
+  globaljetstoken_    = consumes<std::vector<pat::Jet> >(globaljets_);
+  genParticlestoken_  = consumes<std::vector<reco::GenParticle> >(genParticles_);
+  tok_Vertex_         = consumes<reco::VertexCollection>(pvCollection_);  
+  tok_beamspot_       = consumes<reco::BeamSpot>(edm::InputTag(bsCollection_));
   pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(edm::InputTag(PileupSrc_)); 
 
    //Few Counters
   _Nevents_processed = 0.;
-  _Nevents_4jets    = 0.;
+  _Nevents_4jets     = 0.;
   _Nevents_4bjets    = 0.;
   _Nevents_ptpass    = 0.;
   _Nevents_mpairs    = 0.;
@@ -114,7 +114,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // define a jet handle and get the jets
   edm::Handle<std::vector<pat::Jet> > jets;  
   iEvent.getByLabel(jets_, jets);
-
   // no point to continue if there aren't 4 jets
   if(jets->size() < 4) return;
 
@@ -139,7 +138,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   } 
 
   // PileUp code for examining the Pileup information
-  PU_Weight=1.;
+  PU_Weight = 1.;
 
   if (!runningOnData_){
     std::cout<<"Running on Mote Carlo "<<std::endl;
@@ -181,7 +180,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // loop over jets and determine the ranking
   // based on pt from 1 to 4
-  std::cout<<"Processing event number "<<_Nevents_processed<<" with equal to or more than 4 Jets "<<std::endl;
+  if(_show_output) std::cout<<"Processing event number " << _Nevents_processed << " with equal to or more than 4 Jets" << std::endl;
   for(auto jet = jets->begin(); jet != jets->end(); ++jet){
     float thept = jet->p4().Pt();
     float thecsv = jet->bDiscriminator(bdiscr_);

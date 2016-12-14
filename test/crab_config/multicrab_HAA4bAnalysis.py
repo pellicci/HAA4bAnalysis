@@ -16,13 +16,13 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.section_('Data')
 config.Data.splitting = 'FileBased'
-#config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
-config.Data.outLFNDirBase = '/store/user/aashah/'
+config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
+#config.Data.outLFNDirBase = '/store/user/pellicci/'
 config.Data.publication = False
 
 config.section_('Site')
-#config.Site.storageSite = 'T2_IT_Legnaro'
-config.Site.storageSite = 'T2_IN_TIFR'
+config.Site.storageSite = 'T2_IT_Legnaro'
+#config.Site.storageSite = 'T2_IN_TIFR'
 
 if __name__ == '__main__':
 
@@ -100,7 +100,6 @@ if __name__ == '__main__':
     p.start()
     p.join()
 
-############################################################################
     config.General.requestName = 'HAA4bAnalysis_QCD_HT100to200'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
@@ -156,7 +155,6 @@ if __name__ == '__main__':
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
-#===========================================Other Samples
 
     config.General.requestName = 'HAA4bAnalysis_SingleTop_tW'
     config.Data.unitsPerJob = 5
@@ -193,5 +191,3 @@ if __name__ == '__main__':
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
-
-

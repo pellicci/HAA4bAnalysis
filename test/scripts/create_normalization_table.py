@@ -2,17 +2,13 @@ import os
 
 ###All normalizations are provided to 1fb-1 of lumi in these tables
 
-dir_input = "crab_projects/samples/"
+dir_input = "../crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
-
-# Just to write 1.0 for data to the output file for normalization
-dir_input_data = "crab_projects/data/"
-list_dirs_data = os.listdir(dir_input_data)
 
 if not os.path.exists("rootfiles"):
     os.makedirs("rootfiles")
 
-output_filename = "rootfiles/Normalizations_table.txt"
+output_filename = "../rootfiles/Normalizations_table.txt"
 
 ##These are in pb
 def get_xsec_fromsample(samplename):
@@ -77,19 +73,9 @@ def get_xsec_fromsample(samplename):
     if samplename == "SingleAntiTop_tW":
         return 35.6
 
-#    if samplename == "ZZ":
-#        return 16.523
-
-#    if samplename == "WW":
-#        return 63.21
-
-#    if samplename == "WZ":
-#        return 47.13
-
     if samplename == "WJetsToLNu":
         return 61526.7
 
-# Second Addition
     if samplename == "ttbarW":
         return 0.27
 
@@ -119,8 +105,6 @@ def get_xsec_fromsample(samplename):
 
     if samplename == "QCD_HT2000toInf":
         return 25.24
-
-# Third Addition
 
     if samplename == "QCD_MuEnriched_P20to30":
         return 2960198.40 
@@ -182,6 +166,8 @@ for dirname in list_dirs:
     print "Processing sample dir " + dirname
     crab_command = "crab report -d " + dir_input + dirname + " | grep read"
     print crab_command
+
+    #Special cases
     #if samplename == "QCD_15_30":
     #    number_events = 38425945.*186./187.
     #    print "No. of events processed = " + str (number_events) + "\n"
@@ -192,6 +178,7 @@ for dirname in list_dirs:
     #    #number_events = float((event_string.split())[0])
     #    number_events = float((event_string.split())[4])
     #    print "No. of events processed = " + str (number_events) + "\n"
+
     event_string = os.popen(crab_command).read()
     number_events = float((event_string.split())[4])
     print "No. of events processed = " + str (number_events) + "\n"
@@ -201,20 +188,4 @@ for dirname in list_dirs:
     write_string = samplename + " " + str(scale_factor) + "\n"
     out_file.write(write_string)
 
-#====================================================================================
-
-for dirname in list_dirs_data:
-    data_samplename = dirname.split("crab_HAA4bAnalysis_")[1]
-    print "Processing data sample dir " + dirname
-    crab_command = "crab report -d " + dir_input_data + dirname + " | grep read"
-    #if data_samplename:    
-    data_event_string = os.popen(crab_command).read()
-    data_number_events = float((data_event_string.split())[4])
-    print "No. of events processed = " + str (data_number_events) + "\n"
-    data_scale_factor = 1.0
-    write_data_string = data_samplename + " " + str(data_scale_factor) + "\n"
-    out_file.write(write_data_string)
-out_file.close()
-
-print "Data and Sample Normalizations saved in output file"
 print "All done!"

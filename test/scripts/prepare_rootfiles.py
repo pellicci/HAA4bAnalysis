@@ -1,10 +1,9 @@
 import ROOT
 import os
 
-#dir_input = "crab_projects/samples/"
-dir_input = "crab_projects/data/"
-dir_output_bkg = "rootfiles/data/"
-dir_output_sig = "rootfiles/null/"
+dir_input = "../crab_projects/samples/"
+dir_output_bkg = "../rootfiles/backgrounds/"
+dir_output_sig = "../rootfiles/signals/"
 
 list_dirs = os.listdir(dir_input)
 
@@ -29,8 +28,4 @@ for dirname in list_dirs:
 
     os.system(hadd_command)
 
-command_1 = "rm -rf " + dir_output_sig
-os.system(command_1)
-
 print "All done!"
-

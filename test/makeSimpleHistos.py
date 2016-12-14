@@ -1,10 +1,10 @@
 import ROOT
 
 from Workflow_Handler import Workflow_Handler
-myWF = Workflow_Handler("Signal_H500_A200")
+myWF = Workflow_Handler("Signal_H800_A300")
 
 ##Do all the scaling to this luminosity, in fb-1
-luminosity_norm = 10.
+luminosity_norm = 36.
 signal_magnify = 100.
 
 ##These are the histograms to be merged
@@ -40,7 +40,7 @@ canvas = dict()
 for hname in list_histos:
     canvas[hname] = ROOT.TCanvas(hname,hname)
 leg1 = ROOT.TLegend(0.6,0.6,0.9,0.9)
-leg1.SetHeader("Samples considered")
+leg1.SetHeader("Samples")
 
 ##collect all the root files
 samplename_list = myWF.get_samples_names(False)

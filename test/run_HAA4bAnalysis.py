@@ -59,37 +59,30 @@ process.HAA4bAnalysis.runningOnData = options.runningOnData
 # Applying Jet Energy Corrections
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 if not process.HAA4bAnalysis.runningOnData:      #This loop is for MC
-        print "Jet Energy Corrections on Monte Carlo will be applied "
-	updateJetCollection(
-	   process,
-	   jetSource = cms.InputTag('slimmedJets'),
-	   labelName = 'UpdatedJEC',
-	   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None') # Do not forget 'L2L3Residual' on data!
-	)
-else:                                             #this loop is for data
-        print "Jet Energy Corrections on Data will be applied "
-	updateJetCollection(
-	   process,
-	   jetSource = cms.InputTag('slimmedJets'),
-	   labelName = 'UpdatedJEC',
-	   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')# Added 'L2L3Residual'for data!
-	)	
+   print "Jet Energy Corrections on Monte Carlo will be applied "
+   jetCorrectionsList = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None') # Do not forget 'L2L3Residual' on data!
+else:
+   print "Jet Energy Corrections on Data will be applied "
+   jetCorrectionsList = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')# Added 'L2L3Residual'for data!
+
+updateJetCollection(
+   process,
+   jetSource = cms.InputTag('slimmedJets'),
+   labelName = 'UpdatedJEC',
+   jetCorrections = jetCorrectionsList
+)
 process.JetCorr = process.selectedJets.clone(src=cms.InputTag("updatedPatJetsUpdatedJEC"), cut = cms.string("pt > 30 && abs(eta) < 2.5"))
 
-#process.HAA4bAnalysis.jets = cms.InputTag("selectedJets")         #Uncomment only when you need jets without energy corrections
+#process.HAA4bAnalysis.jets = cms.InputTag("selectedJets")             #Uncomment only when you need jets without energy corrections
 #process.HAA4bAnalysis.jets = cms.InputTag("updatedPatJetsUpdatedJEC") #Pass on updated jets (jets with corrected energy) without any cut
-process.HAA4bAnalysis.jets = cms.InputTag("JetCorr") #Pass on updated Jets with the required cuts.
+process.HAA4bAnalysis.jets = cms.InputTag("JetCorr")                   #Pass on updated Jets with the required cuts.
 
 process.HAA4bAnalysis.minPt_low = cms.double(30.)
 
 import HLTrigger.HLTfilters.triggerResultsFilter_cfi as hlt
 process.trigger_filter = hlt.triggerResultsFilter.clone()
-
-if options.runningOnData:
-        process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')   #new path for 8X samples
-        #process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v*', 'HLT_QuadJet45_TripleBTagCSV0p67_v*')  #Old trigger path and it doesn't work now for new samples
-        process.trigger_filter.hltResults = cms.InputTag("TriggerResults", "", "HLT")
-
+process.trigger_filter.triggerConditions = cms.vstring('HLT_DoubleJet90_Double30_TripleBTagCSV_p087_v*', 'HLT_QuadJet45_TripleBTagCSV_p087_v*')   #paths for 2016 samples
+process.trigger_filter.hltResults = cms.InputTag("TriggerResults", "", "HLT")
 process.trigger_filter.l1tResults = cms.InputTag("")
 process.trigger_filter.throw = cms.bool( False )
 
