@@ -25,45 +25,6 @@ def get_xsec_fromsample(samplename):
     if samplename == "DY_200_400":
         return 7.67
 
-#    if samplename == "QCD_15_30":
-#        return 1837410000.0
-
-#    if samplename == "QCD_30_50":
-#        return 140932000.0
-
-#    if samplename == "QCD_50_80":
-#        return 19204300.0
-
-#    if samplename == "QCD_80_120":
-#        return 2762530.0
-
-#    if samplename == "QCD_120_170":
-#        return 471100.0
-
-#    if samplename == "QCD_170_300":
-#        return 117276.0
-
-#    if samplename == "QCD_300_470":
-#        return 7823.0
-
-#    if samplename == "QCD_470_600":
-#        return 648.2
-
-#    if samplename == "QCD_600_800":
-#        return 186.9
-
-#    if samplename == "QCD_800_1000":
-#        return 32.293
-
-#    if samplename == "QCD_1000_1400":
-#        return 9.4183
-
-#    if samplename == "QCD_1400_1800":
-#        return 0.84265
-
-#    if samplename == "QCD_1800_2400":
-#        return 0.114943
-
     if samplename == "ttbar":
         return 831.76
 

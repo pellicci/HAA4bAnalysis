@@ -23,8 +23,8 @@ config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
 #config.Data.outLFNDirBase = '/store/user/aashah/'
 config.section_('User')
 config.section_('Site')
-#config.Site.storageSite = 'T2_IT_Legnaro'
-config.Site.storageSite = 'T2_IN_TIFR'
+config.Site.storageSite = 'T2_IT_Legnaro'
+#config.Site.storageSite = 'T2_IN_TIFR'
 
 if __name__ == '__main__':
 
@@ -43,22 +43,6 @@ if __name__ == '__main__':
 
     #########    From now on that's what users should modify: this is the a-la-CRAB2 configuration part.
         
-    #config.General.requestName = 'HAA4bAnalysis_BTagCSV_A'
-    #config.Data.inputDataset = '/BTagCSV/Run2015A-27Jan2016-v1/MINIAOD'
-    #config.Data.unitsPerJob = 5
-    #from multiprocessing import Process
-    #p = Process(target=submit, args=(config,))
-    #p.start()
-    #p.join()
-    
-    #config.General.requestName = 'HAA4bAnalysis_BTagCSV_B'
-    #config.Data.inputDataset = '/BTagCSV/Run2015B-27Jan2016-v1/MINIAOD'
-    #config.Data.unitsPerJob = 5
-    #from multiprocessing import Process
-    #p = Process(target=submit, args=(config,))
-    #p.start()
-    #p.join()
-
  
 #    config.General.requestName = 'HAA4bAnalysis_BTagCSV_B'
 #    config.Data.inputDataset = '/BTagCSV/Run2016B-01Jul2016-v2/MINIAOD'
