@@ -15,7 +15,9 @@ private:
 
   const edm::InputTag jets_; 
   const edm::InputTag globaljets_; 
-  const edm::InputTag genParticles_; 
+  const edm::InputTag genParticles_;
+  const edm::InputTag met_;
+  const edm::InputTag globalmet_;
   std::string bdiscr_;
   double minPt_high_;
   double minPt_low_;
@@ -29,7 +31,9 @@ private:
   edm::Service<TFileService> fs;
 
   void create_Histos_and_Trees();
-  void fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles);
+ void fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles, edm::Handle<std::vector<pat::MET> > &globalmets);
+ // void fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles);
+
   int get_best_combination(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4);
   bool check_combinations(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4, float mcut);
   TKinFitter get_fitted_candidate(pat::Jet& Jet1, pat::Jet& Jet2, pat::Jet& Jet3, pat::Jet& Jet4, int best_combination);
@@ -83,16 +87,40 @@ private:
   TLorentzVector *jet3_4mom_tree_fit;
   TLorentzVector *jet4_4mom_tree_fit;
 
+  //Vectors to store Jet Information
   std::vector<float> Jet_pt;
   std::vector<float> Jet_phi;
   std::vector<float> Jet_eta;
   std::vector<float> Jet_mass;
   std::vector<float> Jet_btag;
 
+ //Hadron and parton Flavour Information vectors
+  std::vector<int> Jet_hadflavrs;
+  std::vector<int> Jet_partnflavrs;
+
+  // vectors to store MC information for background analysis
   std::vector<float> Genb_pt;
   std::vector<float> Genb_phi;
   std::vector<float> Genb_eta;
   std::vector<float> Genb_mass;
+  std::vector<int>   Genb_flavor;
+ 
+ //Hadron and parton Flavour Information vectors
+  std::vector<int> Genb_hadflavrs;
+  std::vector<int> Genb_partnflavrs;
+
+  // vectors to store global MET
+  std::vector<float> gMet_pt;
+  std::vector<float> gMet_phi;
+  std::vector<float> gMet_eta;
+  std::vector<float> gMet_mass;
+ // std::vector<float> Jet_btag;
+
+  //Event Info like event and run number, lumi sec., 
+  //std::vector<edm::EventID> event_nmbr;
+  std::vector<int> event_nmbr;
+  std::vector<int> run_nmbr;
+  std::vector<int> lumi_blck;
 
   float var_jet1Btag;
   float var_jet2Btag;
@@ -119,6 +147,8 @@ private:
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
   edm::EDGetTokenT<std::vector<pat::Jet> > globaljetstoken_; 
   edm::EDGetTokenT<std::vector<reco::GenParticle> > genParticlestoken_; 
+  edm::EDGetTokenT<std::vector<pat::MET> > metToken_;
+  edm::EDGetTokenT<std::vector<pat::MET> > globalmetToken_;
   edm::EDGetTokenT<reco::VertexCollection> tok_Vertex_; 
   edm::EDGetTokenT<reco::BeamSpot>         tok_beamspot_;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupSummaryToken_;

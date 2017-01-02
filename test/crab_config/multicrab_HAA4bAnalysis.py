@@ -7,7 +7,7 @@ config.General.transferOutputs = True
 config.General.workArea = 'crab_projects/samples/'
 
 config.section_('JobType')
-config.JobType.psetName = 'run_HAA4bAnalysis.py'
+config.JobType.psetName = '../run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
 config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
@@ -21,8 +21,8 @@ config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
 config.Data.publication = False
 
 config.section_('Site')
-config.Site.storageSite = 'T2_IT_Legnaro'
-#config.Site.storageSite = 'T2_IN_TIFR'
+#config.Site.storageSite = 'T2_IT_Legnaro'
+config.Site.storageSite = 'T2_IN_TIFR'
 
 if __name__ == '__main__':
 

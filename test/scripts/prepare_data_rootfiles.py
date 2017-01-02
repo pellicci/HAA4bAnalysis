@@ -1,8 +1,10 @@
 import ROOT
 import os
 
-dir_input = "../crab_projects/data/"
-dir_output = "../rootfiles/data/"
+dir_input = "/crab_config/crab_projects/data/"
+dir_output = "/rootfiles/data/"
+
+os.chdir("..")
 
 list_dirs = os.listdir(dir_input)
 

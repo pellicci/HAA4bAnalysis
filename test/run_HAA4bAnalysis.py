@@ -36,8 +36,8 @@ else:
    inputFiles="root://cms-xrd-global.cern.ch//store/mc/RunIISpring16MiniAODv1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/00000/026D7146-DC1E-E611-9EBA-A0000420FE80.root" 
 
 process.source = cms.Source ("PoolSource",
-                             #fileNames = cms.untracked.vstring (inputFiles),
-                             fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
+                             fileNames = cms.untracked.vstring (inputFiles),
+                             #fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 )
 
 # Output file

@@ -2,13 +2,13 @@ import os
 
 ###All normalizations are provided to 1fb-1 of lumi in these tables
 
-dir_input = "../crab_projects/samples/"
+dir_input = "../crab_config/crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
 
 if not os.path.exists("rootfiles"):
     os.makedirs("rootfiles")
 
-output_filename = "../rootfiles/Normalizations_table.txt"
+output_filename = "/rootfiles/Normalizations_table.txt"
 
 ##These are in pb
 def get_xsec_fromsample(samplename):
