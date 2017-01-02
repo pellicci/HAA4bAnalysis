@@ -61,43 +61,43 @@ if __name__ == '__main__':
     p.join()
 
 
-#    config.General.requestName = 'HAA4bAnalysis_BTagCSV_C'
-#    config.Data.inputDataset = '/BTagCSV/Run2016C-23Sep2016-v1/MINIAOD'
-#    config.Data.unitsPerJob = 5
-#    from multiprocessing import Process
-#    p = Process(target=submit, args=(config,))
-#    p.start()
-#    p.join()
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_C'
+    config.Data.inputDataset = '/BTagCSV/Run2016C-23Sep2016-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
 
 
 
-#    config.General.requestName = 'HAA4bAnalysis_BTagCSV_D'
-#    config.Data.inputDataset = '/BTagCSV/Run2016D-23Sep2016-v1/MINIAOD'
-#    config.Data.unitsPerJob = 5
-#    from multiprocessing import Process
-#    p = Process(target=submit, args=(config,))
-#    p.start()
-#    p.join()
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_D'
+    config.Data.inputDataset = '/BTagCSV/Run2016D-23Sep2016-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
 
-#    config.General.requestName = 'HAA4bAnalysis_BTagCSV_E'
-#    config.Data.inputDataset = '/BTagCSV/Run2016E-23Sep2016-v1/MINIAOD'
-#    config.Data.unitsPerJob = 5
-#    from multiprocessing import Process
-#    p = Process(target=submit, args=(config,))
-#    p.start()
-#    p.join()
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_E'
+    config.Data.inputDataset = '/BTagCSV/Run2016E-23Sep2016-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
 
-#    config.General.requestName = 'HAA4bAnalysis_BTagCSV_F'
-#    config.Data.inputDataset = '/BTagCSV/Run2016F-23Sep2016-v1/MINIAOD'
-#    config.Data.unitsPerJob = 5
-#    from multiprocessing import Process
-#    p = Process(target=submit, args=(config,))
-#    p.start()
-#    p.join()
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_F'
+    config.Data.inputDataset = '/BTagCSV/Run2016F-23Sep2016-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
+    p.join()
 
-#    config.General.requestName = 'HAA4bAnalysis_BTagCSV_G'
-#    config.Data.inputDataset = '/BTagCSV/Run2016G-23Sep2016-v1/MINIAOD'
-#    config.Data.unitsPerJob = 5
-#    from multiprocessing import Process
-#    p = Process(target=submit, args=(config,))
-#    p.start()
+    config.General.requestName = 'HAA4bAnalysis_BTagCSV_G'
+    config.Data.inputDataset = '/BTagCSV/Run2016G-23Sep2016-v1/MINIAOD'
+    config.Data.unitsPerJob = 5
+    from multiprocessing import Process
+    p = Process(target=submit, args=(config,))
+    p.start()
