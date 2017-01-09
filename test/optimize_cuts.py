@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 ##normalize to the 2016 lumi
-luminosity_norm = 30.0 #2.178
+luminosity_norm = 36.
 
 from Workflow_Handler import Workflow_Handler
 myWF = Workflow_Handler("Signal_H800_A300")
@@ -12,11 +12,18 @@ def is_Event_selected(jet_btag,jet_pt):
     """Save events according to some basic selection criteria"""
     #btag_cut = jet_btag[0] > 0.460 and jet_btag[1] > 0.460 and jet_btag[2] > 0.460 and jet_btag[3] > 0.460 #Loose
     #btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.800  #Medium
-    btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.460  #Tight + Medium
+    #btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.460  #Tight + Medium
+    #btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.605  #Tight + Medium
+    btag_cut = jet_btag[0] > 0.800 and jet_btag[1] > 0.800 and jet_btag[2] > 0.800 and jet_btag[3] > 0.800 
     #pt_cut = jet_pt[0] > 165. and jet_pt[1] > 130. and jet_pt[2] > 130. and jet_pt[3] > 110.
     #pt_cut = jet_pt[3] > 50.
 
-    return btag_cut #and pt_cut
+    n_btag_tight = 0
+    for btag_value in jet_btag:
+        if btag_value > 0.935 :
+            n_btag_tight += 1
+
+    return btag_cut and n_btag_tight > 1  #and pt_cut
 
 ##Here starts the program
 Norm_Map = myWF.get_normalizations_map()
@@ -37,11 +44,11 @@ steps_cut4 = 20
 cut4_init = 30.
 cut4_stepsize = 10.
 
-steps_cut5 = 10
+steps_cut5 = 20
 cut5_init = 0.
 cut5_stepsize = 10.
 
-steps_cut6 = 25
+steps_cut6 = 20
 cut6_init = 0.
 cut6_stepsize = 0.1
 
@@ -77,6 +84,16 @@ for name_sample in samplename_list:
         jet3_4mom = mytree.jet3_4mom
         jet4_4mom = mytree.jet4_4mom
 
+        jet1pt = jet1_4mom.Pt()
+        jet2pt = jet2_4mom.Pt()
+        jet3pt = jet3_4mom.Pt()
+        jet4pt = jet4_4mom.Pt()
+
+        jet_pt = [jet1pt, jet2pt, jet3pt, jet4pt]
+
+        if not is_Event_selected(jet_btag,jet_pt):
+            continue
+
         combination_flag = myWF.get_best_combination(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom);
 
         if combination_flag == 1:
@@ -89,24 +106,14 @@ for name_sample in samplename_list:
             p_pair1 = jet1_4mom + jet4_4mom
             p_pair2 = jet2_4mom + jet3_4mom
 
-        jet1pt = jet1_4mom.Pt()
-        jet2pt = jet2_4mom.Pt()
-        jet3pt = jet3_4mom.Pt()
-        jet4pt = jet4_4mom.Pt()
-
-        jet_pt = [jet1pt, jet2pt, jet3pt, jet4pt]
-
-        if not is_Event_selected(jet_btag,jet_pt):
-            continue
-
         delta_Phi = abs(p_pair1.Phi() - p_pair2.Phi())
         delta_Eta = abs(p_pair1.Eta() - p_pair2.Eta())
  
         if delta_Phi > 3.14:
             delta_Phi = 6.28 - delta_Phi
 
-        if p_pair1.M() < 130. or p_pair2.M() < 130.:
-            continue
+        #if p_pair1.M() < 130. or p_pair2.M() < 130.:
+        #    continue
 
         for icut1 in xrange(steps_cut1):
             cut1_value = cut1_init + cut1_stepsize*icut1
@@ -172,6 +179,13 @@ cut5_x_list = [cut5_init + cut5_stepsize*icut for icut in range(steps_cut5)]
 cut6_x_list = [cut6_init + cut6_stepsize*icut for icut in range(steps_cut6)]
 
 signif_max = -1.
+cut1_max = -1
+cut2_max = -1
+cut3_max = -1
+cut4_max = -1
+cut5_max = -1
+cut6_max = -1
+
 for icut1 in xrange(steps_cut1):
     for icut2 in xrange(steps_cut2):
         for icut3 in xrange(steps_cut3):

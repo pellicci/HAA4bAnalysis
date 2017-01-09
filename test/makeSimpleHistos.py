@@ -1,7 +1,11 @@
 import ROOT
+import os
 
 from Workflow_Handler import Workflow_Handler
 myWF = Workflow_Handler("Signal_H800_A300")
+
+if not os.path.exists("plots"):
+    os.makedirs("plots")
 
 ##Do all the scaling to this luminosity, in fb-1
 luminosity_norm = 36.
@@ -19,10 +23,10 @@ h_QCD[list_histos[0]]  = ROOT.TH1F(list_histos[0], "p_{t} of 1st jet", 200, 0., 
 h_QCD[list_histos[1]]  = ROOT.TH1F(list_histos[1], "p_{t} of 2nd jet", 200, 0., 500.)
 h_QCD[list_histos[2]]  = ROOT.TH1F(list_histos[2], "p_{t} of 3rd jet", 200, 0., 500.)
 h_QCD[list_histos[3]]  = ROOT.TH1F(list_histos[3], "p_{t} of 4th jet", 200, 0., 500.)
-h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "Btag value of 1st jet", 50, 0.89, 1.)
-h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "Btag value of 2nd jet", 50, 0.89, 1.)
-h_QCD[list_histos[6]]  = ROOT.TH1F(list_histos[6], "Btag value of 3rd jet", 50, 0.89, 1.)
-h_QCD[list_histos[7]]  = ROOT.TH1F(list_histos[7], "Btag value of 4th jet", 50, 0.89, 1.)
+h_QCD[list_histos[4]]  = ROOT.TH1F(list_histos[4], "Btag value of 1st jet", 50, 0.605, 1.)
+h_QCD[list_histos[5]]  = ROOT.TH1F(list_histos[5], "Btag value of 2nd jet", 50, 0.605, 1.)
+h_QCD[list_histos[6]]  = ROOT.TH1F(list_histos[6], "Btag value of 3rd jet", 50, 0.605, 1.)
+h_QCD[list_histos[7]]  = ROOT.TH1F(list_histos[7], "Btag value of 4th jet", 50, 0.605, 1.)
 h_QCD[list_histos[8]]  = ROOT.TH1F(list_histos[8], "#Delta_{#phi} between the two jet pairs", 50, 0., 6.28)
 h_QCD[list_histos[9]]  = ROOT.TH1F(list_histos[9], "#Delta_{#eta} between the two jet pairs", 50, -10., 10.)
 h_QCD[list_histos[10]] = ROOT.TH1F(list_histos[10], "Events after pre-selection steps", 6, 0., 6.)
@@ -56,7 +60,7 @@ for idx_hname,hname in enumerate(list_histos):
 
         norm_factor = Norm_Map[name_sample]*luminosity_norm
 
-        h_tmp = ROOT.TH1F(root_file[name_sample].Get("HZZ4bAnalysis/" + hname))
+        h_tmp = ROOT.TH1F(root_file[name_sample].Get("HAA4bAnalysis/" + hname))
         h_tmp.Scale(norm_factor)
 
         h_QCD[hname].Add(h_tmp)
@@ -74,7 +78,7 @@ for idx_hname,hname in enumerate(list_histos):
             continue
 
         norm_factor = Norm_Map[name_sample]*luminosity_norm
-        h_tmp = ROOT.TH1F(root_file[name_sample].Get("HZZ4bAnalysis/" + hname))
+        h_tmp = ROOT.TH1F(root_file[name_sample].Get("HAA4bAnalysis/" + hname))
 
         h_tmp.Scale(norm_factor)
         h_tmp.SetFillColor(idx_color+3)
@@ -88,7 +92,7 @@ for idx_hname,hname in enumerate(list_histos):
 root_file_signal = ROOT.TFile(myWF.sig_filename)
 for idx_hname,hname in enumerate(list_histos): 
     norm_factor = Norm_Map[myWF.sig_samplename]*luminosity_norm
-    h_tmp = ROOT.TH1F(root_file_signal.Get("HZZ4bAnalysis/" + hname))
+    h_tmp = ROOT.TH1F(root_file_signal.Get("HAA4bAnalysis/" + hname))
 
     h_tmp.Scale(norm_factor)
     h_tmp.SetLineStyle(2)   #dashed
@@ -100,11 +104,6 @@ for idx_hname,hname in enumerate(list_histos):
     h_signal[hname] = h_tmp.Clone(hname)
 
     hs[hname].Add(h_tmp)
-
-##Put lables in the nEvents plot
-
-##Manual tuning of plots
-
 
 for hname in list_histos:
     canvas[hname].cd()
