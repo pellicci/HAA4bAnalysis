@@ -7,9 +7,9 @@ config.General.requestName = 'HAA4bAnalysis_Signal_H800_A300'
 config.General.workArea = 'crab_projects/samples'
 
 config.section_('JobType')
-config.JobType.psetName = 'run_HAA4bAnalysis.py'
+config.JobType.psetName = '../run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
-config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #data files for PileUp reweighting
+config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #files for PU reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False'] #Set to True if MC misses PileUP info
 
@@ -23,5 +23,5 @@ config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
 config.Data.publication = False
 
 config.section_('Site')
-config.Site.storageSite = 'T2_IT_Legnaro'
-#config.Site.storageSite = 'T2_IN_TIFR'
+#config.Site.storageSite = 'T2_IT_Legnaro'
+config.Site.storageSite = 'T2_IN_TIFR'
