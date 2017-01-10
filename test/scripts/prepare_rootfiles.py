@@ -1,9 +1,9 @@
 import ROOT
 import os
 
-dir_input = "../crab_config/crab_projects/samples/"
-dir_output_bkg = "/rootfiles/backgrounds/"
-dir_output_sig = "/rootfiles/signals/"
+dir_input = "../crab_projects/samples/"
+dir_output_bkg = "../rootfiles/backgrounds/"
+dir_output_sig = "../rootfiles/signals/"
 
 list_dirs = os.listdir(dir_input)
 

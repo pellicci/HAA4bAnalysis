@@ -256,8 +256,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<std::vector<pat::MET> > globalmets;  ///Met
   iEvent.getByLabel(globalmet_, globalmets);
 
-  fill_global_Tree(globaljets, genParticles, globalmets);
-
   if (runningOnData_) { 
                         event_nmbr.clear();
                         run_nmbr.clear();
@@ -266,8 +264,9 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
                         event_nmbr.push_back(iEvent.id().event());
                         run_nmbr.push_back(iEvent.id().run());
                         lumi_blck.push_back(iEvent.id().luminosityBlock());
+  } 
 
-     } 
+  fill_global_Tree(globaljets, genParticles, globalmets);
 
   //Select the highest csv jets
   pat::Jet jet1 = jets->at(nj1);
@@ -596,8 +595,6 @@ void HAA4bAnalysis::fillDescriptions(edm::ConfigurationDescriptions& description
 }
 
 void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles, edm::Handle<std::vector<pat::MET> > &globalmets){
-//void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles){
-
 
   //Clean up the vectors to contain the jet information
   Jet_pt.clear();
