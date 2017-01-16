@@ -2,7 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 HAA4bAnalysis = cms.EDAnalyzer('HAA4bAnalysis',
                                jets = cms.InputTag("slimmedJets"),
-                               #jetCorrections = cms.InputTag("JetCorr"),
                                globaljets = cms.InputTag("slimmedJets"),
                                genParticles = cms.InputTag("prunedGenParticles"),
                                met = cms.InputTag("slimmedMETs"),

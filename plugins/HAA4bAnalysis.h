@@ -14,7 +14,6 @@ private:
   virtual void endJob() override;
 
   const edm::InputTag jets_;
-  //const edm::InputTag jetCorrections_;
   const edm::InputTag globaljets_; 
   const edm::InputTag genParticles_;
   const edm::InputTag met_;
@@ -32,8 +31,7 @@ private:
   edm::Service<TFileService> fs;
 
   void create_Histos_and_Trees();
- void fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles, edm::Handle<std::vector<pat::MET> > &globalmets);
- // void fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles);
+  void fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles, edm::Handle<std::vector<pat::MET> > &globalmets);
 
   int get_best_combination(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4);
   bool check_combinations(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4, float mcut);
@@ -94,23 +92,13 @@ private:
   std::vector<float> Jet_eta;
   std::vector<float> Jet_mass;
   std::vector<float> Jet_btag;
-
- //Hadron and parton Flavour Information vectors
+  std::vector<float> jetbTagWeight;
   std::vector<int>   Jet_hadflavrs;
   std::vector<int>   Jet_partnflavrs;
   std::vector<float> Jet_corr;
   std::vector<float> Jet_corr_shifted;
 
   // vectors to store MC information for background analysis
-  std::vector<float> GenJet_pt;
-  std::vector<float> GenJet_eta;
-  std::vector<float> GenJet_phi;
-  std::vector<float> GenJet_mass;
-  std::vector<float> GenJet_charge;
-  std::vector<int>   GenJet_pdgID;
-  std::vector<int>   GenJet_numbBHadrons;
-  std::vector<int>   GenJet_numbCHadrons;
-
   std::vector<float> Genb_pt;
   std::vector<float> Genb_phi;
   std::vector<float> Genb_eta;
@@ -137,11 +125,9 @@ private:
   std::vector<bool> is_json;
   std::vector<bool> is_json_silver;
   std::vector<float> is_xsec;
-  //pile up vectors for background
   std::vector<float> pu_weight;
   std::vector<float> pu_weightUp;
   std::vector<float> pu_weightDown;
-  std::vector<float> jetbTagWeight;
 
   float var_jet1Btag;
   float var_jet2Btag;
@@ -168,7 +154,6 @@ private:
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
-  //edm::EDGetTocken<std::vector<pat::Jet> > jetCorrectionsToken;
   edm::EDGetTokenT<std::vector<pat::Jet> > globaljetstoken_; 
   edm::EDGetTokenT<std::vector<reco::GenParticle> > genParticlestoken_; 
   edm::EDGetTokenT<std::vector<pat::MET> > metToken_;
