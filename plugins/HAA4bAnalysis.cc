@@ -48,6 +48,7 @@
 #include "SimDataFormats/JetMatching/interface/JetFlavourMatching.h"
 #include "SimDataFormats/JetMatching/interface/MatchedPartons.h"
 #include "SimDataFormats/JetMatching/interface/JetMatchedPartons.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 // Kinematic fitter
 #include "PhysicsTools/KinFitter/interface/TFitConstraintM.h"
@@ -72,7 +73,8 @@ typedef math::XYZTLorentzVector LorentzVector;
 
 // constructors and destructor
 HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
-  jets_(iConfig.getParameter<edm::InputTag>("jets")), 
+  jets_(iConfig.getParameter<edm::InputTag>("jets")),
+ // jetCorrections_(iConfig.getParameter<edm::InputTag>("jetCorrections")),  
   globaljets_(iConfig.getParameter<edm::InputTag>("globaljets")), 
   genParticles_(iConfig.getParameter<edm::InputTag>("genParticles")),
   met_(iConfig.getParameter<edm::InputTag>("met")), //Met
@@ -87,6 +89,7 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   PileupSrc_(iConfig.getParameter<edm::InputTag>("PileupSrc")) //,
 {
   jetstoken_          = consumes<std::vector<pat::Jet> >(jets_); 
+  //jetCorrectionsToken_= consumes<std::vector<pat::Jet> >(jetCorrections_); 
   globaljetstoken_    = consumes<std::vector<pat::Jet> >(globaljets_);
   genParticlestoken_  = consumes<std::vector<reco::GenParticle> >(genParticles_);
   metToken_           = consumes<std::vector<pat::MET> >(met_);
@@ -255,16 +258,50 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //Access MET and store it in the different vectors
   edm::Handle<std::vector<pat::MET> > globalmets;  ///Met
   iEvent.getByLabel(globalmet_, globalmets);
+ 
+  // Few vectors for background estimation
+  //
+  event_nmbr.clear();
+  run_nmbr.clear();
+  lumi_blck.clear();
+  is_data.clear();
+  is_json.clear();
+  is_json_silver.clear();
+  is_xsec.clear();
+  pu_weight.clear();
+  pu_weightUp.clear();
+  pu_weightDown.clear();
+ // jetbTagWeight.clear();
 
   if (runningOnData_) { 
-                        event_nmbr.clear();
-                        run_nmbr.clear();
-                        lumi_blck.clear();
                         //Save above info in vectors
                         event_nmbr.push_back(iEvent.id().event());
                         run_nmbr.push_back(iEvent.id().run());
                         lumi_blck.push_back(iEvent.id().luminosityBlock());
+                        is_data.push_back(runningOnData_);  //Storing 1 in vectors when data is available
+                        is_json.push_back(runningOnData_);
+                        is_json_silver.push_back(runningOnData_);
+                        is_xsec.push_back(runningOnData_);
+                        pu_weight.push_back(runningOnData_);
+                        pu_weightUp.push_back(runningOnData_);
+                        pu_weightDown.push_back(runningOnData_);   
+                       // jetbTagWeight.push_back(Jet_btag);   //tempo
   } 
+  else {
+
+                        event_nmbr.push_back(iEvent.id().event());
+                        run_nmbr.push_back(iEvent.id().run());
+                        lumi_blck.push_back(iEvent.id().luminosityBlock());
+                        is_data.push_back(runningOnData_); //Storing 0 in vectors when no data is available
+                        is_json.push_back(runningOnData_);
+                        is_json_silver.push_back(runningOnData_);
+                        pu_weight.push_back(PU_Weight);
+                        pu_weightUp.push_back(PU_Weight); // Temporary and  Need to put a proper value
+                        pu_weightDown.push_back(PU_Weight);//Temporary and need to put a proper value      
+                       // jetbTagWeight.push_back(Jet_btag); //tempo
+
+  }
+   
 
   fill_global_Tree(globaljets, genParticles, globalmets);
 
@@ -597,13 +634,17 @@ void HAA4bAnalysis::fillDescriptions(edm::ConfigurationDescriptions& description
 void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles, edm::Handle<std::vector<pat::MET> > &globalmets){
 
   //Clean up the vectors to contain the jet information
+  float temporary = 1.0;  ///Will be replaced by actual value afterwords
   Jet_pt.clear();
   Jet_eta.clear();
   Jet_phi.clear();
   Jet_mass.clear();
-  Jet_btag.clear();
+  Jet_btag.clear(); 
+  jetbTagWeight.clear(); //For btag weight
   Jet_hadflavrs.clear();
   Jet_partnflavrs.clear();
+  Jet_corr.clear();
+  Jet_corr_shifted.clear();
 
   for(auto jet = globaljets->begin(); jet != globaljets->end(); ++jet){
     float thept = jet->p4().Pt();
@@ -615,18 +656,30 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
     //Jet Hadron and Parton Flavour
      int thehadrnflavr = jet->hadronFlavour();
      int thepartnflavr = jet->partonFlavour();
-
+   
     //Store info in Vectors
     Jet_pt.push_back(thept);
     Jet_eta.push_back(theeta);
     Jet_phi.push_back(thephi);
     Jet_mass.push_back(themass);
     Jet_btag.push_back(thecsv);
+    jetbTagWeight.push_back(thecsv); //May need a proper value
     Jet_hadflavrs.push_back(thehadrnflavr);
     Jet_partnflavrs.push_back(thepartnflavr);
+    Jet_corr.push_back(temporary);   // Need to be changed
+    Jet_corr_shifted.push_back(temporary);  //need to be changed
 
 
   }
+
+  GenJet_pt.clear();
+  GenJet_eta.clear();
+  GenJet_phi.clear();
+  GenJet_mass.clear();
+  GenJet_pdgID.clear();
+  GenJet_charge.clear();
+  GenJet_numbBHadrons.clear();
+  GenJet_numbCHadrons.clear();
 
   Genb_pt.clear();
   Genb_eta.clear();
@@ -642,7 +695,17 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
 
     for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
 
-      //std::cout << "Id of genparticle = " << genpart->pdgId() << std::endl;
+     
+  	GenJet_pt.push_back(genpart->pt());
+  	GenJet_eta.push_back(genpart->eta());
+  	GenJet_phi.push_back(genpart->phi());
+  	GenJet_mass.push_back(genpart->mass());
+  	GenJet_pdgID.push_back(genpart->pdgId());
+        GenJet_charge.push_back(genpart->charge());
+  	//GenJet_numbBHadrons.push_back();
+  	//GenJet_numbCHadrons.push_back();
+
+      // Signal Information from MC
       if( abs(genpart->pdgId()) != 5) continue;
       if( abs(genpart->mother(0)->pdgId()) != 36) continue; //A -> bb
 
@@ -651,21 +714,17 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
       Genb_phi.push_back(genpart->phi());
       Genb_mass.push_back(genpart->mass());
 
-    //Jet Hadron and Parton Flavour
-      //Genb_hadflavrs.push_back(genpart->hadronFlavour());
-     // Genb_partnflavrs.push_back(genpart->partonFlavour());
-
       //std::cout<<"genParticleFlavourInfoSize = "<<genpart.getbHadrons.size()<<std::endl;
-      //std::cout<<"genParticlePdgId= "<<genpart->pdgId()<<std::endl;
+      //std::cout<<"genParticleFlavourInfoSize = "<<genpart->size()<<std::endl;
       }
 
-  //Clean up the vectors to contain the MET information
+  //Clean up the vectors to contain the MET information, gMet->globalMet for background
    gMet_pt.clear();
    gMet_eta.clear();
    gMet_phi.clear();
    gMet_mass.clear();
      
-   float mthept   = (globalmets->front() ).pt();
+   float mthept   = (globalmets->front() ).pt();  //mthept-->Met the pt (pt of met)
    float mtheeta  = (globalmets->front() ).eta();
    float mthephi  = (globalmets->front() ).phi();
    float mthemass = (globalmets->front()).mass();
@@ -753,6 +812,8 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   mytree->Branch("PUInTime", &npIT, "npIT/F");
   mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
 
+ 
+  //Global tree for background estimation
   globalTree = fs->make<TTree>("globalTree", "Tree containing most of the event info to study background");
   globalTree->Branch("Jet_pt",&Jet_pt);
   globalTree->Branch("Jet_eta",&Jet_eta);
@@ -760,34 +821,53 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   globalTree->Branch("Jet_mass",&Jet_mass);
   globalTree->Branch("Jet_btag",&Jet_btag);
 
-  //Flavour Branches
-   globalTree->Branch("hadronFlavour",&Jet_hadflavrs);
-   globalTree->Branch("partonFlavour",&Jet_partnflavrs);
+  //Jet Flavour Branches
+   globalTree->Branch("jet_hadronFlavour",&Jet_hadflavrs);
+   globalTree->Branch("jet_partonFlavour",&Jet_partnflavrs);
 
+   //primary verticies
+   globalTree->Branch("nPVs", &_nPv, "_nPv/I");    
 
   if(!runningOnData_){
     globalTree->Branch("Genb_pt",&Genb_pt);
     globalTree->Branch("Genb_eta",&Genb_eta);
     globalTree->Branch("Genb_phi",&Genb_phi);
     globalTree->Branch("Genb_mass",&Genb_mass);
-    //Pile Information for background estimation
-    globalTree->Branch("True_PileUp", &npT, "npT/F");
-    globalTree->Branch("InTime_PileUp", &npIT, "npIT/F");
-    globalTree->Branch("PU_Weight", &PU_Weight, "PU_Weight/F");
 
-    //globalTree->Branch("Genb_hadronFlavour",&Genb_hadflavrs);
-   // globalTree->Branch("partonFlavour", &Genb_partnflavrs);
+    //Gen Met global tree information
+//    globalTree->Branch("met_genPt",&genMet_pt);
+//    globalTree->Branch("met_genEta",&genMet_eta);
+//    globalTree->Branch("met_genPhi",&genMet_phi);
+//    globalTree->Branch("met_genMass",&genMet_mass);
+
+    //Pile Information for background estimation
+    globalTree->Branch("nTrueInt", &npT, "npT/F");
+    globalTree->Branch("InTime_PileUp", &npIT, "npIT/F");   //Not yet included with proper var/branch name
+   // globalTree->Branch("puWeight", &PU_Weight, "PU_Weight/F");
+
+    //Jet Flavour 
+    //globalTree->Branch("jet_hadronFlavour",&Genb_hadflavrs);
+   // globalTree->Branch("jet_partonFlavour", &Genb_partnflavrs);
   }
 
      //Met tree information
-   globalTree->Branch("gMet_pt",&gMet_pt);
-   globalTree->Branch("gMet_eta",&gMet_eta);
-   globalTree->Branch("gMet_phi",&gMet_phi);
-   globalTree->Branch("gMet_mass",&gMet_mass);
-   globalTree->Branch("Event_Number",&event_nmbr);
-   globalTree->Branch("Run_Number",&run_nmbr);
-   globalTree->Branch("Lumi_block",&lumi_blck);
-
+   globalTree->Branch("met_pt",&gMet_pt);
+   globalTree->Branch("met_eta",&gMet_eta);
+   globalTree->Branch("met_phi",&gMet_phi);
+   globalTree->Branch("met_mass",&gMet_mass);
+   globalTree->Branch("evt",&event_nmbr);
+   globalTree->Branch("run",&run_nmbr);
+   globalTree->Branch("lumi",&lumi_blck);
+   globalTree->Branch("isData",&is_data);
+   globalTree->Branch("json",&is_json);
+   globalTree->Branch("json_silver",&is_json_silver);
+   globalTree->Branch("xsec",&is_xsec);
+   globalTree->Branch("puWeight",&pu_weight);
+   globalTree->Branch("puWeightUp",&pu_weightUp);
+   globalTree->Branch("puWeightDown",&pu_weightDown);
+   globalTree->Branch("Jet_bTagWeight",&jetbTagWeight);  
+   globalTree->Branch("Jet_corr",&Jet_corr);
+   globalTree->Branch("Jet_corr_shifted", &Jet_corr_shifted);
 }
 
 //define this as a plug-in
