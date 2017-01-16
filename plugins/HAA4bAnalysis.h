@@ -13,7 +13,8 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
   virtual void endJob() override;
 
-  const edm::InputTag jets_; 
+  const edm::InputTag jets_;
+  //const edm::InputTag jetCorrections_;
   const edm::InputTag globaljets_; 
   const edm::InputTag genParticles_;
   const edm::InputTag met_;
@@ -95,10 +96,21 @@ private:
   std::vector<float> Jet_btag;
 
  //Hadron and parton Flavour Information vectors
-  std::vector<int> Jet_hadflavrs;
-  std::vector<int> Jet_partnflavrs;
+  std::vector<int>   Jet_hadflavrs;
+  std::vector<int>   Jet_partnflavrs;
+  std::vector<float> Jet_corr;
+  std::vector<float> Jet_corr_shifted;
 
   // vectors to store MC information for background analysis
+  std::vector<float> GenJet_pt;
+  std::vector<float> GenJet_eta;
+  std::vector<float> GenJet_phi;
+  std::vector<float> GenJet_mass;
+  std::vector<float> GenJet_charge;
+  std::vector<int>   GenJet_pdgID;
+  std::vector<int>   GenJet_numbBHadrons;
+  std::vector<int>   GenJet_numbCHadrons;
+
   std::vector<float> Genb_pt;
   std::vector<float> Genb_phi;
   std::vector<float> Genb_eta;
@@ -121,6 +133,15 @@ private:
   std::vector<int> event_nmbr;
   std::vector<int> run_nmbr;
   std::vector<int> lumi_blck;
+  std::vector<bool> is_data;
+  std::vector<bool> is_json;
+  std::vector<bool> is_json_silver;
+  std::vector<float> is_xsec;
+  //pile up vectors for background
+  std::vector<float> pu_weight;
+  std::vector<float> pu_weightUp;
+  std::vector<float> pu_weightDown;
+  std::vector<float> jetbTagWeight;
 
   float var_jet1Btag;
   float var_jet2Btag;
@@ -137,14 +158,17 @@ private:
   float _Nevents_passed;
   unsigned int _nPv; 
 
+  //Pile  Up Info used in "mytree"
   float npT;
   float npIT;
-  float PU_Weight;
+  float PU_Weight; 
+    
 
   unsigned int _Noutputs; //to limit the couts of debug info
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
+  //edm::EDGetTocken<std::vector<pat::Jet> > jetCorrectionsToken;
   edm::EDGetTokenT<std::vector<pat::Jet> > globaljetstoken_; 
   edm::EDGetTokenT<std::vector<reco::GenParticle> > genParticlestoken_; 
   edm::EDGetTokenT<std::vector<pat::MET> > metToken_;
