@@ -94,6 +94,3 @@ class Workflow_Handler:
             return 2
         elif diff_vector[0] == diff_m_14_23:
             return 3
-
-
-

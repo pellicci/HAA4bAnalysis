@@ -277,7 +277,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   is_json_silver.push_back(runningOnData_);
   is_xsec.push_back(runningOnData_);
 
-
   if(runningOnData_){ 
     pu_weight.push_back(runningOnData_);
     pu_weightUp.push_back(runningOnData_);

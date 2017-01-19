@@ -13,58 +13,76 @@ output_filename = "../rootfiles/Normalizations_table.txt"
 ##These are in pb
 def get_xsec_fromsample(samplename):
     
-    if samplename == "DY_5_50":
-        return 7160.0
-
-    if samplename == "DY_50":
-        return 4895.0
-
-    if samplename == "DY_100_200":
-        return 226.0
-
-    if samplename == "DY_200_400":
-        return 7.67
-
     if samplename == "ttbar":
         return 831.76
 
+    if samplename == "ttbarW":
+        return 0.41
+
+    if samplename == "ttbarZ":
+        return 0.53
+
     if samplename == "SingleTop_tW":
-        return 35.6
+        return 35.85
 
     if samplename == "SingleAntiTop_tW":
-        return 35.6
+        return 35.85
 
     if samplename == "WJetsToLNu":
         return 61526.7
 
-    if samplename == "ttbarW":
-        return 0.27
+    if samplename == "WJetsToQQ":
+        return 95.14
 
-    if samplename == "ttbarZ":
-        return 0.37
+    if samplename == "DY_10_50":
+        return 18610.0
+
+    if samplename == "DY_50":
+        return 6104.0
 
     if samplename == "QCD_HT100to200":
         return 27990000.0
 
-    if samplename == "QCD_HT200to300":
+    if samplename == "QCD_HT200to300_1":
         return 1712000.0
 
-    if samplename == "QCD_HT300to500":
+    if samplename == "QCD_HT200to300_2":
+        return 1712000.0
+
+    if samplename == "QCD_HT300to500_1":
         return 347700.0
 
-    if samplename == "QCD_HT500to700":
+    if samplename == "QCD_HT300to500_2":
+        return 347700.0
+
+    if samplename == "QCD_HT500to700_1":
         return 32100.0
 
-    if samplename == "QCD_HT700to1000":
+    if samplename == "QCD_HT500to700_2":
+        return 32100.0
+
+    if samplename == "QCD_HT700to1000_1":
         return 6831.0
 
-    if samplename == "QCD_HT1000to1500":
+    if samplename == "QCD_HT700to1000_2":
+        return 6831.0
+
+    if samplename == "QCD_HT1000to1500_1":
         return 1207.0
 
-    if samplename == "QCD_HT1500to2000":
+    if samplename == "QCD_HT1000to1500_2":
+        return 1207.0
+
+    if samplename == "QCD_HT1500to2000_1":
         return 119.9
 
-    if samplename == "QCD_HT2000toInf":
+    if samplename == "QCD_HT1500to2000_2":
+        return 119.9
+
+    if samplename == "QCD_HT2000toInf_1":
+        return 25.24
+
+    if samplename == "QCD_HT2000toInf_2":
         return 25.24
 
     if samplename == "QCD_MuEnriched_P20to30":
@@ -104,10 +122,10 @@ def get_xsec_fromsample(samplename):
         return 8.16
 
     if samplename == "WW":
-        return 23.50
+        return 51.723
 
     if samplename == "WZ":
-        return 2.48 
+        return 47.13
 
     if samplename == "Signal_H500_A200":
         return 1.96
