@@ -258,8 +258,9 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(globalmet_, globalmets);
  
   // Few vectors for background estimation
-  event_nmbr.clear();
+
   run_nmbr.clear();
+  event_nmbr.clear();
   lumi_blck.clear();
   is_data.clear();
   is_json.clear();
@@ -268,9 +269,11 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   pu_weight.clear();
   pu_weightUp.clear();
   pu_weightDown.clear();
+  LHE_weights_scale_wgt.clear();
+  LHE_weights_pdf_wgt.clear();
 
-  event_nmbr.push_back(iEvent.id().event());
   run_nmbr.push_back(iEvent.id().run());
+  event_nmbr.push_back(iEvent.id().event());
   lumi_blck.push_back(iEvent.id().luminosityBlock());
   is_data.push_back(runningOnData_);  //Storing 1 in vectors when data is available
   is_json.push_back(runningOnData_);
@@ -286,6 +289,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     pu_weight.push_back(PU_Weight);
     pu_weightUp.push_back(PU_Weight); // Temporary and  Need to put a proper value
     pu_weightDown.push_back(PU_Weight);//Temporary and need to put a proper value      
+    LHE_weights_scale_wgt.push_back(PU_Weight); // Temporary
+    LHE_weights_pdf_wgt.push_back(PU_Weight);   //Temporary
   }
    
   fill_global_Tree(globaljets, genParticles, globalmets);
@@ -420,7 +425,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 void HAA4bAnalysis::beginJob()
 {
   // Flag for PileUp reweighting
-  if (!runningOnData_) Lumiweights_=edm::LumiReWeighting("MC_Recent_25ns_2015.root", "pileUpData_fromJson.root", "pileup", "pileup");
+  if (!runningOnData_) Lumiweights_=edm::LumiReWeighting("pileUpData_fromJsonSep2016.root", "MCpileUp_25ns_Recent2016.root", "pileup", "pileup");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -625,7 +630,8 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
   Jet_phi.clear();
   Jet_mass.clear();
   Jet_btag.clear(); 
-  jetbTagWeight.clear(); //For btag weight
+  bTagWeight.clear();   /// bTag weight
+  jetbTagWeight.clear(); //Another bTag variable to be stored
   Jet_hadflavrs.clear();
   Jet_partnflavrs.clear();
   Jet_corr.clear();
@@ -648,6 +654,7 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
     Jet_phi.push_back(thephi);
     Jet_mass.push_back(themass);
     Jet_btag.push_back(thecsv);
+    bTagWeight.push_back(thecsv); // Have to put a proper value
     jetbTagWeight.push_back(thecsv); //May need a proper value
     Jet_hadflavrs.push_back(thehadrnflavr);
     Jet_partnflavrs.push_back(thepartnflavr);
@@ -661,13 +668,8 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
   Genb_eta.clear();
   Genb_phi.clear();
   Genb_mass.clear();
-  Genb_flavor.clear();
-  Genb_hadflavrs.clear();
-  Genb_partnflavrs.clear();
-
 
   if(!runningOnData_){
-    //std::cout << "Number of genparticles = " << genParticles->size() << std::endl;
 
     for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
 
@@ -680,8 +682,6 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
       Genb_phi.push_back(genpart->phi());
       Genb_mass.push_back(genpart->mass());
 
-      //std::cout<<"genParticleFlavourInfoSize = "<<genpart.getbHadrons.size()<<std::endl;
-      //std::cout<<"genParticleFlavourInfoSize = "<<genpart->size()<<std::endl;
     }
 
     //Clean up the vectors to contain the MET information, gMet->globalMet for background
@@ -776,9 +776,11 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   mytree->Branch("PUTrue", &npT, "npT/F");
   mytree->Branch("PUInTime", &npIT, "npIT/F");
   mytree->Branch("PUWeight", &PU_Weight, "PU_Weight/F");
+  mytree->Branch("run",&run_nmbr);
+  mytree->Branch("evt",&event_nmbr);
+  mytree->Branch("lumi",&lumi_blck);
 
- 
-  //Global tree for background estimation
+  
   globalTree = fs->make<TTree>("globalTree", "Tree containing most of the event info to study background");
 
   //jet info
@@ -787,6 +789,7 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   globalTree->Branch("Jet_phi",&Jet_phi);
   globalTree->Branch("Jet_mass",&Jet_mass);
   globalTree->Branch("Jet_btag",&Jet_btag);
+  globalTree->Branch("bTagWeight",&bTagWeight);
   globalTree->Branch("Jet_bTagWeight",&jetbTagWeight);  
   globalTree->Branch("Jet_corr",&Jet_corr);
   globalTree->Branch("Jet_corr_shifted", &Jet_corr_shifted);
@@ -822,6 +825,8 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   globalTree->Branch("puWeight",&pu_weight);
   globalTree->Branch("puWeightUp",&pu_weightUp);
   globalTree->Branch("puWeightDown",&pu_weightDown);
+  globalTree->Branch("LHE_weights_scale_wgt",&LHE_weights_scale_wgt);
+  globalTree->Branch("LHE_weights_pdf_wgt",&LHE_weights_pdf_wgt);
 }
 
 //define this as a plug-in

@@ -92,11 +92,14 @@ private:
   std::vector<float> Jet_eta;
   std::vector<float> Jet_mass;
   std::vector<float> Jet_btag;
-  std::vector<float> jetbTagWeight;
+  std::vector<float> bTagWeight; 
+  std::vector<float> jetbTagWeight;  
   std::vector<int>   Jet_hadflavrs;
   std::vector<int>   Jet_partnflavrs;
   std::vector<float> Jet_corr;
   std::vector<float> Jet_corr_shifted;
+  std::vector<float> LHE_weights_scale_wgt;  //scale weight
+  std::vector<float> LHE_weights_pdf_wgt;    //pdf weight 
 
   // vectors to store MC information for background analysis
   std::vector<float> Genb_pt;
@@ -117,7 +120,6 @@ private:
  // std::vector<float> Jet_btag;
 
   //Event Info like event and run number, lumi sec., 
-  //std::vector<edm::EventID> event_nmbr;
   std::vector<int> event_nmbr;
   std::vector<int> run_nmbr;
   std::vector<int> lumi_blck;
@@ -129,6 +131,10 @@ private:
   std::vector<float> pu_weightUp;
   std::vector<float> pu_weightDown;
 
+ //Errors and Scales
+  std::vector<std::string> bw_names = {"JES","LF","HF","LFStats1","LFStats2","HFStats1","HFStats2","cErr1","cErr2"};
+  std::vector<std::string> shifts = {"Up","Down"};
+  
   float var_jet1Btag;
   float var_jet2Btag;
   float var_jet3Btag;
@@ -147,10 +153,10 @@ private:
   //Pile  Up Info used in "mytree"
   float npT;
   float npIT;
-  float PU_Weight; 
-    
+  float PU_Weight;     
 
   unsigned int _Noutputs; //to limit the couts of debug info
+
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 

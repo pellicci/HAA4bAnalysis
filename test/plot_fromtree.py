@@ -47,7 +47,7 @@ JET4_BTAG = 0.80
 data_legend_name = "Data"
 
 #Normalize to this luminsity, in fb-1
-luminosity_norm = 2.178
+luminosity_norm = 36.46
 
 #Stop the loop after one data entry in the legend
 data_flag = 1
@@ -175,7 +175,7 @@ for sample_name in combined_list:      #for data + background
     h_base[sample_name+list_histos[17]] = ROOT.TH1F(sample_name+list_histos[17], "B-tag of the 4th jet", 25, JET4_BTAG, 1.)
     h_base[sample_name+list_histos[18]] = ROOT.TH1F(sample_name+list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
     h_base[sample_name+list_histos[19]] = ROOT.TH1F(sample_name+list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
-    h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of primary verticies",25 , 0., 25.)
+    h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of primary verticies",35 , 0., 35.)
     h_base[sample_name+list_histos[21]] = ROOT.TH1F(sample_name+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
     h_base[sample_name+list_histos[22]] = ROOT.TH1F(sample_name+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
     #h_base[sample_name+list_histos[20]] = ROOT.TH1F(sample_name+list_histos[20], "No. of jet entries", 10, 0., 10.)
@@ -200,7 +200,7 @@ h_QCD[list_histos[16]] = ROOT.TH1F(list_histos[16], "B-tag of 3rd jet", 25, JET3
 h_QCD[list_histos[17]] = ROOT.TH1F(list_histos[17], "B-tag of 4th jet", 25, JET4_BTAG, 1.)
 h_QCD[list_histos[18]] = ROOT.TH1F(list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
 h_QCD[list_histos[19]] = ROOT.TH1F(list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
-h_QCD[list_histos[20]] = ROOT.TH1F(list_histos[20], "No. of primary verticies", 25, 0., 25.)
+h_QCD[list_histos[20]] = ROOT.TH1F(list_histos[20], "No. of primary verticies", 35, 0., 35.)
 h_QCD[list_histos[21]] = ROOT.TH1F(list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
 h_QCD[list_histos[22]] = ROOT.TH1F(list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
 

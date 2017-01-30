@@ -9,7 +9,7 @@ config.General.workArea = 'crab_projects/samples/'
 config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
-config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #data files for PileUp reweighting
+config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpData_fromJsonSep2016.root'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False']
 config.JobType.allowUndistributedCMSSW = True
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     config.Data.inputDataset = '/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
-    p.join()
+    p.join() 
 
     config.General.requestName = 'HAA4bAnalysis_QCD_HT1500to2000_1'
     config.Data.unitsPerJob = 5
