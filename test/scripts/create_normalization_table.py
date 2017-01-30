@@ -5,8 +5,8 @@ import os
 dir_input = "../crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
 
-if not os.path.exists("rootfiles"):
-    os.makedirs("rootfiles")
+if not os.path.exists("../rootfiles"):
+    os.makedirs("../rootfiles")
 
 output_filename = "../rootfiles/Normalizations_table.txt"
 

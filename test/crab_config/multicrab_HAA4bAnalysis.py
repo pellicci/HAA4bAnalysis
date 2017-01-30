@@ -185,14 +185,14 @@ if __name__ == '__main__':
 
     config.General.requestName = 'HAA4bAnalysis_QCD_HT1500to2000_1'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = ' /QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
+    config.Data.inputDataset = '/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
 
     config.General.requestName = 'HAA4bAnalysis_QCD_HT1500to2000_2'
     config.Data.unitsPerJob = 5
-    config.Data.inputDataset = ' /QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
+    config.Data.inputDataset = '/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
@@ -204,7 +204,7 @@ if __name__ == '__main__':
     p.start()
     p.join()
 
-    config.General.requestName = 'HAA4bAnalysis_QCD_HT2000toInf_1_2'
+    config.General.requestName = 'HAA4bAnalysis_QCD_HT2000toInf_2'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
     p = Process(target=submit, args=(config,))

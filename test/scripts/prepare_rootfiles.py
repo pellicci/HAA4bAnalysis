@@ -22,9 +22,9 @@ for dirname in list_dirs:
     samplename = dirname.split("crab_HAA4bAnalysis_")
 
     if "Signal" in dirname:
-        hadd_command = "hadd " + dir_output_sig + "/HAA4bAnalysis_" + samplename[1] + ".root " + dir_input + dirname + "/results/*.root"
+        hadd_command = "hadd -f " + dir_output_sig + "/HAA4bAnalysis_" + samplename[1] + ".root " + dir_input + dirname + "/results/*.root"
     else:
-        hadd_command = "hadd " + dir_output_bkg + "/HAA4bAnalysis_" + samplename[1] + ".root " + dir_input + dirname + "/results/*.root"
+        hadd_command = "hadd -f " + dir_output_bkg + "/HAA4bAnalysis_" + samplename[1] + ".root " + dir_input + dirname + "/results/*.root"
 
     os.system(hadd_command)
 

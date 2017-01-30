@@ -23,7 +23,7 @@ def is_Event_selected(jet_btag,jet_pt):
         if btag_value > 0.935 :
             n_btag_tight += 1
 
-    return btag_cut and n_btag_tight > 1  #and pt_cut
+    return btag_cut and n_btag_tight > 0  #and pt_cut
 
 ##Here starts the program
 Norm_Map = myWF.get_normalizations_map()
@@ -48,7 +48,7 @@ steps_cut5 = 20
 cut5_init = 0.
 cut5_stepsize = 10.
 
-steps_cut6 = 20
+steps_cut6 = 1
 cut6_init = 0.
 cut6_stepsize = 0.1
 
