@@ -2,25 +2,25 @@ import os
 
 ###All normalizations are provided to 1fb-1 of lumi in these tables
 
-dir_input = "../crab_projects/samples/"
+dir_input = "crab_projects/samples/"
 list_dirs = os.listdir(dir_input)
 
 if not os.path.exists("rootfiles"):
     os.makedirs("rootfiles")
 
-output_filename = "../rootfiles/Normalizations_table.txt"
+output_filename = "rootfiles/Normalizations_table.txt"
 
 ##These are in pb
 def get_xsec_fromsample(samplename):
     
     if samplename == "ttbar":
-        return 831.76
+        return 730.0
 
     if samplename == "ttbarW":
-        return 0.41
-
+        return 0.4062
+                  
     if samplename == "ttbarZ":
-        return 0.53
+        return 0.5297 
 
     if samplename == "SingleTop_tW":
         return 35.85
@@ -41,49 +41,49 @@ def get_xsec_fromsample(samplename):
         return 6104.0
 
     if samplename == "QCD_HT100to200":
-        return 27990000.0
+        return 27540000.0 
 
     if samplename == "QCD_HT200to300_1":
-        return 1712000.0
+        return 1717000.0
 
     if samplename == "QCD_HT200to300_2":
-        return 1712000.0
+        return 1717000.0
 
     if samplename == "QCD_HT300to500_1":
-        return 347700.0
+        return 351300.0
 
     if samplename == "QCD_HT300to500_2":
-        return 347700.0
+        return 351300.0
 
     if samplename == "QCD_HT500to700_1":
-        return 32100.0
+        return 31630.0
 
     if samplename == "QCD_HT500to700_2":
-        return 32100.0
+        return 31630.0
 
     if samplename == "QCD_HT700to1000_1":
-        return 6831.0
+        return 6802.0
 
     if samplename == "QCD_HT700to1000_2":
-        return 6831.0
+        return 6802.0
 
     if samplename == "QCD_HT1000to1500_1":
-        return 1207.0
+        return 1206.0
 
     if samplename == "QCD_HT1000to1500_2":
-        return 1207.0
+        return 1206.0
 
     if samplename == "QCD_HT1500to2000_1":
-        return 119.9
+        return 120.4 
 
     if samplename == "QCD_HT1500to2000_2":
-        return 119.9
+        return 120.4
 
     if samplename == "QCD_HT2000toInf_1":
-        return 25.24
+        return 25.25
 
     if samplename == "QCD_HT2000toInf_2":
-        return 25.24
+        return 25.25
 
     if samplename == "QCD_MuEnriched_P20to30":
         return 2960198.40 
@@ -163,8 +163,11 @@ for dirname in list_dirs:
     print "No. of events processed = " + str (number_events) + "\n"
     #xsection = float(get_xsec_fromsample(samplename))
     xsection = get_xsec_fromsample(samplename)  
+    print "crsoection = ", xsection
     scale_factor = float(xsection*1000./number_events)
+    print "scale_factor = ", scale_factor
     write_string = samplename + " " + str(scale_factor) + "\n"
+    print "Output Norm = ", write_string
     out_file.write(write_string)
 
 print "All done!"

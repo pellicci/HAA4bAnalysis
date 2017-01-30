@@ -1,5 +1,6 @@
-#from CRABClient.UserUtilities import config, getUsernameFromSiteDB
-config = config()
+from WMCore.Configuration import Configuration
+from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+config = Configuration()
 
 config.section_('General')
 config.General.transferOutputs = True
@@ -9,7 +10,7 @@ config.General.workArea = 'crab_projects/samples'
 config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
-config.JobType.inputFiles = ['MC_Recent_25ns_2015.root','pileUpData_fromJson.root'] #files for PU reweighting
+config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpData_fromJsonSep2016.root'] #files for PU reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False'] #Set to True if MC misses PileUP info
 
