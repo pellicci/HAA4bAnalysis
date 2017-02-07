@@ -191,7 +191,7 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   int nj2 = -1;
   int nj3 = -1;
   int nj4 = -1;
-  int nCounter = 0;
+  int nCounter = -1;
 
   float jetpt1max = -999.;
   float jetpt2max = -999.;
@@ -205,7 +205,9 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     float thept = jet->p4().Pt();
     float thecsv = jet->bDiscriminator(bdiscr_);
 
-    if(_show_output) std::cout<<"Momentum is " << thept << std::endl;
+    if(_show_output) std::cout << "Momentum is " << thept << std::endl;
+
+    nCounter++;
 
     if(thecsv < minCSV_) continue;
 
@@ -238,7 +240,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       nj4 = nCounter;
     }
 
-    nCounter++;
   }
 
   if(nj4 < 0) return;
@@ -366,8 +367,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   float_t total_Mass_4b_fitted = (jet1_fit + jet2_fit + jet3_fit + jet4_fit).M();
 
-  std::cout << "4b mass before fit = " << total_Mass_4b << std::endl;
-  std::cout << "4b mass after  fit = " << total_Mass_4b_fitted << std::endl;
+  //std::cout << "4b mass before fit = " << total_Mass_4b << std::endl;
+  //std::cout << "4b mass after  fit = " << total_Mass_4b_fitted << std::endl;
 
   jet1_4mom_tree_fit->SetPxPyPzE(jet1_fit.Px(),jet1_fit.Py(),jet1_fit.Pz(),jet1_fit.E());
   jet2_4mom_tree_fit->SetPxPyPzE(jet2_fit.Px(),jet2_fit.Py(),jet2_fit.Pz(),jet2_fit.E());

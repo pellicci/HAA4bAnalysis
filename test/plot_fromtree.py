@@ -25,23 +25,27 @@ myWF = Workflow_Handler("Signal_H800_A300")
 #TTTT
 
 ##This is for mH = 800 and mA = 300
-PT1_MIN = 50.
-PT2_MIN = 50.
-PT3_MIN = 50.
+PT1_MIN = 130.
+PT2_MIN = 90.
+PT3_MIN = 80.
 PT4_MIN = 50.
 ETA1_MAX = 5.
 ETA2_MAX = 5.
 ETA3_MAX = 5.
 ETA4_MAX = 5.
+
 DELTA_PHI_MIN = 0.
-DELTA_ETA_MAX = 10.
+DELTA_ETA_MAX = 2.
+
 PT_PAIR1_MIN = 0.
 PT_PAIR2_MIN = 0.
 
-JET1_BTAG = 0.80 
-JET2_BTAG = 0.80 
-JET3_BTAG = 0.80 
-JET4_BTAG = 0.80 
+DELTA_MASS = 0.9
+
+JET1_BTAG = 0.8
+JET2_BTAG = 0.8
+JET3_BTAG = 0.8
+JET4_BTAG = 0.8
 
 #data legend name
 data_legend_name = "Data"
@@ -68,6 +72,8 @@ colors_mask = [1,400,840,616,860,432,880,416,800,900,820,920]
 
 def select_all_but_one(cutstring):
 
+    btag_collector = [mytree.jet1Btag, mytree.jet2Btag, mytree.jet3Btag, mytree.jet4Btag]
+
     selection_bools = dict()
     selection_bools["h_jet1pt"] = jet1pt > PT1_MIN
     selection_bools["h_jet2pt"] = jet2pt > PT2_MIN
@@ -84,10 +90,18 @@ def select_all_but_one(cutstring):
     selection_bools["h_pt_pair1"] = pt_pair1 > PT_PAIR1_MIN
     selection_bools["h_pt_pair2"] = pt_pair2 > PT_PAIR1_MIN
 
-    selection_bools["h_jet1Btag"] = mytree.jet1Btag > JET1_BTAG
-    selection_bools["h_jet2Btag"] = mytree.jet2Btag > JET2_BTAG
-    selection_bools["h_jet3Btag"] = mytree.jet3Btag > JET3_BTAG
-    selection_bools["h_jet4Btag"] = mytree.jet4Btag > JET4_BTAG
+    selection_bools["h_jet1Btag"] = btag_collector[0] > JET1_BTAG
+    selection_bools["h_jet2Btag"] = btag_collector[1] > JET2_BTAG
+    selection_bools["h_jet3Btag"] = btag_collector[2] > JET3_BTAG
+    selection_bools["h_jet4Btag"] = btag_collector[3] > JET4_BTAG
+
+    selection_bools["h_abs_massRatio_jetpair_beforefit"] = abs_massRatio_jetpair < DELTA_MASS
+
+    btag_select = False
+    btag_counter = 0
+    for btag_value in btag_collector:
+        if btag_value > 0.935:
+            btag_counter += 1
 
     result = True
 
@@ -97,7 +111,7 @@ def select_all_but_one(cutstring):
         else:
             result = result and selection_bools[hname]
 
-    return result
+    return result and btag_counter > 1
 
 ##Here starts the program
 Norm_Map = myWF.get_normalizations_map()
@@ -331,21 +345,21 @@ for  name_sample in combined_list:    # for data + background
         m4b_fitted = totaljets_4mom_fitted.M()
 
         #abs(mass_diff_pair1/mass_add_pair2) variable before fit
-        diff_p_pair1 = p_pair1 - p_pair2
-        add_p_pair2 = p_pair1 + p_pair2
-        mass_diff_pair1 = diff_p_pair1.M()
-        mass_add_pair2 = add_p_pair2.M()
-        if not mass_add_pair2==0:
-            abs_massRatio_jetpair = abs(mass_diff_pair1/mass_add_pair2)
+        diff_p_pair = p_pair1 - p_pair2
+        add_p_pair  = p_pair1 + p_pair2
+        mass_diff_pair = diff_p_pair.M()
+        mass_add_pair  = add_p_pair.M()
+        if not mass_add_pair==0:
+            abs_massRatio_jetpair = abs(mass_diff_pair/mass_add_pair)
     
         #abs(mass_diff_pair1/mass_add_pair2) variable after fit
-        diff_p_pair1_fit = p_pair1_fit - p_pair2_fit
-        add_p_pair2_fit = p_pair1_fit + p_pair2_fit
-        mass_diff_pair1_fit = diff_p_pair1_fit.M()
-        mass_add_pair2_fit = add_p_pair2_fit.M()
+        diff_p_pair_fit = p_pair1_fit - p_pair2_fit
+        add_p_pair_fit = p_pair1_fit + p_pair2_fit
+        mass_diff_pair_fit = diff_p_pair_fit.M()
+        mass_add_pair_fit = add_p_pair_fit.M()
 
-        if not mass_add_pair2_fit==0:
-            abs_massRatio_jetpair_afterfit = abs(mass_diff_pair1_fit/mass_add_pair2_fit)
+        if not mass_add_pair_fit==0:
+            abs_massRatio_jetpair_afterfit = abs(mass_diff_pair_fit/mass_add_pair_fit)
 
         if select_all_but_one("h_jet1pt"):
             h_base[theSampleName+"h_jet1pt"].Fill(jet1pt,Event_Weight)
@@ -428,8 +442,7 @@ for  name_sample in combined_list:    # for data + background
             h_base[theSampleName+hname].SetLineColor(4)   #blue
             h_base[theSampleName+hname].SetLineWidth(4)   #kind of thick
         else:
-            h_base[theSampleName+hname].SetFillColor(idx_sample)
-            idx_sample += 1
+            h_base[theSampleName+hname].SetFillColor(colors_mask[idx_sample])
 
         if idx_histo == 0:
             if Dataflag:
@@ -449,6 +462,9 @@ for  name_sample in combined_list:    # for data + background
             hs[hname].Add(h_base[theSampleName+hname])
             h_sum_mc[hname] = ROOT.TH1F(h_base[theSampleName+hname])
             h_sum_mc[hname].Add(h_base[theSampleName+hname])        
+
+    if not QCDflag and not Dataflag and not name_sample == myWF.sig_samplename:
+        idx_sample += 1
 
 print "Finished runnning over samples!"
 

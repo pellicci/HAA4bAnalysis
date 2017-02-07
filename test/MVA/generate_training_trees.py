@@ -58,8 +58,8 @@ tree_Signal.Branch('j2_pt', j2_pt, 'j2_pt/D')
 tree_Signal.Branch('j3_pt', j3_pt, 'j3_pt/D')
 tree_Signal.Branch('j4_pt', j4_pt, 'j4_pt/D')
 
-tree_Signal.Branch('delpta_phi', delta_phi, 'delta_phi/D')
-tree_Signal.Branch('delpta_eta', delta_eta, 'delta_eta/D')
+tree_Signal.Branch('delta_phi', delta_phi, 'delta_phi/D')
+tree_Signal.Branch('delta_eta', delta_eta, 'delta_eta/D')
 tree_Signal.Branch('abs_massRatio_jetpair', abs_massRatio_jetpair, 'abs_massRatio_jetpair/D')
 
 tree_Signal.Branch('evt_weight', evt_weight, 'evt_weight/D')
@@ -74,8 +74,8 @@ tree_Background.Branch('j2_pt', j2_pt, 'j2_pt/D')
 tree_Background.Branch('j3_pt', j3_pt, 'j3_pt/D')
 tree_Background.Branch('j4_pt', j4_pt, 'j4_pt/D')
 
-tree_Background.Branch('delpta_phi', delta_phi, 'delta_phi/D')
-tree_Background.Branch('delpta_eta', delta_eta, 'delta_eta/D')
+tree_Background.Branch('delta_phi', delta_phi, 'delta_phi/D')
+tree_Background.Branch('delta_eta', delta_eta, 'delta_eta/D')
 tree_Background.Branch('abs_massRatio_jetpair', abs_massRatio_jetpair, 'abs_massRatio_jetpair/D')
 
 tree_Background.Branch('evt_weight', evt_weight, 'evt_weight/D')
@@ -123,10 +123,17 @@ for sample_name in samplename_list:
         j3_pt[0] = jet3_4mom.Pt()
         j4_pt[0] = jet4_4mom.Pt()
 
+        if j4_pt[0] < 50.:
+            continue
+
         j1_btag[0] = mytree.jet1Btag
         j2_btag[0] = mytree.jet2Btag
         j3_btag[0] = mytree.jet3Btag
         j4_btag[0] = mytree.jet4Btag
+
+        if j1_btag[0] < 0.:
+            print "jet1 btag = ", j1_btag[0]
+            print " jet1 pt = ", j1_pt[0]
 
         #get best combinations of jets before fit
         combination_flag = myWF.get_best_combination(jet1_4mom,jet2_4mom,jet3_4mom,jet4_4mom);
@@ -144,7 +151,7 @@ for sample_name in samplename_list:
 
         #get best combinations of jets after fit
         combination_flag_fit = myWF.get_best_combination(jet1_4mom_fit,jet2_4mom_fit,jet3_4mom_fit,jet4_4mom_fit);
-        if combination_flag_fit==1:
+        if combination_flag_fit == 1:
             p_pair1_fit = jet1_4mom_fit + jet2_4mom_fit
             p_pair2_fit = jet3_4mom_fit + jet4_4mom_fit
         elif combination_flag_fit == 2:
@@ -160,15 +167,15 @@ for sample_name in samplename_list:
         if delta_Phi > 3.14:
             delta_Phi = 6.28 - delta_Phi
 
-        delta_phi = delta_Phi
-        delta_eta = delta_Eta
+        delta_phi[0] = delta_Phi
+        delta_eta[0] = delta_Eta
 
         #abs(mass_diff_pair1/mass_add_pair2) variable before fit
         diff_p_pair1 = p_pair1 - p_pair2
         add_p_pair2 = p_pair1 + p_pair2
         mass_diff_pair1 = diff_p_pair1.M()
         mass_add_pair2 = add_p_pair2.M()
-        if not mass_add_pair2==0:
+        if not mass_add_pair2 == 0.:
             abs_massRatio_jetpair[0] = abs(mass_diff_pair1/mass_add_pair2)
         else:
             abs_massRatio_jetpair[0] = 0.

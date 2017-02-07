@@ -1,6 +1,9 @@
 import ROOT
 import math
 import numpy as np
+import sys
+
+sys.path.append("../")
 
 ##normalize to the 2016 lumi
 luminosity_norm = 36.
@@ -23,34 +26,34 @@ def is_Event_selected(jet_btag,jet_pt):
         if btag_value > 0.935 :
             n_btag_tight += 1
 
-    return btag_cut and n_btag_tight > 0  #and pt_cut
+    return btag_cut and n_btag_tight > 1  #and pt_cut
 
 ##Here starts the program
 Norm_Map = myWF.get_normalizations_map()
 
-steps_cut1 = 20
-cut1_init = 50.
+steps_cut1 = 10
+cut1_init = 100.
 cut1_stepsize = 10.
 
-steps_cut2 = 20
-cut2_init = 50.
+steps_cut2 = 10
+cut2_init = 70.
 cut2_stepsize = 10.
 
-steps_cut3 = 20
+steps_cut3 = 10
 cut3_init = 50.
 cut3_stepsize = 10.
 
-steps_cut4 = 20
-cut4_init = 30.
+steps_cut4 = 5
+cut4_init = 50.
 cut4_stepsize = 10.
 
-steps_cut5 = 20
-cut5_init = 0.
-cut5_stepsize = 10.
+steps_cut5 = 15
+cut5_init = 1.5
+cut5_stepsize = 0.1
 
-steps_cut6 = 1
-cut6_init = 0.
-cut6_stepsize = 0.1
+steps_cut6 = 5
+cut6_init = 0.75
+cut6_stepsize = 0.05
 
 cut_Nbkg = [[[[[[0. for x in range(steps_cut6)] for x in range(steps_cut5)] for x in range(steps_cut4)] for x in range(steps_cut3)] for x in range(steps_cut2)] for x in range(steps_cut1)]
 cut_Nsig = [[[[[[0. for x in range(steps_cut6)] for x in range(steps_cut5)] for x in range(steps_cut4)] for x in range(steps_cut3)] for x in range(steps_cut2)] for x in range(steps_cut1)]
@@ -67,6 +70,8 @@ for name_sample in samplename_list:
 
     if "Signal" in name_sample and not name_sample == myWF.sig_samplename:
         continue
+
+    print "Working on sample ", name_sample
 
     for jentry in xrange(mytree.GetEntriesFast()):
         ientry = mytree.LoadTree( jentry )
@@ -112,6 +117,15 @@ for name_sample in samplename_list:
         if delta_Phi > 3.14:
             delta_Phi = 6.28 - delta_Phi
 
+        diff_p_pair = p_pair1 - p_pair2
+        add_p_pair  = p_pair1 + p_pair2
+        mass_diff_pair = diff_p_pair.M()
+        mass_add_pair  = add_p_pair.M()
+        if not mass_add_pair == 0.:
+            abs_massRatio_jetpair = abs(mass_diff_pair/mass_add_pair)
+        else:
+            abs_massRatio_jetpair = 0.
+
         #if p_pair1.M() < 130. or p_pair2.M() < 130.:
         #    continue
 
@@ -151,22 +165,21 @@ for name_sample in samplename_list:
                         for icut5 in xrange(steps_cut5):
                             cut5_value = cut5_init + cut5_stepsize*icut5
 
-                            if p_pair1.Pt() < cut5_value:
-                                continue
-
-                            if p_pair2.Pt() < cut5_value:
+                            if delta_Eta > cut5_value:
                                 continue
 
                             for icut6 in xrange(steps_cut6):
                                 cut6_value = cut6_init + cut6_stepsize*icut6
 
-                                if delta_Phi < cut6_value:
+                                if abs_massRatio_jetpair > cut6_value:
                                     continue
 
                                 if name_sample == myWF.sig_samplename:
                                     cut_Nsig[icut1][icut2][icut3][icut4][icut5][icut6] += norm_factor
                                 else:
                                     cut_Nbkg[icut1][icut2][icut3][icut4][icut5][icut6] += norm_factor
+
+print "Done looping over the events"
 
 ##Calculate the significance
 signif_list = [[[[[[0. for x in range(steps_cut6)] for x in range(steps_cut5)] for x in range(steps_cut4)] for x in range(steps_cut3)] for x in range(steps_cut2)] for x in range(steps_cut1)]

@@ -77,7 +77,7 @@ process.JetCorr = process.selectedJets.clone(src=cms.InputTag("updatedPatJetsUpd
 #process.HAA4bAnalysis.jets = cms.InputTag("updatedPatJetsUpdatedJEC") #Pass on updated jets (jets with corrected energy) without any cut
 process.HAA4bAnalysis.jets = cms.InputTag("JetCorr")                   #Pass on updated Jets with the required cuts.
 #print "Jet energy correction is ", process.HAA4bAnalysis.upeJetCollection.jetCorrections
-process.HAA4bAnalysis.minPt_low = cms.double(30.)
+process.HAA4bAnalysis.minPt_low = cms.double(50.)
 
 import HLTrigger.HLTfilters.triggerResultsFilter_cfi as hlt
 process.trigger_filter = hlt.triggerResultsFilter.clone()
