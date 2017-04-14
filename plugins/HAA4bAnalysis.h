@@ -86,55 +86,125 @@ private:
   TLorentzVector *jet3_4mom_tree_fit;
   TLorentzVector *jet4_4mom_tree_fit;
 
-  //Vectors to store Jet Information
-  std::vector<float> Jet_pt;
-  std::vector<float> Jet_phi;
-  std::vector<float> Jet_eta;
-  std::vector<float> Jet_mass;
-  std::vector<float> Jet_btag;
-  std::vector<float> bTagWeight; 
-  std::vector<float> jetbTagWeight;  
-  std::vector<int>   Jet_hadflavrs;
-  std::vector<int>   Jet_partnflavrs;
-  std::vector<float> Jet_corr;
-  std::vector<float> Jet_corr_shifted;
-  std::vector<float> LHE_weights_scale_wgt;  //scale weight
-  std::vector<float> LHE_weights_pdf_wgt;    //pdf weight 
-
   // vectors to store MC information for background analysis
   std::vector<float> Genb_pt;
   std::vector<float> Genb_phi;
   std::vector<float> Genb_eta;
   std::vector<float> Genb_mass;
-  std::vector<int>   Genb_flavor;
- 
- //Hadron and parton Flavour Information vectors
-  std::vector<int> Genb_hadflavrs;
-  std::vector<int> Genb_partnflavrs;
+
+/*
+  float Genb_pt;
+  float Genb_phi;
+  float Genb_eta;
+  float Genb_mass;
+*/
 
   // vectors to store global MET
-  std::vector<float> gMet_pt;
-  std::vector<float> gMet_phi;
-  std::vector<float> gMet_eta;
-  std::vector<float> gMet_mass;
+ // std::vector<float> gMet_pt;
+ // std::vector<float> gMet_phi;
+ // std::vector<float> gMet_eta;
+ // std::vector<float> gMet_mass;
  // std::vector<float> Jet_btag;
 
-  //Event Info like event and run number, lumi sec., 
-  std::vector<int> event_nmbr;
-  std::vector<int> run_nmbr;
-  std::vector<int> lumi_blck;
-  std::vector<bool> is_data;
-  std::vector<bool> is_json;
-  std::vector<bool> is_json_silver;
-  std::vector<float> is_xsec;
-  std::vector<float> pu_weight;
-  std::vector<float> pu_weightUp;
-  std::vector<float> pu_weightDown;
+  float gMet_pt;
+  float gMet_phi;
+  float gMet_eta;
+  float gMet_mass;
+  float Jet_btag;
 
- //Errors and Scales
-  std::vector<std::string> bw_names = {"JES","LF","HF","LFStats1","LFStats2","HFStats1","HFStats2","cErr1","cErr2"};
-  std::vector<std::string> shifts = {"Up","Down"};
-  
+  //Event Info like event and run number, lumi sec., 
+  ULong64_t evt;
+  unsigned int run;
+  unsigned int lumi;
+
+  Int_t isData;
+  Int_t Jet_id;
+  Int_t Jet_mcFlavour;
+  Int_t Jet_partonFlavour;
+  Int_t Jet_hadronFlavour;
+  Int_t nGenJet;
+  Int_t Jet_mcMatchId;
+  Int_t HLT_BIT_HLT_QuadJet45_TripleBTagCSV0p67_v;
+  Int_t HLT_BIT_HLT_QuadJet45_DoubleBTagCSV0p67_v;
+  Int_t HLT_BIT_HLT_DoubleJet90_Double30_TripleBTagCSV0p67_v;
+  Int_t HLT_BIT_HLT_DoubleJet90_Double30_DoubleBTagCSV0p67_v;
+  Int_t HLT_HH4bAll;
+
+
+  float xsec;
+  float puWeight;
+  float puWeightUp; 
+  float puWeightDown; 
+  float genWeight;
+  float json;
+  float json_silver;
+  float bTagWeight_LFUp;
+  float bTagWeight_LFDown;
+  float bTagWeight_LFStats1Up;
+  float bTagWeight_LFStats1Down;
+  float bTagWeight_LFStats2Down;
+  float bTagWeight_LFStats2Up;
+  float bTagWeight_HFUp;
+  float bTagWeight_HFDown;
+  float bTagWeight_HFStats1Up;
+  float bTagWeight_HFStats1Down;
+  float bTagWeight_HFStats2Up;
+  float bTagWeight_HFStats2Down;
+  float bTagWeight_cErr1Down;
+  float bTagWeight_cErr1Up;
+  float bTagWeight_cErr2Up;
+  float bTagWeight_cErr2Down;
+  float bTagWeight_JESDown;
+  float bTagWeight_JESUp;
+  float bTagWeight;
+  float Jet_bTagWeight;
+  float Jet_bTagWeightJESUp;
+  float Jet_bTagWeightJESDown;
+  float Jet_bTagWeightLFUp;
+  float Jet_bTagWeightLFDown;
+  float Jet_bTagWeightLFStats1Up;
+  float Jet_bTagWeightLFStats1Down;
+  float Jet_bTagWeightLFStats2Up;
+  float Jet_bTagWeightLFStats2Down;
+  float Jet_bTagWeightHFUp;
+  float Jet_bTagWeightHFDown;
+  float Jet_bTagWeightHFStats1Up;
+  float Jet_bTagWeightHFStats1Down;
+  float Jet_bTagWeightHFStats2Up;
+  float Jet_bTagWeightHFStats2Down;
+  float Jet_bTagWeightcErr1Up;
+  float Jet_bTagWeightcErr1Down;
+  float Jet_bTagWeightcErr2Up;
+  float Jet_bTagWeightcErr2Down; 
+  float Jet_btagCSV;
+  float Jet_btagCMVA; 
+  float Jet_btagCSVV0; 
+  float Jet_btagCMVAV2; 
+  float Jet_mcPt;
+  float Jet_corr; 
+  float Jet_corr_JECUp; 
+  float Jet_corr_JECDown; 
+  float Jet_corr_JER;
+  float Jet_corr_JERUp; 
+  float Jet_corr_JERDown; 
+  float met_pt;
+  float met_eta; 
+  float met_phi; 
+  float met_mass; 
+  float Jet_pt;
+  float Jet_eta; 
+  float Jet_phi; 
+  float Jet_mass; 
+  float GenJet_pt; 
+  float GenJet_eta; 
+  float GenJet_phi; 
+  float GenJet_mass; 
+  float LHE_weights_scale_wgt; 
+  float nLHE_weights_pdf;
+  float LHE_weights_pdf_id; 
+  float LHE_weights_pdf_wgt;
+
+ //Btagging Info of Jets 
   float var_jet1Btag;
   float var_jet2Btag;
   float var_jet3Btag;
@@ -154,9 +224,21 @@ private:
   float npT;
   float npIT;
   float PU_Weight;     
-
+  // Few variables for background estimation and initialization
+  int is_data;
+  int is_not_data;
+  float is_mc;
+  float is_not_mc;
+  float is_json;
+  float is_silver_json;
+  float is_xsec;
+  float is_trigger; 
+  int is_mcFlavour;
+  int nGenJets;
+  int jet_id;
+  int jet_mcMatchId;
+  unsigned int is_run;
   unsigned int _Noutputs; //to limit the couts of debug info
-
 
   //Tokens
   edm::EDGetTokenT<std::vector<pat::Jet> > jetstoken_; 
