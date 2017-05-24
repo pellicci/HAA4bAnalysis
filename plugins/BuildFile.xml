@@ -5,5 +5,16 @@
 <use name="PhysicsTools/KinFitter"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/PatAlgos"/>
-
+<use name="CondFormats/JetMETObjects"/>
+<use name="JetMETCorrections/Objects"/>
+<use name="JetMETCorrections/Modules"/>
+<use name="CondFormats/DataRecord"/>
+<use name="JetMETCorrections/Algorithms"/>
+<use name="JetMETCorrections/JetCorrector"/>
+<use name="DataFormats/GeometryCommonDetAlgo"/>
+<use name="DataFormats/VertexReco"/>
+<use name="RecoBTag/SecondaryVertex"/>
+<use name="RecoVertex/VertexTools"/>
+<use name="CondFormats/BTauObjects"/>
+<use name="CondTools/BTau"/>
 <flags EDM_PLUGIN="1"/>

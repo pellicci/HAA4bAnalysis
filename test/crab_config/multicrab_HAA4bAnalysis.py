@@ -9,7 +9,7 @@ config.General.workArea = 'crab_projects/samples/'
 config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
-config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpData_fromJsonSep2016.root'] #data files for PileUp reweighting
+config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpHistogramFromjson_Nominal.root', 'pileUpHistogramFromjson_ScaleUp.root', 'pileUpHistogramFromjson_ScaleDown.root', 'CSVv2_Moriond17_B_H.csv', 'PHYS14_25_V1_L1FastJet_AK4PFchs.txt','PHYS14_25_V1_L2L3Residual_AK4PFchs.txt','PHYS14_25_V1_L2Relative_AK4PFchs.txt','PHYS14_25_V1_L3Absolute_AK4PFchs.txt', 'PHYS14_25_V1_Uncertainty_AK4PFchs.txt'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False']
 config.JobType.allowUndistributedCMSSW = True

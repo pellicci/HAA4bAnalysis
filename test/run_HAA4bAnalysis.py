@@ -1,16 +1,11 @@
 import FWCore.ParameterSet.Config as cms
+
 process = cms.Process("USER")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load('Configuration.StandardSequences.Services_cff') 
 from Configuration.AlCa.GlobalTag import GlobalTag
-
-#JEC
-process.load('JetMETCorrections.Configuration.DefaultJEC_cff') 
-process.load('JetMETCorrections.Configuration.JetCorrectors_cff')
-from JetMETCorrections.Configuration.DefaultJEC_cff import *
-from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100)
@@ -25,6 +20,7 @@ options.register('runningOnData',
                  "PU config flag")
 options.parseArguments()
 
+##-------------------- Define the source  ----------------------------
 #Input source
 if options.runningOnData: 
    process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_Prompt_v14') #which conditions to use
@@ -39,6 +35,7 @@ process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring (inputFiles),
                              #fileNames = cms.untracked.vstring('file:miniAOD-prod_new_PAT.root'), #When running on crab
 )
+
 
 # Output file
 process.TFileService = cms.Service("TFileService",
