@@ -282,10 +282,23 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // loop over jets and determine the ranking
   // based on pt from 1 to 4
+   // Jet_Size_it = 0;
+//  int Jet_Size = 0;
+ //   Jet_Size = 0;
+    Jet_iterator = 0;
   if(_show_output) std::cout<<"Processing event number " << _Nevents_processed << " with equal to or more than 4 Jets" << std::endl;
   for(auto jet = jets->begin(); jet != jets->end(); ++jet){
-    float thept = jet->p4().Pt();
+ 
+    // Jet_Size_it++;
+  
+   //  Jet_Size_V.push_back(Jet_Size);
+    // Jet_Size++; //////
+   //int Jet_Size = 0;
+   //Jet_Size = jet->size(); ////////////////////////////////////
+ 
+    Jet_iterator++;
 
+    float thept = jet->p4().Pt();
     
     //JEC follow Up procedure
     reco::Candidate::LorentzVector uncorrJet;
@@ -822,8 +835,11 @@ void HAA4bAnalysis::fillDescriptions(edm::ConfigurationDescriptions& description
   descriptions.addDefault(desc);
 }
 
+    //Jet_Size_it = 0; //ttttttttttttttttttttttttttttttttttttt
 void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& globaljets, edm::Handle<std::vector<reco::GenParticle> >& genParticles, edm::Handle<std::vector<pat::MET> > &globalmets){
 
+
+    //Jet_Size_it ++;
 
   // setup calibration + reader //setup calibration readers (once)   
    BTagCalibration calib("csvv2", "CSVv2_Moriond17_B_H.csv");
@@ -876,196 +892,231 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
 
 
   //Few more background variables and their initialization
-  Jet_pt   = 0.;
-  Jet_eta  = 0.;
-  Jet_phi  = 0.;
-  Jet_mass = 0.;
-  Jet_btag = 0.;  
+  Jet_pt[Max_Jets]   = {0.};
+  Jet_phi[Max_Jets]  = {0.};
+  Jet_eta[Max_Jets]  = {0.};
+  Jet_mass[Max_Jets] = {0.};
+  Jet_btag[Max_Jets] = {0.};  
 
-  bTagWeight_LFUp = 0.;
-  bTagWeight_LFDown = 0.;
-  bTagWeight_LFStats1Up = 0.;
-  bTagWeight_LFStats1Down = 0.;
-  bTagWeight_LFStats2Down = 0.;
-  bTagWeight_LFStats2Up = 0.;
 
-  bTagWeight_HFUp = 0.;
-  bTagWeight_HFDown = 0.;
-  bTagWeight_HFStats1Up = 0.;
-  bTagWeight_HFStats1Down = 0.;
-  bTagWeight_HFStats2Up = 0.;
-  bTagWeight_HFStats2Down = 0.;
+  bTagWeight[Max_Jets]   = {0.};
 
-  bTagWeight_cErr1Down = 0.;
-  bTagWeight_cErr1Up = 0.;
-  bTagWeight_cErr2Up = 0.;
-  bTagWeight_cErr2Down = 0.;
+  bTagWeight_LFUp[Max_Jets] = {0.};
+  bTagWeight_LFDown[Max_Jets] = {0.};
+  bTagWeight_LFStats1Up[Max_Jets] = {0.};
+  bTagWeight_LFStats1Down[Max_Jets] = {0.};
+  bTagWeight_LFStats2Down[Max_Jets] = {0.};
+  bTagWeight_LFStats2Up[Max_Jets] = {0.};
 
-  bTagWeight_JESDown = 0.;
-  bTagWeight_JESUp   = 0.;
-  bTagWeight         = 0.;
+  bTagWeight_HFUp[Max_Jets] = {0.};
+  bTagWeight_HFDown[Max_Jets] = {0.};
+  bTagWeight_HFStats1Up[Max_Jets] = {0.};
+  bTagWeight_HFStats1Down[Max_Jets] = {0.};
+  bTagWeight_HFStats2Up[Max_Jets] = {0.};
+  bTagWeight_HFStats2Down[Max_Jets] = {0.};
 
-  Jet_bTagWeight = 0.;
+  bTagWeight_cErr1Down[Max_Jets] = {0.};
+  bTagWeight_cErr1Up[Max_Jets] = {0.};
+  bTagWeight_cErr2Up[Max_Jets] = {0.};
+  bTagWeight_cErr2Down[Max_Jets] ={0.};
 
-  Jet_btagCSV = 0. ;
-  Jet_btagCMVA = 0.; 
-  Jet_btagCSVV0 = 0.; 
-  Jet_btagCMVAV2 = 0.; 
-  Jet_mcPt = 0. ;
+  bTagWeight_JESDown[Max_Jets] = {0.};
+  bTagWeight_JESUp[Max_Jets]   = {0.};
+//  bTagWeight[Max_Jets]         = {0.};
+
+  Jet_bTagWeight[Max_Jets] = {0.};
+
+
+  Jet_bTagWeightLFUp[Max_Jets] = {0.};
+  Jet_bTagWeightLFDown[Max_Jets] = {0.};
+  Jet_bTagWeightLFStats1Up[Max_Jets] = {0.};
+  Jet_bTagWeightLFStats1Down[Max_Jets] = {0.};
+  Jet_bTagWeightLFStats2Down[Max_Jets] = {0.};
+  Jet_bTagWeightLFStats2Up[Max_Jets] = {0.};
+
+  Jet_bTagWeightHFUp[Max_Jets] = {0.};
+  Jet_bTagWeightHFDown[Max_Jets] = {0.};
+  Jet_bTagWeightHFStats1Up[Max_Jets] = {0.};
+  Jet_bTagWeightHFStats1Down[Max_Jets] = {0.};
+  Jet_bTagWeightHFStats2Up[Max_Jets] = {0.};
+  Jet_bTagWeightHFStats2Down[Max_Jets] = {0.};
+
+  Jet_bTagWeightcErr1Down[Max_Jets] = {0.};
+  Jet_bTagWeightcErr1Up[Max_Jets] = {0.};
+  Jet_bTagWeightcErr2Up[Max_Jets] = {0.};
+  Jet_bTagWeightcErr2Down[Max_Jets] ={0.};
+
+  Jet_bTagWeightJESDown[Max_Jets] = {0.};
+  Jet_bTagWeightJESUp[Max_Jets]   = {0.};
+
+
+  Jet_btagCSV[Max_Jets] = {0.} ;
+  Jet_btagCMVA[Max_Jets] = {0.}; 
+  Jet_btagCSVV0[Max_Jets] = {0.}; 
+  Jet_btagCMVAV2[Max_Jets] = {0.}; 
+  Jet_mcPt[Max_Jets] = {0.} ;
  
-  Jet_corr         = 0.; 
-  Jet_corr_JECUp   = 0.; 
-  Jet_corr_JECDown = 0.; 
+  Jet_corr[Max_Jets]         = {0.}; 
+  Jet_corr_JECUp[Max_Jets]   = {0.}; 
+  Jet_corr_JECDown[Max_Jets] = {0.}; 
 
-  Jet_corr_JER     = 0.;
-  Jet_corr_JERUp   = 0.; 
-  Jet_corr_JERDown = 0.;
+  Jet_corr_JER[Max_Jets]     = {0.};
+  Jet_corr_JERUp[Max_Jets]   = {0.}; 
+  Jet_corr_JERDown[Max_Jets] = {0.};
 
+ 
+  int loop_increment =0;
+
+  globalJet_iterator = 0 ;
 
   for(auto jet = globaljets->begin(); jet != globaljets->end(); ++jet){
-    float thept   = jet->p4().Pt();
-    float theeta  = jet->p4().Eta();
-    float thephi  = jet->p4().Phi();
-    float themass = jet->p4().M();
-    float thecsv  = jet->bDiscriminator(bdiscr_);
+     
+    globalJet_iterator++;
 
     //Jet Hadron and Parton Flavour
     Jet_partonFlavour = jet->hadronFlavour();
     Jet_hadronFlavour = jet->partonFlavour();
 
-    //Store info into variables and also need to control the loop as the data might be over written during the next pass of the above loop
-    Jet_pt   = thept;
-    Jet_eta  = theeta;
-    Jet_phi  = thephi;
-    Jet_mass = themass;
-    Jet_btag = thecsv;
+    Jet_pt[loop_increment]   = jet->p4().Pt();
+    Jet_eta[loop_increment]  = jet->p4().Eta();
+    Jet_phi[loop_increment]  = jet->p4().Phi();
+    Jet_mass[loop_increment] = jet->p4().M();
+    Jet_btag[loop_increment] = jet->bDiscriminator(bdiscr_);
 
+  
    if(!runningOnData_){
 
      //Btag Scale factors and scale Variations
      //Eta values outside -2.4 < eta < 2.4 and discriminator values outside 0 < discr < 1, Pt <20 will yield a scale factor of 0
      //using eval_auto_bounds() function
-     bjet_scaleFactor           = reader.eval_auto_bounds("central", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().Pt()); 
-     bjet_scaleFactor_ScaleUp   = reader.eval_auto_bounds("up",      BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().Pt());
-     bjet_scaleFactor_ScaleDown = reader.eval_auto_bounds("down",    BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt()); 
+     bjet_scaleFactor[loop_increment]           = reader.eval_auto_bounds("central", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().Pt()); 
+     bjet_scaleFactor_ScaleUp[loop_increment]   = reader.eval_auto_bounds("up",      BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().Pt());
+     bjet_scaleFactor_ScaleDown[loop_increment] = reader.eval_auto_bounds("down",    BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt()); 
 
      std::cout<<"Btaging Scale factors"       <<std::endl;
-     std::cout<<"Btag Scale factor central "  <<bjet_scaleFactor <<std::endl;
-     std::cout<<"Btag Scale factor scaleUp "  <<bjet_scaleFactor_ScaleUp<<std::endl;
-     std::cout<<"Btag Scale factor scaleDown" <<bjet_scaleFactor_ScaleDown<<std::endl;
+     std::cout<<"Btag Scale factor central "  <<bjet_scaleFactor[loop_increment] <<std::endl;
+     std::cout<<"Btag Scale factor scaleUp "  <<bjet_scaleFactor_ScaleUp[loop_increment]<<std::endl;
+     std::cout<<"Btag Scale factor scaleDown" <<bjet_scaleFactor_ScaleDown[loop_increment]<<std::endl;
 
     //Jet Energy Scale Factors and Scale variation
-    bTagWeight_JESUp   = reader_JES.eval_auto_bounds("up_jes",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
-    bTagWeight_JESDown = reader_JES.eval_auto_bounds("down_jes", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightJESUp[loop_increment]   = reader_JES.eval_auto_bounds("up_jes",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightJESDown[loop_increment] = reader_JES.eval_auto_bounds("down_jes", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"Jet Energy ScaleUp factor "    <<bTagWeight_JESUp<<std::endl;
-    std::cout<<"Jet Energy ScaleDown factor "  <<bTagWeight_JESDown<<std::endl;
+
+    std::cout<<"Jet Energy ScaleUp factor "    <<Jet_bTagWeightJESUp[loop_increment]<<std::endl;
+    std::cout<<"Jet Energy ScaleDown factor "  <<Jet_bTagWeightJESDown[loop_increment]<<std::endl;
 
     //Light Flavour and Scale Variations
-    Jet_bTagWeightLFUp   = reader_LF.eval_auto_bounds("up_lf",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightLFDown = reader_LF.eval_auto_bounds("down_lf", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightLFUp[loop_increment]   = reader_LF.eval_auto_bounds("up_lf",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightLFDown[loop_increment] = reader_LF.eval_auto_bounds("down_lf", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
  
-    std::cout<<"Light Flavour ScaleUp factor  "  <<Jet_bTagWeightLFUp<<std::endl;
-    std::cout<<"Light Flavour ScaleDown factor " <<Jet_bTagWeightLFDown<<std::endl;
+    std::cout<<"Light Flavour ScaleUp factor  "  <<Jet_bTagWeightLFUp[loop_increment]<<std::endl;
+    std::cout<<"Light Flavour ScaleDown factor " <<Jet_bTagWeightLFDown[loop_increment]<<std::endl;
 
     //Heavy Flavour and Scale Variations
-    Jet_bTagWeightHFUp   = reader_HF.eval_auto_bounds("up_hf",   BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightHFDown = reader_HF.eval_auto_bounds("down_hf", BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightHFUp[loop_increment]   = reader_HF.eval_auto_bounds("up_hf",   BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightHFDown[loop_increment] = reader_HF.eval_auto_bounds("down_hf", BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"Heavy Flavour ScaleUp factor  "      <<Jet_bTagWeightHFUp<<std::endl;
-    std::cout<<"Heavy Flavour ScaleDown factor "     <<Jet_bTagWeightHFDown<<std::endl;
+    std::cout<<"Heavy Flavour ScaleUp factor  "   <<Jet_bTagWeightHFUp[loop_increment]<<std::endl;
+    std::cout<<"Heavy Flavour ScaleDown factor "  <<Jet_bTagWeightHFDown[loop_increment]<<std::endl;
 
     //// HFStats1; Up and down variations
-    Jet_bTagWeightHFStats1Up   = reader_HFStats1.eval_auto_bounds("up_hfstats1",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightHFStats1Down = reader_HFStats1.eval_auto_bounds("down_hfstats1", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightHFStats1Up[loop_increment]   = reader_HFStats1.eval_auto_bounds("up_hfstats1",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightHFStats1Down[loop_increment] = reader_HFStats1.eval_auto_bounds("down_hfstats1", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"Heavy Flavour hfstats1 ScaleUp factor  "      <<Jet_bTagWeightHFStats1Up<<std::endl;
-    std::cout<<"Heavy Flavour hfstats1 ScaleDown factor "     <<Jet_bTagWeightHFStats1Down<<std::endl;
+    std::cout<<"Heavy Flavour hfstats1 ScaleUp factor  "   <<Jet_bTagWeightHFStats1Up[loop_increment]<<std::endl;
+    std::cout<<"Heavy Flavour hfstats1 ScaleDown factor "  <<Jet_bTagWeightHFStats1Down[loop_increment]<<std::endl;
 
     //// HFStats2; Up and down variations
-    Jet_bTagWeightHFStats2Up   = reader_HFStats2.eval_auto_bounds("up_hfstats2",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightHFStats2Down = reader_HFStats2.eval_auto_bounds("down_hfstats2", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightHFStats2Up[loop_increment]   = reader_HFStats2.eval_auto_bounds("up_hfstats2",   BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightHFStats2Down[loop_increment] = reader_HFStats2.eval_auto_bounds("down_hfstats2", BTagEntry::FLAV_B, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"Heavy Flavour hfstats2 ScaleUp factor  "      <<Jet_bTagWeightHFStats2Up<<std::endl;
-    std::cout<<"Heavy Flavour hfstats2 ScaleDown factor "     <<Jet_bTagWeightHFStats2Down<<std::endl;
+    std::cout<<"Heavy Flavour hfstats2 ScaleUp factor  "      <<Jet_bTagWeightHFStats2Up[loop_increment]<<std::endl;
+    std::cout<<"Heavy Flavour hfstats2 ScaleDown factor "     <<Jet_bTagWeightHFStats2Down[loop_increment]<<std::endl;
 
     // LFStats1; Up and down variations
-    Jet_bTagWeightLFStats1Up   = reader_LFStats1.eval_auto_bounds("up_lfstats1",   BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightLFStats1Down = reader_LFStats1.eval_auto_bounds("down_lfstats1", BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightLFStats1Up[loop_increment]   = reader_LFStats1.eval_auto_bounds("up_lfstats1",   BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightLFStats1Down[loop_increment] = reader_LFStats1.eval_auto_bounds("down_lfstats1", BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"Light Flavour lfstats1 ScaleUp factor  "      <<Jet_bTagWeightLFStats1Up<<std::endl;
-    std::cout<<"Light Flavour lfstats1 ScaleDown factor "     <<Jet_bTagWeightLFStats1Down<<std::endl;
+    std::cout<<"Light Flavour lfstats1 ScaleUp factor  "      <<Jet_bTagWeightLFStats1Up[loop_increment]<<std::endl;
+    std::cout<<"Light Flavour lfstats1 ScaleDown factor "     <<Jet_bTagWeightLFStats1Down[loop_increment]<<std::endl;
 
     // LFStats2; Up and down variations
-    Jet_bTagWeightLFStats2Up   = reader_LFStats2.eval_auto_bounds("up_lfstats2",   BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightLFStats2Down = reader_LFStats2.eval_auto_bounds("down_lfstats2", BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightLFStats2Up[loop_increment]   = reader_LFStats2.eval_auto_bounds("up_lfstats2",   BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightLFStats2Down[loop_increment] = reader_LFStats2.eval_auto_bounds("down_lfstats2", BTagEntry::FLAV_UDSG, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"Light Flavour lfstats2 ScaleUp factor  "      <<Jet_bTagWeightLFStats2Up<<std::endl;
-    std::cout<<"Light Flavour lfstats2 ScaleDown factor "     <<Jet_bTagWeightLFStats2Down<<std::endl;
+    std::cout<<"Light Flavour lfstats2 ScaleUp factor  "      <<Jet_bTagWeightLFStats2Up[loop_increment]<<std::endl;
+    std::cout<<"Light Flavour lfstats2 ScaleDown factor "     <<Jet_bTagWeightLFStats2Down[loop_increment]<<std::endl;
 
     //CFErr1Up and CFErr1Down
-    Jet_bTagWeightcErr1Up   = reader_CFErr1.eval_auto_bounds("up_cferr1",   BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightcErr1Down = reader_CFErr1.eval_auto_bounds("down_cferr1", BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightcErr1Up[loop_increment]   = reader_CFErr1.eval_auto_bounds("up_cferr1",   BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightcErr1Down[loop_increment] = reader_CFErr1.eval_auto_bounds("down_cferr1", BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"cferr1 ScaleUp factor  "      <<Jet_bTagWeightcErr1Up<<std::endl;
-    std::cout<<"cferr1 ScaleDown factor "     <<Jet_bTagWeightcErr1Down<<std::endl;
+    std::cout<<"cferr1 ScaleUp factor  "      <<Jet_bTagWeightcErr1Up[loop_increment]<<std::endl;
+    std::cout<<"cferr1 ScaleDown factor "     <<Jet_bTagWeightcErr1Down[loop_increment]<<std::endl;
 
     //CFErr2Up and CFErr2Down
-    Jet_bTagWeightcErr2Up   = reader_CFErr2.eval_auto_bounds("up_cferr2",   BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
-    Jet_bTagWeightcErr2Down = reader_CFErr2.eval_auto_bounds("down_cferr2", BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightcErr2Up[loop_increment]   = reader_CFErr2.eval_auto_bounds("up_cferr2",   BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
+    Jet_bTagWeightcErr2Down[loop_increment] = reader_CFErr2.eval_auto_bounds("down_cferr2", BTagEntry::FLAV_C, jet->p4().Eta(), jet->p4().pt());
 
-    std::cout<<"cferr2 ScaleUp factor  "      <<Jet_bTagWeightcErr2Up <<std::endl;
-    std::cout<<"cferr2 ScaleDown factor "     <<Jet_bTagWeightcErr2Down<<std::endl;
+    std::cout<<"cferr2 ScaleUp factor  "      <<Jet_bTagWeightcErr2Up[loop_increment] <<std::endl;
+    std::cout<<"cferr2 ScaleDown factor "     <<Jet_bTagWeightcErr2Down[loop_increment]<<std::endl;
 
-    bTagWeight_LFUp = thecsv;  //Need to put a proper value onwards and also to differentiate between bTagWeight and Jet_bTagWeight etc
-    bTagWeight_LFDown = thecsv;
-    bTagWeight_LFStats1Up = thecsv;
-    bTagWeight_LFStats1Down = thecsv;
-    bTagWeight_LFStats2Down = thecsv;
-    bTagWeight_LFStats2Up = thecsv;
+    //Need to put a proper value onwards and also to differentiate between bTagWeight and Jet_bTagWeight etc
+    bTagWeight_LFUp[loop_increment]         = Jet_bTagWeightLFUp[loop_increment];  
+    bTagWeight_LFDown[loop_increment]       = Jet_bTagWeightLFDown[loop_increment];
+    bTagWeight_LFStats1Up[loop_increment]   = Jet_bTagWeightLFStats1Up[loop_increment];
+    bTagWeight_LFStats1Down[loop_increment] = Jet_bTagWeightLFStats1Down[loop_increment];
+    bTagWeight_LFStats2Down[loop_increment] = Jet_bTagWeightLFStats2Down[loop_increment];
+    bTagWeight_LFStats2Up[loop_increment]   = Jet_bTagWeightLFStats2Up[loop_increment];
 
-    bTagWeight_HFUp = thecsv;
-    bTagWeight_HFDown = thecsv;
-    bTagWeight_HFStats1Up = thecsv;
-    bTagWeight_HFStats1Down = thecsv;
-    bTagWeight_HFStats2Up = thecsv;
-    bTagWeight_HFStats2Down = thecsv;
+    bTagWeight_HFUp[loop_increment]         = Jet_bTagWeightHFUp[loop_increment];
+    bTagWeight_HFDown[loop_increment]       = Jet_bTagWeightHFDown[loop_increment];
+    bTagWeight_HFStats1Up[loop_increment]   = Jet_bTagWeightHFStats1Up[loop_increment];
+    bTagWeight_HFStats1Down[loop_increment] = Jet_bTagWeightHFStats1Down[loop_increment];
+    bTagWeight_HFStats2Up[loop_increment]   = Jet_bTagWeightHFStats2Up[loop_increment];
+    bTagWeight_HFStats2Down[loop_increment] = Jet_bTagWeightHFStats2Down[loop_increment];
 
-    bTagWeight_cErr1Down = thecsv;
-    bTagWeight_cErr1Up = thecsv;
-    bTagWeight_cErr2Up = thecsv;
-    bTagWeight_cErr2Down = thecsv;
+    bTagWeight_cErr1Down[loop_increment] = Jet_bTagWeightcErr1Down[loop_increment];
+    bTagWeight_cErr1Up[loop_increment]   = Jet_bTagWeightcErr1Up[loop_increment];
+    bTagWeight_cErr2Up[loop_increment]   = Jet_bTagWeightcErr2Up[loop_increment];
+    bTagWeight_cErr2Down[loop_increment] = Jet_bTagWeightcErr2Down[loop_increment];
 
-    bTagWeight_JESDown = Jet_resolutionSF_Down; //has to be changed
-    bTagWeight_JESUp   = Jet_resolutionSF_Up ;
+    bTagWeight_JESDown[loop_increment] = Jet_bTagWeightJESDown[loop_increment]; //has to be changed
+    bTagWeight_JESUp[loop_increment]   = Jet_bTagWeightJESUp[loop_increment];
 
-    bTagWeight = bjet_scaleFactor;
+    bTagWeight[loop_increment] = bjet_scaleFactor[loop_increment];
+    Jet_bTagWeight[loop_increment] = bjet_scaleFactor[loop_increment];
 
       } // Extend this braket to include more variables given below if they are also to be applied on MC
 
 
-    Jet_btagCSV = thecsv;
-    Jet_btagCMVA = thecsv; 
-    Jet_btagCSVV0 = thecsv; 
-    Jet_btagCMVAV2 = thecsv; 
-    Jet_mcPt = thecsv;
+    Jet_btagCSV[loop_increment]    = jet->bDiscriminator(bdiscr_);
+    Jet_btagCMVA[loop_increment]   = jet->bDiscriminator(bdiscr_); 
+    Jet_btagCSVV0[loop_increment]  = jet->bDiscriminator(bdiscr_); 
+    Jet_btagCMVAV2[loop_increment] = jet->bDiscriminator(bdiscr_); 
 
-    Jet_corr          = corr; 
-    Jet_corr_JECUp    = corrUp; 
-    Jet_corr_JECDown  = corrDown; 
+    Jet_mcPt[loop_increment] = jet->bDiscriminator(bdiscr_);
 
-    Jet_corr_JER      = Jet_resolutionSF;     //Please check whether we have to use Scale factor or resolution
-    Jet_corr_JERUp    = Jet_resolutionSF_Up;  //Similarly here
-    Jet_corr_JERDown  = Jet_resolutionSF_Down;
+    Jet_corr[loop_increment]          = corr; 
+    Jet_corr_JECUp[loop_increment]    = corrUp; 
+    Jet_corr_JECDown[loop_increment]  = corrDown; 
 
+    Jet_corr_JER[loop_increment]      = Jet_resolutionSF;     //Please check whether we have to use Scale factor or resolution
+    Jet_corr_JERUp[loop_increment]    = Jet_resolutionSF_Up;  //Similarly here
+    Jet_corr_JERDown[loop_increment]  = Jet_resolutionSF_Down;
+
+    
+   loop_increment++;
+   
   }
   //Generator level info from MC
   genWeight   = 0.;
 
-  GenJet_pt   = 0.; 
-  GenJet_eta  = 0.; 
-  GenJet_phi  = 0.; 
-  GenJet_mass = 0.;
+  GenJet_pt [Max_Jets]  = {0.}; 
+  GenJet_eta[Max_Jets]  = {0.}; 
+  GenJet_phi[Max_Jets]  = {0.}; 
+  GenJet_mass[Max_Jets] = {0.};
 
   Jet_id = 0;
   Jet_mcFlavour = 0;
@@ -1079,19 +1130,32 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
   Genb_mass.clear();
 
   if(!runningOnData_){
+
     nGenJets = 0;
-    for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
-       
+    genJet_iterator = 0;  //for tree
+    int genJet_loop_increment =0;  //for loop increament
+
+   for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
+
+      genJet_iterator++;  
       nGenJets++;
-      genWeight     = is_mc; // will have to fix the loop problem as the data will get over written for next pass
-      GenJet_pt     = genpart->pt(); 
-      GenJet_eta    = genpart->eta(); 
-      GenJet_phi    = genpart->phi(); 
-      GenJet_mass   = genpart->mass();
-      Jet_id        = jet_id;
-      Jet_mcFlavour = is_mcFlavour;  
-      nGenJet       = nGenJets;  //Need to look for it if it is correct
-      Jet_mcMatchId = jet_mcMatchId;   // same as Ref 3
+
+    //  genWeight     = is_mc; // will have to fix the loop problem as the data will get over written for next pass
+
+/*       GenJet_pt[genJet_loop_increment]   = genpart->pt(); //tempororaly commented as program crashes if it is uncommented.
+       GenJet_eta[genJet_loop_increment]    = genpart->eta(); 
+       GenJet_phi[genJet_loop_increment]    = genpart->phi(); 
+       GenJet_mass[genJet_loop_increment]   = genpart->mass();
+*/
+      // genJet_iterator++; 
+      
+       genJet_loop_increment++;
+     // genJet_iterator++;
+
+      Jet_id        = jet_id;          //temporary
+      Jet_mcFlavour = is_mcFlavour;    //temporary
+      nGenJet       = nGenJets;  //No. of gen Jets
+      Jet_mcMatchId = jet_mcMatchId;   // temporary
 
       // Signal Information from MC
       if( abs(genpart->pdgId()) != 5) continue;
@@ -1101,26 +1165,32 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
       Genb_eta.push_back(genpart->eta());
       Genb_phi.push_back(genpart->phi());
       Genb_mass.push_back(genpart->mass());
+      //nGenJets++;
+     // genbJet_iterator++;
 
     }
-
-    // MET information for background
-    met_pt   = 0.;
-    met_eta  = 0.; 
-    met_phi  = 0.; 
-    met_mass = 0.;
  
-    float mthept   = (globalmets->front()).pt();  //mthept-->Met the pt (pt of met)
-    float mtheeta  = (globalmets->front()).eta();
-    float mthephi  = (globalmets->front()).phi();
-    float mthemass = (globalmets->front()).mass();
-   
-    met_pt   = mthept;
-    met_eta  = mtheeta; 
-    met_phi  = mthephi; 
-    met_mass = mthemass;
-   
-  }
+   int met_loop_increment = 0;
+   met_iterator = 0;
+   //for(auto met = globalmets->begin(); met != globalmets->end(); ++met){
+    // MET information for background
+    met_pt[Max_Jets]     = {0.};
+    met_eta [Max_Jets]   = {0.}; 
+    met_phi [Max_Jets]   = {0.}; 
+    met_mass [Max_Jets]  = {0.};
+
+   for(auto met = globalmets->begin(); met != globalmets->end(); ++met){
+    met_iterator++;
+    met_pt[met_loop_increment]   = (globalmets->front()).pt();
+    met_eta[met_loop_increment]  = (globalmets->front()).eta(); 
+    met_phi[met_loop_increment]  = (globalmets->front()).phi(); 
+    met_mass[met_loop_increment] = (globalmets->front()).mass();
+
+    met_loop_increment++;
+
+        }
+
+    }
 
   //Fill global tree
   globalTree->Fill();
@@ -1193,13 +1263,15 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   mytree->Branch("N_nPv", &_nPv, "_nPv/I");                                          //Filling Primary Verticies 
 
 
-  mytree->Branch("Jet_corr",         &Jet_corr,         "Jet_corr/F");
-  mytree->Branch("Jet_corr_JECUp",   &Jet_corr_JECUp,   "Jet_corr_JECUp/F");
-  mytree->Branch("Jet_corr_JECDown", &Jet_corr_JECDown, "Jet_corr_JECDown/F");
+  mytree->Branch("Jet_iterator",   &Jet_iterator, "Jet_iterator/I");  
 
-  mytree->Branch("Jet_corr_JER",     &Jet_corr_JER,     "Jet_corr_JER");
-  mytree->Branch("Jet_corr_JERUp",   &Jet_corr_JERUp,   "Jet_corr_JERUp/F");
-  mytree->Branch("Jet_corr_JERDown", &Jet_corr_JERDown, "Jet_corr_JERDown/F");
+  mytree->Branch("Jet_corr",         Jet_corr,         "Jet_corr[Jet_iterator]/F");
+  mytree->Branch("Jet_corr_JECUp",   Jet_corr_JECUp,   "Jet_corr_JECUp[Jet_iterator]/F");
+  mytree->Branch("Jet_corr_JECDown", Jet_corr_JECDown, "Jet_corr_JECDown[Jet_iterator]/F");
+
+  mytree->Branch("Jet_corr_JER",     Jet_corr_JER,     "Jet_corr_JER[Jet_iterator]/F");
+  mytree->Branch("Jet_corr_JERUp",   Jet_corr_JERUp,   "Jet_corr_JERUp[Jet_iterator]/F");
+  mytree->Branch("Jet_corr_JERDown", Jet_corr_JERDown, "Jet_corr_JERDown[Jet_iterator]/F");
  
 
   // pileUp histograms
@@ -1213,74 +1285,88 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   globalTree->Branch("run",  &run,  "run/i" );
   globalTree->Branch("evt",  &evt,  "evt/l");
   globalTree->Branch("lumi", &lumi, "lumi/i");
-
+/*
   globalTree->Branch("Jet_pt",   &Jet_pt,   "Jet_pt/F");
   globalTree->Branch("Jet_eta",  &Jet_eta,  "Jet_eta/F");
   globalTree->Branch("Jet_phi",  &Jet_phi,  "Jet_phi/F");
   globalTree->Branch("Jet_mass", &Jet_mass, "Jet_mass/F");
+*/
+  
+  globalTree->Branch("Jet_iterator",   &Jet_iterator, "Jet_iterator/I"); //This needs to be modified for background jets. 
 
-  globalTree->Branch("Jet_bTagWeight",        &Jet_bTagWeight,        "Jet_bTagWeight/F");
-  globalTree->Branch("Jet_bTagWeightJESUp",   &Jet_bTagWeightJESUp,   "Jet_bTagWeightJESUp/F");
-  globalTree->Branch("Jet_bTagWeightJESDown", &Jet_bTagWeightJESDown, "Jet_bTagWeightJESDown/F");
+  globalTree->Branch("Jet_corr",         Jet_corr,         "Jet_corr[Jet_iterator]/F"); //This also needs to be modified for background jets.
+  globalTree->Branch("Jet_corr_JECUp",   Jet_corr_JECUp,   "Jet_corr_JECUp[Jet_iterator]/F");
+  globalTree->Branch("Jet_corr_JECDown", Jet_corr_JECDown, "Jet_corr_JECDown[Jet_iterator]/F");
 
-  globalTree->Branch("Jet_bTagWeightLFUp",         &Jet_bTagWeightLFUp,         "Jet_bTagWeightLFUp/F");
-  globalTree->Branch("Jet_bTagWeightLFDown",       &Jet_bTagWeightLFDown,       "Jet_bTagWeightLFDown/F");
-  globalTree->Branch("Jet_bTagWeightLFStats1Up",   &Jet_bTagWeightLFStats1Up,   "Jet_bTagWeightLFStats1Up/F");
-  globalTree->Branch("Jet_bTagWeightLFStats1Down", &Jet_bTagWeightLFStats1Down, "Jet_bTagWeightLFStats1Down/F");
-  globalTree->Branch("Jet_bTagWeightLFStats2Up",   &Jet_bTagWeightLFStats2Up,   "Jet_bTagWeightLFStats2Up/F");
-  globalTree->Branch("Jet_bTagWeightLFStats2Down", &Jet_bTagWeightLFStats2Down, "Jet_bTagWeightLFStats2Down/F");
-
-  globalTree->Branch("Jet_bTagWeightHFUp",         &Jet_bTagWeightHFUp,        "Jet_bTagWeightHFUp/F");
-  globalTree->Branch("Jet_bTagWeightHFDown",       &Jet_bTagWeightHFDown,      "Jet_bTagWeightHFDown/F");
-  globalTree->Branch("Jet_bTagWeightHFStats1Up",   &Jet_bTagWeightHFStats1Up,   "Jet_bTagWeightHFStats1Up/F");
-  globalTree->Branch("Jet_bTagWeightHFStats1Down", &Jet_bTagWeightHFStats1Down, "Jet_bTagWeightHFStats1Down/F");
-  globalTree->Branch("Jet_bTagWeightHFStats2Up",   &Jet_bTagWeightHFStats2Up,   "Jet_bTagWeightHFStats2Up/F");
-  globalTree->Branch("Jet_bTagWeightHFStats2Down", &Jet_bTagWeightHFStats2Down, "Jet_bTagWeightHFStats2Down/F");
-
-  globalTree->Branch("Jet_bTagWeightcErr1Up",    &Jet_bTagWeightcErr1Up,   "Jet_bTagWeightcErr1Up/F");
-  globalTree->Branch("Jet_bTagWeightcErr1Down",  &Jet_bTagWeightcErr1Down, "Jet_bTagWeightcErr1Down/F");
-  globalTree->Branch("Jet_bTagWeightcErr2Up",    &Jet_bTagWeightcErr2Up,   "Jet_bTagWeightcErr2Up/F");
-  globalTree->Branch("Jet_bTagWeightcErr2Down",  &Jet_bTagWeightcErr2Down, "Jet_bTagWeightcErr2Down/F");
-
-  globalTree->Branch("Jet_btagCSV",&Jet_btagCSV, "Jet_btagCSV/F"); //Pending patch
-  globalTree->Branch("Jet_btagCMVA",&Jet_btagCMVA, "Jet_btagCMVA/F");
-  globalTree->Branch("Jet_btagCSVV0",&Jet_btagCSVV0, "Jet_btagCSVV0/F");
-  globalTree->Branch("Jet_btagCMVAV2",&Jet_btagCMVAV2, "Jet_btagCMVAV2/F");
-
-  globalTree->Branch("Jet_mcPt",&Jet_mcPt, "Jet_mcPt/F");
-
-  globalTree->Branch("Jet_corr",         &Jet_corr, "Jet_corr/F");
-  globalTree->Branch("Jet_corr_JECUp",   &Jet_corr_JECUp, "Jet_corr_JECUp/F");
-  globalTree->Branch("Jet_corr_JECDown", &Jet_corr_JECDown, "Jet_corr_JECDown/F");
-
-  globalTree->Branch("Jet_corr_JER",     &Jet_corr_JER, "Jet_corr_JER");
-  globalTree->Branch("Jet_corr_JERUp",   &Jet_corr_JERUp, "Jet_corr_JERUp/F");
-  globalTree->Branch("Jet_corr_JERDown", &Jet_corr_JERDown, "Jet_corr_JERDown/F");
+  globalTree->Branch("Jet_corr_JER",     Jet_corr_JER,     "Jet_corr_JER[Jet_iterator]/F");
+  globalTree->Branch("Jet_corr_JERUp",   Jet_corr_JERUp,   "Jet_corr_JERUp[Jet_iterator]/F");
+  globalTree->Branch("Jet_corr_JERDown", Jet_corr_JERDown, "Jet_corr_JERDown[Jet_iterator]/F");
  
+  
+  globalTree->Branch("globalJet_iterator",   &globalJet_iterator, "globalJet_iterator/I");  
+
+  globalTree->Branch("Jet_pt",   Jet_pt,   "Jet_pt[globalJet_iterator]/F"); 
+  globalTree->Branch("Jet_eta",  Jet_eta,  "Jet_eta[globalJet_iterator]/F"); 
+  globalTree->Branch("Jet_phi",  Jet_phi,  "Jet_phi[globalJet_iterator]/F"); 
+  globalTree->Branch("Jet_mass", Jet_mass, "Jet_mass[globalJet_iterator]/F");
+  
+
+  globalTree->Branch("Jet_bTagWeight",        Jet_bTagWeight,        "Jet_bTagWeight[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightJESUp",   Jet_bTagWeightJESUp,   "Jet_bTagWeightJESUp[globalJet_iterator]/F"); 
+  globalTree->Branch("Jet_bTagWeightJESDown", Jet_bTagWeightJESDown, "Jet_bTagWeightJESDown[globalJet_iterator]/F");
+
+  globalTree->Branch("Jet_bTagWeightLFUp",         Jet_bTagWeightLFUp,         "Jet_bTagWeightLFUp[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightLFDown",       Jet_bTagWeightLFDown,       "Jet_bTagWeightLFDown[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightLFStats1Up",   Jet_bTagWeightLFStats1Up,   "Jet_bTagWeightLFStats1Up[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightLFStats1Down", Jet_bTagWeightLFStats1Down, "Jet_bTagWeightLFStats1Down[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightLFStats2Up",   Jet_bTagWeightLFStats2Up,   "Jet_bTagWeightLFStats2Up[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightLFStats2Down", Jet_bTagWeightLFStats2Down, "Jet_bTagWeightLFStats2Down[globalJet_iterator]/F");
+
+  globalTree->Branch("Jet_bTagWeightHFUp",         Jet_bTagWeightHFUp,         "Jet_bTagWeightHFUp[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightHFDown",       Jet_bTagWeightHFDown,       "Jet_bTagWeightHFDown[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightHFStats1Up",   Jet_bTagWeightHFStats1Up,   "Jet_bTagWeightHFStats1Up[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightHFStats1Down", Jet_bTagWeightHFStats1Down, "Jet_bTagWeightHFStats1Down[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightHFStats2Up",   Jet_bTagWeightHFStats2Up,   "Jet_bTagWeightHFStats2Up[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightHFStats2Down", Jet_bTagWeightHFStats2Down, "Jet_bTagWeightHFStats2Down[globalJet_iterator]/F");
+
+  globalTree->Branch("Jet_bTagWeightcErr1Up",    Jet_bTagWeightcErr1Up,   "Jet_bTagWeightcErr1Up[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightcErr1Down",  Jet_bTagWeightcErr1Down, "Jet_bTagWeightcErr1Down[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightcErr2Up",    Jet_bTagWeightcErr2Up,   "Jet_bTagWeightcErr2Up[globalJet_iterator]/F");
+  globalTree->Branch("Jet_bTagWeightcErr2Down",  Jet_bTagWeightcErr2Down, "Jet_bTagWeightcErr2Down[globalJet_iterator]/F");
+
+  globalTree->Branch("Jet_btagCSV",    Jet_btagCSV,    "Jet_btagCSV[globalJet_iterator]/F"); //temoprary
+  globalTree->Branch("Jet_btagCMVA",   Jet_btagCMVA,   "Jet_btagCMVA[globalJet_iterator]/F"); //tempo.
+  globalTree->Branch("Jet_btagCSVV0",  Jet_btagCSVV0,  "Jet_btagCSVV0[globalJet_iterator]/F"); //tempo
+  globalTree->Branch("Jet_btagCMVAV2", Jet_btagCMVAV2, "Jet_btagCMVAV2[globalJet_iterator]/F");//tempo
+
+  globalTree->Branch("Jet_mcPt", Jet_mcPt);//, "Jet_mcPt/F");
+
   globalTree->Branch("nPVs", &_nPv, "_nPv/I");    
 
   if(!runningOnData_){
-   // globalTree->Branch("Genb_pt",&Genb_pt);
-   // globalTree->Branch("Genb_eta",&Genb_eta);
-   // globalTree->Branch("Genb_phi",&Genb_phi);
-   // globalTree->Branch("Genb_mass",&Genb_mass);
 
-    globalTree->Branch("Genb_pt",   &Genb_pt,   "Genb_pt/F");
-    globalTree->Branch("Genb_eta",  &Genb_eta,  "Genb_eta/F");
-    globalTree->Branch("Genb_phi",  &Genb_phi,  "Genb_phi/F");
-    globalTree->Branch("Genb_mass", &Genb_mass, "Genb_mass/F");
+ // globalTree->Branch("GenJet_pt",   GenJet_pt);
+ // globalTree->Branch("GenJet_eta",  GenJet_eta);
+ // globalTree->Branch("GenJet_phi",  GenJet_phi);
+ // globalTree->Branch("GenJet_mass", GenJet_mass);
+
+
+      globalTree->Branch("Genb_pt",   &Genb_pt); 
+      globalTree->Branch("Genb_eta",  &Genb_eta); 
+      globalTree->Branch("Genb_phi",  &Genb_phi); 
+      globalTree->Branch("Genb_mass", &Genb_mass);
 
     globalTree->Branch("nTrueInt",      &npT, "npT/F");
     globalTree->Branch("InTime_PileUp", &npIT, "npIT/F");   //Not yet included with proper var/branch name
 
-    globalTree->Branch("Jet_mcFlavour",&Jet_mcFlavour, "Jet_mcFlavour/I");
+     globalTree->Branch("Jet_mcFlavour",&Jet_mcFlavour, "Jet_mcFlavour/I");
   }
 
   globalTree->Branch("Jet_partonFlavour", &Jet_partonFlavour, "Jet_partonFlavour/I");
   globalTree->Branch("Jet_hadronFlavour", &Jet_hadronFlavour, "Jet_hadronFlavour/I");
 
-  globalTree->Branch("nGenJet",&nGenJet, "nGenJet/I");                    //Pending patch
-  globalTree->Branch("Jet_mcMatchId",&Jet_mcMatchId, "Jet_mcMatchId/F");
+   globalTree->Branch("nGenJet",&nGenJet, "nGenJet/I");                    //temporary
+   globalTree->Branch("Jet_mcMatchId",&Jet_mcMatchId, "Jet_mcMatchId/F");
 
   globalTree->Branch("HLT_BIT_HLT_QuadJet45_TripleBTagCSV0p67_v",&HLT_BIT_HLT_QuadJet45_TripleBTagCSV0p67_v, "HLT_BIT_HLT_QuadJet45_TripleBTagCSV0p67_v/I");
   globalTree->Branch("HLT_BIT_HLT_QuadJet45_DoubleBTagCSV0p67_v",&HLT_BIT_HLT_QuadJet45_DoubleBTagCSV0p67_v, "HLT_BIT_HLT_QuadJet45_DoubleBTagCSV0p67_v/I");
@@ -1299,37 +1385,37 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   globalTree->Branch("json",        &json,        "json/F");
   globalTree->Branch("json_silver", &json_silver, "json_silver/F");
 
-  globalTree->Branch("bTagWeight_LFUp",&bTagWeight_LFUp, "bTagWeight_LFUp/F");
-  globalTree->Branch("bTagWeight_LFDown",&bTagWeight_LFDown, "bTagWeight_LFDown/F");
-  globalTree->Branch("bTagWeight_LFStats1Up",&bTagWeight_LFStats1Up, "bTagWeight_LFStats1Up/F");
-  globalTree->Branch("bTagWeight_LFStats1Down",&bTagWeight_LFStats1Down, "bTagWeight_LFStats1Down/F");
-  globalTree->Branch("bTagWeight_LFStats2Down",&bTagWeight_LFStats2Down, "bTagWeight_LFStats2Down/F");
-  globalTree->Branch("bTagWeight_LFStats2Up",&bTagWeight_LFStats2Up, "bTagWeight_LFStats2Up/F");
+  globalTree->Branch("bTagWeight", bTagWeight, "bTagWeight[globalJet_iterator]/F");
+  
+  globalTree->Branch("bTagWeight_LFUp",         bTagWeight_LFUp,         "bTagWeight_LFUp[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_LFDown",       bTagWeight_LFDown,       "bTagWeight_LFDown[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_LFStats1Up",   bTagWeight_LFStats1Up,   "bTagWeight_LFStats1Up[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_LFStats1Down", bTagWeight_LFStats1Down, "bTagWeight_LFStats1Down[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_LFStats2Down", bTagWeight_LFStats2Down, "bTagWeight_LFStats2Down[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_LFStats2Up",   bTagWeight_LFStats2Up,   "bTagWeight_LFStats2Up[globalJet_iterator]/F");
 
-  globalTree->Branch("bTagWeight_HFUp",&bTagWeight_HFUp, "bTagWeight_HFUp/F");
-  globalTree->Branch("bTagWeight_HFDown",&bTagWeight_HFDown, "bTagWeight_HFDown/F");
-  globalTree->Branch("bTagWeight_HFStats1Up",&bTagWeight_HFStats1Up, "bTagWeight_HFStats1Up/F");
-  globalTree->Branch("bTagWeight_HFStats1Down",&bTagWeight_HFStats1Down, "bTagWeight_HFStats1Down/F");
-  globalTree->Branch("bTagWeight_HFStats2Up",&bTagWeight_HFStats2Up, "bTagWeight_HFStats2Up/F");
-  globalTree->Branch("bTagWeight_HFStats2Down",&bTagWeight_HFStats2Down, "bTagWeight_HFStats2Down/F");
+  globalTree->Branch("bTagWeight_HFUp",         bTagWeight_HFUp,         "bTagWeight_HFUp[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_HFDown",       bTagWeight_HFDown,       "bTagWeight_HFDown[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_HFStats1Up",   bTagWeight_HFStats1Up,   "bTagWeight_HFStats1Up[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_HFStats1Down", bTagWeight_HFStats1Down, "bTagWeight_HFStats1Down[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_HFStats2Up",   bTagWeight_HFStats2Up,   "bTagWeight_HFStats2Up[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_HFStats2Down", bTagWeight_HFStats2Down, "bTagWeight_HFStats2Down[globalJet_iterator]/F");
 
-  globalTree->Branch("bTagWeight_cErr1Down",&bTagWeight_cErr1Down, "bTagWeight_cErr1Down/F");
-  globalTree->Branch("bTagWeight_cErr1Up",&bTagWeight_cErr1Up, "bTagWeight_cErr1Up/F");
-  globalTree->Branch("bTagWeight_cErr2Up",&bTagWeight_cErr2Up, "bTagWeight_cErr2Up/F");
-  globalTree->Branch("bTagWeight_cErr2Down",&bTagWeight_cErr2Down, "bTagWeight_cErr2Down/F");
+  globalTree->Branch("bTagWeight_cErr1Down", bTagWeight_cErr1Down, "bTagWeight_cErr1Down[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_cErr1Up",   bTagWeight_cErr1Up,   "bTagWeight_cErr1Up[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_cErr2Up",   bTagWeight_cErr2Up,   "bTagWeight_cErr2Up[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_cErr2Down", bTagWeight_cErr2Down, "bTagWeight_cErr2Down[globalJet_iterator]/F");
 
-  globalTree->Branch("bTagWeight_JESDown",&bTagWeight_JESDown, "bTagWeight_JESDown/F");
-  globalTree->Branch("bTagWeight_JESUp",&bTagWeight_JESUp, "bTagWeight_JESUp/F");
- 
-  globalTree->Branch("met_pt",   &met_pt,   "met_pt/F");
-  globalTree->Branch("met_eta",  &met_eta,  "met_eta/F");
-  globalTree->Branch("met_phi",  &met_phi,  "met_phi/F");
-  globalTree->Branch("met_mass", &met_mass, "met_mass/F");
+  globalTree->Branch("bTagWeight_JESDown", bTagWeight_JESDown, "bTagWeight_JESDown[globalJet_iterator]/F");
+  globalTree->Branch("bTagWeight_JESUp",   bTagWeight_JESUp,   "bTagWeight_JESUp[globalJet_iterator]/F");
 
-  globalTree->Branch("GenJet_pt",   &GenJet_pt);
-  globalTree->Branch("GenJet_eta",  &GenJet_eta);
-  globalTree->Branch("GenJet_phi",  &GenJet_phi);
-  globalTree->Branch("GenJet_mass", &GenJet_mass);
+  
+  globalTree->Branch("met_iterator",   &met_iterator, "met_iterator/I");  
+
+  globalTree->Branch("met_pt",   met_pt,   "met_pt[met_iterator]/F");
+  globalTree->Branch("met_eta",  met_eta,  "met_eta[met_iterator]/F");
+  globalTree->Branch("met_phi",  met_phi,  "met_phi[met_iterator]/F");
+  globalTree->Branch("met_mass", met_mass, "met_mass[met_iterator]/F");
 
   globalTree->Branch("LHE_weights_scale_wgt",&LHE_weights_scale_wgt, "LHE_weights_scale_wgt/F");
   globalTree->Branch("nLHE_weights_pdf",&nLHE_weights_pdf, "nLHE_weights_pdf/F");
