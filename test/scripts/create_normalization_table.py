@@ -164,7 +164,8 @@ for dirname in list_dirs:
     #xsection = float(get_xsec_fromsample(samplename))
     xsection = get_xsec_fromsample(samplename)  
     print "crsoection = ", xsection
-    scale_factor = float(xsection*1000./number_events)
+    scale_factor = float(xsection*35.87/number_events)
+    #scale_factor = float(xsection*1000./number_events)
     print "scale_factor = ", scale_factor
     write_string = samplename + " " + str(scale_factor) + "\n"
     print "Output Norm = ", write_string

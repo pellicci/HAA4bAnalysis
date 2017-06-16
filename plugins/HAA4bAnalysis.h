@@ -99,8 +99,8 @@ private:
   TLorentzVector *jet3_4mom_tree_fit;
   TLorentzVector *jet4_4mom_tree_fit;
 //==============================================
-  
-  const int Max_Jets = 25;
+
+   const int Max_Jets = 25;
 
   // vectors to store MC information for background analysis
   std::vector<float> Genb_pt;
@@ -134,9 +134,9 @@ private:
   double ptCor_ScaleDown;
 
   //Btag Weight and Scale variation
-  float* bjet_scaleFactor           = new float[Max_Jets];
-  float* bjet_scaleFactor_ScaleUp   = new float[Max_Jets];
-  float* bjet_scaleFactor_ScaleDown = new float[Max_Jets];
+  float* bjet_scaleFactor           = new float[Max_Jets]();
+  float* bjet_scaleFactor_ScaleUp   = new float[Max_Jets]();
+  float* bjet_scaleFactor_ScaleDown = new float[Max_Jets]();
 
   //Event Info like event and run number, lumi sec., 
   ULong64_t evt;
@@ -177,7 +177,7 @@ private:
   float json;
   float json_silver;
 
-  float* bTagWeight_LFUp   = new float[Max_Jets];
+/*  float* bTagWeight_LFUp   = new float[Max_Jets];
   float* bTagWeight_LFDown = new float[Max_Jets];
 
   float* bTagWeight_LFStats1Up   = new float[Max_Jets];
@@ -202,68 +202,66 @@ private:
   float* bTagWeight_JESUp   = new float[Max_Jets];
 
   float* bTagWeight = new float[Max_Jets];
+*/
 
-  float* Jet_bTagWeight = new float[Max_Jets];
+  float* Jet_bTagWeight = new float[Max_Jets]();
 
-  float* Jet_bTagWeightJESUp   = new float[Max_Jets];
-  float* Jet_bTagWeightJESDown = new float[Max_Jets];
+  float* Jet_bTagWeightJESUp = new float[Max_Jets]();
+  float* Jet_bTagWeightJESDown  = new float[Max_Jets]();
 
-  float* Jet_bTagWeightLFUp   = new float[Max_Jets];   //start
-  float* Jet_bTagWeightLFDown = new float[Max_Jets];
+  float* Jet_bTagWeightLFUp   = new float[Max_Jets]();   //start
+  float* Jet_bTagWeightLFDown = new float[Max_Jets]();
 
-  float* Jet_bTagWeightLFStats1Up   = new float[Max_Jets];
-  float* Jet_bTagWeightLFStats1Down = new float[Max_Jets];
-  float* Jet_bTagWeightLFStats2Up   = new float[Max_Jets];
-  float* Jet_bTagWeightLFStats2Down = new float[Max_Jets];
+  float* Jet_bTagWeightLFStats1Up   = new float[Max_Jets]();
+  float* Jet_bTagWeightLFStats1Down = new float[Max_Jets]();
+  float* Jet_bTagWeightLFStats2Up   = new float[Max_Jets]();
+  float* Jet_bTagWeightLFStats2Down = new float[Max_Jets]();
 
-  float* Jet_bTagWeightHFUp   = new float[Max_Jets];
-  float* Jet_bTagWeightHFDown = new float[Max_Jets];
+  float* Jet_bTagWeightHFUp   = new float[Max_Jets]();
+  float* Jet_bTagWeightHFDown = new float[Max_Jets]();
 
-  float* Jet_bTagWeightHFStats1Up   = new float[Max_Jets];
-  float* Jet_bTagWeightHFStats1Down = new float[Max_Jets];
-  float* Jet_bTagWeightHFStats2Up   = new float[Max_Jets];
-  float* Jet_bTagWeightHFStats2Down = new float[Max_Jets];
+  float* Jet_bTagWeightHFStats1Up   = new float[Max_Jets]();
+  float* Jet_bTagWeightHFStats1Down = new float[Max_Jets]();
+  float* Jet_bTagWeightHFStats2Up   = new float[Max_Jets]();
+  float* Jet_bTagWeightHFStats2Down = new float[Max_Jets]();
 
-  float* Jet_bTagWeightcErr1Up   = new float[Max_Jets];
-  float* Jet_bTagWeightcErr1Down = new float[Max_Jets];
-  float* Jet_bTagWeightcErr2Up   = new float[Max_Jets];
-  float* Jet_bTagWeightcErr2Down = new float[Max_Jets]; 
+  float* Jet_bTagWeightcErr1Up   = new float[Max_Jets]();
+  float* Jet_bTagWeightcErr1Down = new float[Max_Jets]();
+  float* Jet_bTagWeightcErr2Up   = new float[Max_Jets]();
+  float* Jet_bTagWeightcErr2Down = new float[Max_Jets](); 
 
-  float* Jet_btagCSV    = new float[Max_Jets];
-  float* Jet_btagCMVA   = new float[Max_Jets]; 
-  float* Jet_btagCSVV0  = new float[Max_Jets]; 
-  float* Jet_btagCMVAV2 = new float[Max_Jets]; 
 
-  float* Jet_mcPt = new float[Max_Jets];
+  float* Jet_btagCSV    = new float[Max_Jets]();
+  float* Jet_btagCMVA   = new float[Max_Jets](); 
+  float* Jet_btagCSVV0  = new float[Max_Jets](); 
+  float* Jet_btagCMVAV2 = new float[Max_Jets](); 
 
-  float* Jet_corr         = new float[Max_Jets]; 
-  float* Jet_corr_JECUp   = new float[Max_Jets]; 
-  float* Jet_corr_JECDown = new float[Max_Jets]; 
+  float* Jet_mcPt = new float[Max_Jets]();
 
-  float* Jet_corr_JER     = new float[Max_Jets];
-  float* Jet_corr_JERUp   = new float[Max_Jets]; 
-  float* Jet_corr_JERDown = new float[Max_Jets]; 
+  float* Jet_corr         = new float[Max_Jets](); 
+  float* Jet_corr_JECUp   = new float[Max_Jets](); 
+  float* Jet_corr_JECDown = new float[Max_Jets](); 
 
-  float* met_pt   = new float[Max_Jets];
-  float* met_eta  = new float[Max_Jets]; 
-  float* met_phi  = new float[Max_Jets]; 
-  float* met_mass = new float[Max_Jets]; 
+  float* Jet_corr_JER     = new float[Max_Jets]();
+  float* Jet_corr_JERUp   = new float[Max_Jets](); 
+  float* Jet_corr_JERDown = new float[Max_Jets](); 
 
-  //const int Max_Jets = 25;
-  //float &jpfrecopt;
-  //  float* JetsArray = new float[Max_Jets];
+  float* met_pt   = new float[Max_Jets]();
+  float* met_eta  = new float[Max_Jets](); 
+  float* met_phi  = new float[Max_Jets](); 
+  float* met_mass = new float[Max_Jets](); 
+
  
-   
-  float* Jet_pt   = new float[Max_Jets];
-  float* Jet_eta  = new float[Max_Jets]; 
-  float* Jet_phi  = new float[Max_Jets]; 
-  float* Jet_mass = new float[Max_Jets]; 
-  float* Jet_btag = new float[Max_Jets];
+  float* Jet_pt   = new float[Max_Jets]();
+  float* Jet_eta  = new float[Max_Jets](); 
+  float* Jet_phi  = new float[Max_Jets](); 
+  float* Jet_mass = new float[Max_Jets](); 
+  float* Jet_btag = new float[Max_Jets]();
 
-  float* GenJet_pt    = new float[Max_Jets]; 
-  float* GenJet_eta   = new float[Max_Jets]; 
-  float* GenJet_phi   = new float[Max_Jets]; 
-  float* GenJet_mass  = new float[Max_Jets]; 
+//  float* GenJet_pt    = new float[Max_Jets]; 
+//  float* GenJet_eta   = new float[Max_Jets]; 
+//  float* GenJet_phi   = new float[Max_Jets]; 
+//  float* GenJet_mass  = new float[Max_Jets]; 
 
   float LHE_weights_scale_wgt; 
   float nLHE_weights_pdf;
@@ -275,6 +273,18 @@ private:
   float var_jet2Btag;
   float var_jet3Btag;
   float var_jet4Btag;
+
+// Input for Gamma Variables
+  float jet1_energy;
+  float jet2_energy;
+  float jet3_energy;
+  float jet4_energy;
+
+  float jet1_mass;
+  float jet2_mass;
+  float jet3_mass;
+  float jet4_mass;
+
 
   //A few counters
   float _Nevents_processed;

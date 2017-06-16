@@ -9,7 +9,7 @@ config.General.workArea = 'crab_projects/samples/'
 config.section_('JobType')
 config.JobType.psetName = 'run_HAA4bAnalysis.py'
 config.JobType.pluginName = 'Analysis'
-config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpHistogramFromjson_Nominal.root', 'pileUpHistogramFromjson_ScaleUp.root', 'pileUpHistogramFromjson_ScaleDown.root', 'CSVv2_Moriond17_B_H.csv', 'PHYS14_25_V1_L1FastJet_AK4PFchs.txt','PHYS14_25_V1_L2L3Residual_AK4PFchs.txt','PHYS14_25_V1_L2Relative_AK4PFchs.txt','PHYS14_25_V1_L3Absolute_AK4PFchs.txt', 'PHYS14_25_V1_Uncertainty_AK4PFchs.txt'] #data files for PileUp reweighting
+config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpHistogramFromjson_Nominal.root', 'pileUpHistogramFromjson_ScaleUp.root', 'pileUpHistogramFromjson_ScaleDown.root', 'CSVv2_Moriond17_B_H.csv', 'input_data/Summer16_23Sep2016V4_MC_L1FastJet_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L1RC_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L2L3Residual_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L2Relative_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L3Absolute_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False']
 config.JobType.allowUndistributedCMSSW = True
@@ -98,14 +98,14 @@ if __name__ == '__main__':
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
-
+    
     config.General.requestName = 'HAA4bAnalysis_DY_50'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM'
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
-
+    
     config.General.requestName = 'HAA4bAnalysis_QCD_HT100to200'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
-
+    
     config.General.requestName = 'HAA4bAnalysis_QCD_HT2000toInf_1'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     p = Process(target=submit, args=(config,))
     p.start()
     p.join()
-
+    
     config.General.requestName = 'HAA4bAnalysis_ZZ'
     config.Data.unitsPerJob = 5
     config.Data.inputDataset = '/ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
