@@ -51,7 +51,8 @@ JET4_BTAG = 0.8
 data_legend_name = "Data"
 
 #Normalize to this luminsity, in fb-1
-luminosity_norm = 36.46
+#luminosity_norm = 36.46
+luminosity_norm = 35.87
 
 #Make signal histos larger
 signal_magnify = 100.
@@ -61,7 +62,7 @@ output_dir = "plots"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" , "h_abs_massRatio_jetpair_beforefit", "h_abs_massRatio_jetpair_afterfit"  ] #"h_njetE" 
+list_histos = ["h_jet1pt", "h_jet2pt", "h_jet3pt", "h_jet4pt", "h_delta_Phi_pair", "h_delta_Eta_pair", "h_pt_pair1", "h_pt_pair2", "h_m4b", "h_m4b_fitted", "h_jet1eta", "h_jet2eta", "h_jet3eta", "h_jet4eta", "h_jet1Btag", "h_jet2Btag", "h_jet3Btag", "h_jet4Btag", "h_m12", "h_m34","h_nPv" , "h_abs_massRatio_jetpair_beforefit", "h_abs_massRatio_jetpair_afterfit" , "h_GammaL2_X_GammaL3", "h_Gamma_triple" ] #"h_njetE" 
 
 # Dataset names, and add new data samples as many as available
 data_samples = ["BTagCSV_B", "BTagCSV_C", "BTagCSV_D", "BTagCSV_E", "BTagCSV_F", "BTagCSV_G"] 
@@ -177,36 +178,38 @@ for sample_name in combined_list:      #for data + background
     if "Signal" in sample_name and not sample_name == myWF.sig_samplename:
         continue
 
-    h_base[theSampleName+list_histos[0]]  = ROOT.TH1F(theSampleName+list_histos[0], "p_{T} of the 1st jet", 25, PT1_MIN, 390.)
-    h_base[theSampleName+list_histos[1]]  = ROOT.TH1F(theSampleName+list_histos[1], "p_{T} of the 2nd jet", 25, PT2_MIN, 400.)
-    h_base[theSampleName+list_histos[2]]  = ROOT.TH1F(theSampleName+list_histos[2], "p_{T} of the 3rd jet", 25, PT3_MIN, 400.)
-    h_base[theSampleName+list_histos[3]]  = ROOT.TH1F(theSampleName+list_histos[3], "p_{T} of the 4th jet", 25, PT4_MIN, 390.)
-    h_base[theSampleName+list_histos[4]]  = ROOT.TH1F(theSampleName+list_histos[4], "#Delta#phi of the two jet pairs", 20, 0., 3.14)
-    h_base[theSampleName+list_histos[5]]  = ROOT.TH1F(theSampleName+list_histos[5], "#Delta#eta of the two jet pairs", 25, -5., 5.)
-    h_base[theSampleName+list_histos[6]]  = ROOT.TH1F(theSampleName+list_histos[6], "p_{T} of the first jet pair", 20, 0., 500.)
-    h_base[theSampleName+list_histos[7]]  = ROOT.TH1F(theSampleName+list_histos[7], "p_{T} of the second jet pair", 20, 0., 500.)
-    h_base[theSampleName+list_histos[8]]  = ROOT.TH1F(theSampleName+list_histos[8], "4jets invariant mass", 25, 100., 1200.)
-    h_base[theSampleName+list_histos[9]]  = ROOT.TH1F(theSampleName+list_histos[9], "Fitted 4jets invariant mass", 25, 100., 1200.)
-    h_base[theSampleName+list_histos[10]] = ROOT.TH1F(theSampleName+list_histos[10], "#eta of the 1st jet", 25, -3.5, 3.5)
-    h_base[theSampleName+list_histos[11]] = ROOT.TH1F(theSampleName+list_histos[11], "#eta of the 2nd jet", 25, -3.5, 3.5)
-    h_base[theSampleName+list_histos[12]] = ROOT.TH1F(theSampleName+list_histos[12], "#eta of the 3rd jet", 25, -3.5, 3.5)
-    h_base[theSampleName+list_histos[13]] = ROOT.TH1F(theSampleName+list_histos[13], "#eta of the 4th jet", 25, -3.5, 3.5)
-    h_base[theSampleName+list_histos[14]] = ROOT.TH1F(theSampleName+list_histos[14], "B-tag of the 1st jet", 25, JET1_BTAG+0.09, 1.)
-    h_base[theSampleName+list_histos[15]] = ROOT.TH1F(theSampleName+list_histos[15], "B-tag of the 2nd jet", 25, JET2_BTAG+0.04, 1.)
-    h_base[theSampleName+list_histos[16]] = ROOT.TH1F(theSampleName+list_histos[16], "B-tag of the 3rd jet", 25, JET3_BTAG, 1.)
-    h_base[theSampleName+list_histos[17]] = ROOT.TH1F(theSampleName+list_histos[17], "B-tag of the 4th jet", 25, JET4_BTAG, 1.)
-    h_base[theSampleName+list_histos[18]] = ROOT.TH1F(theSampleName+list_histos[18], "Invariant mass m_{12} of the first jet pair", 20, 0., 550.)
-    h_base[theSampleName+list_histos[19]] = ROOT.TH1F(theSampleName+list_histos[19], "Invariant mass m_{34} of the second jet pair", 20, 0., 550.)
-    h_base[theSampleName+list_histos[20]] = ROOT.TH1F(theSampleName+list_histos[20], "No. of primary verticies",35 , 0., 35.)
-    h_base[theSampleName+list_histos[21]] = ROOT.TH1F(theSampleName+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
-    h_base[theSampleName+list_histos[22]] = ROOT.TH1F(theSampleName+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",15 , 0., 1.1)
+    h_base[theSampleName+list_histos[0]]  = ROOT.TH1F(theSampleName+list_histos[0], "p_{T} of the 1st jet", 55, PT1_MIN, 390.)
+    h_base[theSampleName+list_histos[1]]  = ROOT.TH1F(theSampleName+list_histos[1], "p_{T} of the 2nd jet", 55, PT2_MIN, 400.)
+    h_base[theSampleName+list_histos[2]]  = ROOT.TH1F(theSampleName+list_histos[2], "p_{T} of the 3rd jet", 55, PT3_MIN, 400.)
+    h_base[theSampleName+list_histos[3]]  = ROOT.TH1F(theSampleName+list_histos[3], "p_{T} of the 4th jet", 55, PT4_MIN, 390.)
+    h_base[theSampleName+list_histos[4]]  = ROOT.TH1F(theSampleName+list_histos[4], "#Delta#phi of the two jet pairs", 40, 0., 3.14)
+    h_base[theSampleName+list_histos[5]]  = ROOT.TH1F(theSampleName+list_histos[5], "#Delta#eta of the two jet pairs", 40, -5., 5.)
+    h_base[theSampleName+list_histos[6]]  = ROOT.TH1F(theSampleName+list_histos[6], "p_{T} of the first jet pair", 50, 0., 500.)
+    h_base[theSampleName+list_histos[7]]  = ROOT.TH1F(theSampleName+list_histos[7], "p_{T} of the second jet pair", 50, 0., 500.)
+    h_base[theSampleName+list_histos[8]]  = ROOT.TH1F(theSampleName+list_histos[8], "4jets invariant mass", 55, 150., 1400.)
+    h_base[theSampleName+list_histos[9]]  = ROOT.TH1F(theSampleName+list_histos[9], "Fitted 4jets invariant mass", 55, 150., 1400.)
+    h_base[theSampleName+list_histos[10]] = ROOT.TH1F(theSampleName+list_histos[10], "#eta of the 1st jet", 40, -3.5, 3.5)
+    h_base[theSampleName+list_histos[11]] = ROOT.TH1F(theSampleName+list_histos[11], "#eta of the 2nd jet", 40, -3.5, 3.5)
+    h_base[theSampleName+list_histos[12]] = ROOT.TH1F(theSampleName+list_histos[12], "#eta of the 3rd jet", 40, -3.5, 3.5)
+    h_base[theSampleName+list_histos[13]] = ROOT.TH1F(theSampleName+list_histos[13], "#eta of the 4th jet", 40, -3.5, 3.5)
+    h_base[theSampleName+list_histos[14]] = ROOT.TH1F(theSampleName+list_histos[14], "B-tag of the 1st jet", 40, JET1_BTAG+0.09, 1.)
+    h_base[theSampleName+list_histos[15]] = ROOT.TH1F(theSampleName+list_histos[15], "B-tag of the 2nd jet", 40, JET2_BTAG+0.04, 1.)
+    h_base[theSampleName+list_histos[16]] = ROOT.TH1F(theSampleName+list_histos[16], "B-tag of the 3rd jet", 40, JET3_BTAG, 1.)
+    h_base[theSampleName+list_histos[17]] = ROOT.TH1F(theSampleName+list_histos[17], "B-tag of the 4th jet", 40, JET4_BTAG, 1.)
+    h_base[theSampleName+list_histos[18]] = ROOT.TH1F(theSampleName+list_histos[18], "Invariant mass m_{12} of the first jet pair", 55, 0., 650.)
+    h_base[theSampleName+list_histos[19]] = ROOT.TH1F(theSampleName+list_histos[19], "Invariant mass m_{34} of the second jet pair", 55, 0., 650.)
+    h_base[theSampleName+list_histos[20]] = ROOT.TH1F(theSampleName+list_histos[20], "No. of primary verticies",55 , 0., 45.)
+    h_base[theSampleName+list_histos[21]] = ROOT.TH1F(theSampleName+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",40 , 0., 1.1)
+    h_base[theSampleName+list_histos[22]] = ROOT.TH1F(theSampleName+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",40 , 0., 1.1)
+    h_base[theSampleName+list_histos[23]] = ROOT.TH1F(theSampleName+list_histos[23], "#gamma_{L2} x #gamma_{L3}",55 , 0., 600.)
+    h_base[theSampleName+list_histos[24]] = ROOT.TH1F(theSampleName+list_histos[24], "#gamma_{tripple}",55 , 0., 60.)
     #h_base[theSampleName+list_histos[20]] = ROOT.TH1F(theSampleName+list_histos[20], "No. of jet entries", 10, 0., 10.)
 
 #Defining 2D Histograms/Correlation's
-h_ma1_ma2     = ROOT.TH2F("h_ma1_ma2", "m_{12} vs m_{34}", 15,   0.,  600., 15, 0., 600.)
-h_mh_ma1      = ROOT.TH2F("h_mh_ma2", "m_{H} vs m_{34}"  , 20, 200., 1000., 15, 0., 600.)
-h_ma1_ma2_sig = ROOT.TH2F("h_ma1_ma2_sig", "m_{12} vs m_{34}", 15,   0.,  600., 15, 0., 600.)
-h_mh_ma1_sig  = ROOT.TH2F("h_mh_ma2_sig", "m_{H} vs m_{34}",   20, 200., 1000., 15, 0., 600.)
+h_ma1_ma2     = ROOT.TH2F("h_ma1_ma2", "m_{12} vs m_{34}", 25,   0.,  600., 25, 0., 600.)
+h_mh_ma1      = ROOT.TH2F("h_mh_ma2", "m_{H} vs m_{34}"  , 25, 200., 1000., 35, 0., 600.)
+h_ma1_ma2_sig = ROOT.TH2F("h_ma1_ma2_sig", "m_{12} vs m_{34}", 25,   0.,  600., 25, 0., 600.)
+h_mh_ma1_sig  = ROOT.TH2F("h_mh_ma2_sig", "m_{H} vs m_{34}",   25, 200., 1000., 25, 0., 600.)
 
 ##Graphics stuff
 canvas = dict()
@@ -358,7 +361,201 @@ for  name_sample in combined_list:    # for data + background
         mass_diff_pair_fit = diff_p_pair_fit.M()
         mass_add_pair_fit = add_p_pair_fit.M()
 
-        if not mass_add_pair_fit==0:
+        #Define Gamma variables using energy and mass
+        jet1_energy = mytree.jet1_energy
+        jet2_energy = mytree.jet2_energy
+        jet3_energy = mytree.jet3_energy
+        jet4_energy = mytree.jet4_energy
+
+        jet1_mass = mytree.jet1_mass
+        jet2_mass = mytree.jet2_mass
+        jet3_mass = mytree.jet3_mass
+        jet4_mass = mytree.jet4_mass
+
+        #double jet boast
+        if not (jet1_mass + jet2_mass) == 0:
+            Gamma12 = (jet1_energy + jet2_energy)/(jet1_mass + jet2_mass)
+        if not (jet1_mass + jet3_mass) == 0:
+            Gamma13 = (jet1_energy + jet3_energy)/(jet1_mass + jet3_mass)
+        if not (jet1_mass + jet4_mass) == 0:
+            Gamma14 = (jet1_energy + jet4_energy)/(jet1_mass + jet4_mass)
+        if not (jet2_mass + jet3_mass) == 0:
+            Gamma23 = (jet2_energy + jet3_energy)/(jet2_mass + jet3_mass)
+        if not (jet2_mass + jet4_mass) == 0:
+            Gamma24 = (jet2_energy + jet4_energy)/(jet2_mass + jet4_mass)
+        if not (jet3_mass + jet4_mass) == 0:
+            Gamma34 = (jet3_energy + jet4_energy)/(jet3_mass + jet4_mass)
+
+        diff_Gamma1 = abs(Gamma12 - Gamma34)
+        diff_Gamma2 = abs(Gamma13 - Gamma24)
+        diff_Gamma3 = abs(Gamma14 - Gamma23)
+
+        #Ordering as per minimum difference (Increasing order)
+        # diff_Gamma1 < (diff_Gamma2 < diff_Gamma3 or diff_Gamma2 > diff_Gamma3)
+        if diff_Gamma1 < diff_Gamma2 and diff_Gamma1 < diff_Gamma3:
+            if diff_Gamma2 < diff_Gamma3:
+                if Gamma12 > Gamma34:
+                     Gamma_L1 = Gamma12
+                     Gamma_S1 = Gamma34
+                else:
+                     Gamma_L1 = Gamma34
+                     Gamma_S1 = Gamma12
+
+                if Gamma13 > Gamma24:
+                     Gamma_L2 = Gamma13
+                     Gamma_S2 = Gamma24
+                else:
+                     Gamma_L2 = Gamma24
+                     Gamma_S2 = Gamma13
+
+                if Gamma14 > Gamma23:
+                    Gamma_L3 = Gamma14
+                    Gamma_S3 = Gamma23
+                else:
+                    Gamma_L3 = Gamma23
+                    Gamma_S3 = Gamma14
+
+            elif diff_Gamma3 < diff_Gamma2:
+                if Gamma12 > Gamma34:
+                     Gamma_L1 = Gamma12
+                     Gamma_S1 = Gamma34
+                else:
+                     Gamma_L1 = Gamma34
+                     Gamma_S1 = Gamma12
+
+                if Gamma14 > Gamma23:
+                    Gamma_L2 = Gamma14
+                    Gamma_S2 = Gamma23
+                else:
+                    Gamma_L2 = Gamma23
+                    Gamma_S2 = Gamma14
+
+                if Gamma13 > Gamma24:
+                     Gamma_L3 = Gamma13
+                     Gamma_S3 = Gamma24
+                else:
+                     Gamma_L3 = Gamma24
+                     Gamma_S3 = Gamma13
+
+        # diff_Gamma2 < (diff_Gamma1 < diff_Gamma3 or diff_Gamma1> diff_Gamma3)
+        if diff_Gamma2 < diff_Gamma1 and diff_Gamma2 < diff_Gamma3:
+            if diff_Gamma1 < diff_Gamma3:
+
+                if Gamma13 > Gamma24:
+                     Gamma_L1 = Gamma13
+                     Gamma_S1 = Gamma24
+                else:
+                     Gamma_L1 = Gamma24
+                     Gamma_S1 = Gamma13
+
+                if Gamma12 > Gamma34:
+                     Gamma_L2 = Gamma12
+                     Gamma_S2 = Gamma34
+                else:
+                     Gamma_L2 = Gamma34
+                     Gamma_S2 = Gamma12
+
+                if Gamma14 > Gamma23:
+                    Gamma_L3 = Gamma14
+                    Gamma_S3 = Gamma23
+                else:
+                    Gamma_L3 = Gamma23
+                    Gamma_S3 = Gamma14
+
+            elif diff_Gamma3 < diff_Gamma1:
+
+                if Gamma13 > Gamma24:
+                    Gamma_L1 = Gamma13
+                    Gamma_S1 = Gamma24
+                else:
+                    Gamma_L1 = Gamma24
+                    Gamma_S1 = Gamma13
+
+                if Gamma14 > Gamma23:
+                     Gamma_L2 = Gamma14
+                     Gamma_S2 = Gamma23
+                else:
+                     Gamma_L2 = Gamma23
+                     Gamma_S2 = Gamma14
+
+                if Gamma12 > Gamma34:
+                     Gamma_L3 = Gamma12
+                     Gamma_S3 = Gamma34
+                else:
+                     Gamma_L3 = Gamma34
+                     Gamma_S3 = Gamma12
+
+        # diff_Gamma3 < (diff_Gamma1 < diff_Gamma2 or diff_Gamma1 > diff_Gamma2)
+        if diff_Gamma3 < diff_Gamma1 and diff_Gamma3 < diff_Gamma2:
+            if diff_Gamma1 < diff_Gamma2:
+                if Gamma14 > Gamma23:
+                     Gamma_L1 = Gamma14
+                     Gamma_S1 = Gamma23
+                else:
+                     Gamma_L1 = Gamma23
+                     Gamma_S1 = Gamma14
+
+                if Gamma12 > Gamma34:
+                     Gamma_L2 = Gamma12
+                     Gamma_S2 = Gamma34
+                else:
+                     Gamma_L2 = Gamma34
+                     Gamma_S2 = Gamma12
+
+                if Gamma13 > Gamma24:
+                    Gamma_L3 = Gamma13
+                    Gamma_S3 = Gamma24
+                else:
+                    Gamma_L3 = Gamma24
+                    Gamma_S3 = Gamma13
+
+            elif diff_Gamma2 < diff_Gamma1:
+                if Gamma14 > Gamma23:
+                     Gamma_L1 = Gamma14
+                     Gamma_S1 = Gamma23
+                else:
+                     Gamma_L1 = Gamma23
+                     Gamma_S1 = Gamma14
+
+                if Gamma13 > Gamma24:
+                    Gamma_L2 = Gamma13
+                    Gamma_S2 = Gamma24
+                else:
+                    Gamma_L2 = Gamma24
+                    Gamma_S2 = Gamma13
+
+                if Gamma12 > Gamma34:
+                     Gamma_L3 = Gamma12
+                     Gamma_S3 = Gamma34
+                else:
+                     Gamma_L3 = Gamma34
+                     Gamma_S3 = Gamma12
+        
+        #Parameter to controll QCD multijet
+        Gamma_L2_X_GammaL3 = Gamma_L2 * Gamma_L3
+
+        #Triple Jet boast
+        if not (jet1_mass + jet2_mass + jet3_mass) == 0:
+            Gamma123 = (jet1_energy + jet2_energy + jet3_energy)/(jet1_mass + jet2_mass + jet3_mass)
+        if not (jet1_mass + jet2_mass + jet4_mass) == 0:
+            Gamma124 = (jet1_energy + jet2_energy + jet4_energy)/(jet1_mass + jet2_mass + jet4_mass)
+        if not (jet1_mass + jet3_mass + jet4_mass) == 0:
+            Gamma134 = (jet1_energy + jet3_energy + jet4_energy)/(jet1_mass + jet3_mass + jet4_mass)
+        if not (jet2_mass + jet3_mass + jet4_mass) == 0:
+            Gamma234 = (jet2_energy + jet3_energy + jet4_energy)/(jet2_mass + jet3_mass + jet4_mass)
+
+        #find the maximal of the above boast
+        if Gamma123 > Gamma124 and Gamma123 > Gamma134 and Gamma123 > Gamma234:
+            Gamma_tripple = Gamma123
+        if Gamma124 > Gamma123 and Gamma124 > Gamma134 and Gamma124 > Gamma234:
+            Gamma_tripple = Gamma124
+        if Gamma134 > Gamma123 and Gamma134 > Gamma124 and Gamma134 > Gamma234:
+            Gamma_tripple = Gamma134
+        if Gamma234 > Gamma123 and Gamma234 > Gamma124 and Gamma234 > Gamma134:
+            Gamma_tripple = Gamma234
+
+
+        if not mass_add_pair_fit == 0:
             abs_massRatio_jetpair_afterfit = abs(mass_diff_pair_fit/mass_add_pair_fit)
 
         if select_all_but_one("h_jet1pt"):
@@ -407,7 +604,10 @@ for  name_sample in combined_list:    # for data + background
             h_base[theSampleName+"h_abs_massRatio_jetpair_beforefit"].Fill(abs_massRatio_jetpair,Event_Weight)
         if select_all_but_one("h_abs_massRatio_jetpair_afterfit"):
             h_base[theSampleName+"h_abs_massRatio_jetpair_afterfit"].Fill(abs_massRatio_jetpair_afterfit, Event_Weight)
-
+        if select_all_but_one("h_Gamma_L2_X_GammaL3"):
+            h_base[theSampleName+"h_GammaL2_X_GammaL3"].Fill(Gamma_L2_X_GammaL3,Event_Weight)
+        if select_all_but_one("h_Gamma_triple"):
+            h_base[theSampleName+"h_Gamma_triple"].Fill(Gamma_tripple,Event_Weight)
 
         ##Now the 2D plots
         if name_sample == myWF.sig_samplename:
