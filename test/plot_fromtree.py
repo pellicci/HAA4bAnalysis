@@ -201,8 +201,8 @@ for sample_name in combined_list:      #for data + background
     h_base[theSampleName+list_histos[20]] = ROOT.TH1F(theSampleName+list_histos[20], "No. of primary verticies",55 , 0., 45.)
     h_base[theSampleName+list_histos[21]] = ROOT.TH1F(theSampleName+list_histos[21], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",40 , 0., 1.1)
     h_base[theSampleName+list_histos[22]] = ROOT.TH1F(theSampleName+list_histos[22], "abs([M(b1b2)-M(b3b4)]/[M(b1b2)+M(b3b4])",40 , 0., 1.1)
-    h_base[theSampleName+list_histos[23]] = ROOT.TH1F(theSampleName+list_histos[23], "#gamma_{L2} x #gamma_{L3}",55 , 0., 600.)
-    h_base[theSampleName+list_histos[24]] = ROOT.TH1F(theSampleName+list_histos[24], "#gamma_{tripple}",55 , 0., 60.)
+    h_base[theSampleName+list_histos[23]] = ROOT.TH1F(theSampleName+list_histos[23], "#gamma_{L2} x #gamma_{L3}",50 , 0., 35.)
+    h_base[theSampleName+list_histos[24]] = ROOT.TH1F(theSampleName+list_histos[24], "#gamma_{tripple}",50 , 0., 3.5)
     #h_base[theSampleName+list_histos[20]] = ROOT.TH1F(theSampleName+list_histos[20], "No. of jet entries", 10, 0., 10.)
 
 #Defining 2D Histograms/Correlation's
@@ -362,29 +362,19 @@ for  name_sample in combined_list:    # for data + background
         mass_add_pair_fit = add_p_pair_fit.M()
 
         #Define Gamma variables using energy and mass
-        jet1_energy = mytree.jet1_energy
-        jet2_energy = mytree.jet2_energy
-        jet3_energy = mytree.jet3_energy
-        jet4_energy = mytree.jet4_energy
-
-        jet1_mass = mytree.jet1_mass
-        jet2_mass = mytree.jet2_mass
-        jet3_mass = mytree.jet3_mass
-        jet4_mass = mytree.jet4_mass
-
         #double jet boast
-        if not (jet1_mass + jet2_mass) == 0:
-            Gamma12 = (jet1_energy + jet2_energy)/(jet1_mass + jet2_mass)
-        if not (jet1_mass + jet3_mass) == 0:
-            Gamma13 = (jet1_energy + jet3_energy)/(jet1_mass + jet3_mass)
-        if not (jet1_mass + jet4_mass) == 0:
-            Gamma14 = (jet1_energy + jet4_energy)/(jet1_mass + jet4_mass)
-        if not (jet2_mass + jet3_mass) == 0:
-            Gamma23 = (jet2_energy + jet3_energy)/(jet2_mass + jet3_mass)
-        if not (jet2_mass + jet4_mass) == 0:
-            Gamma24 = (jet2_energy + jet4_energy)/(jet2_mass + jet4_mass)
-        if not (jet3_mass + jet4_mass) == 0:
-            Gamma34 = (jet3_energy + jet4_energy)/(jet3_mass + jet4_mass)
+        if not ((jet1_4mom + jet2_4mom).M()) == 0:
+            Gamma12 = (jet1_4mom.Energy() + jet2_4mom.Energy())/((jet1_4mom + jet2_4mom).M())
+        if not ((jet1_4mom + jet3_4mom).M()) == 0:
+            Gamma13 = (jet1_4mom.Energy() + jet3_4mom.Energy())/((jet1_4mom + jet3_4mom).M())
+        if not ((jet1_4mom + jet4_4mom).M()) == 0:
+            Gamma14 = (jet1_4mom.Energy() + jet4_4mom.Energy())/((jet1_4mom + jet4_4mom).M())
+        if not ((jet2_4mom + jet3_4mom).M()) == 0:
+            Gamma23 = (jet2_4mom.Energy() + jet3_4mom.Energy())/((jet2_4mom + jet3_4mom).M())
+        if not ((jet2_4mom + jet4_4mom).M()) == 0:
+            Gamma24 = (jet2_4mom.Energy() + jet4_4mom.Energy())/((jet2_4mom + jet4_4mom).M())
+        if not ((jet3_4mom + jet4_4mom).M()) == 0:
+            Gamma34 = (jet3_4mom.Energy() + jet4_4mom.Energy())/((jet3_4mom + jet4_4mom).M())
 
         diff_Gamma1 = abs(Gamma12 - Gamma34)
         diff_Gamma2 = abs(Gamma13 - Gamma24)
@@ -456,20 +446,20 @@ for  name_sample in combined_list:    # for data + background
                      Gamma_S2 = Gamma12
 
                 if Gamma14 > Gamma23:
-                    Gamma_L3 = Gamma14
-                    Gamma_S3 = Gamma23
+                     Gamma_L3 = Gamma14
+                     Gamma_S3 = Gamma23
                 else:
-                    Gamma_L3 = Gamma23
-                    Gamma_S3 = Gamma14
+                     Gamma_L3 = Gamma23
+                     Gamma_S3 = Gamma14
 
             elif diff_Gamma3 < diff_Gamma1:
 
                 if Gamma13 > Gamma24:
-                    Gamma_L1 = Gamma13
-                    Gamma_S1 = Gamma24
+                     Gamma_L1 = Gamma13
+                     Gamma_S1 = Gamma24
                 else:
-                    Gamma_L1 = Gamma24
-                    Gamma_S1 = Gamma13
+                     Gamma_L1 = Gamma24
+                     Gamma_S1 = Gamma13
 
                 if Gamma14 > Gamma23:
                      Gamma_L2 = Gamma14
@@ -503,11 +493,11 @@ for  name_sample in combined_list:    # for data + background
                      Gamma_S2 = Gamma12
 
                 if Gamma13 > Gamma24:
-                    Gamma_L3 = Gamma13
-                    Gamma_S3 = Gamma24
+                     Gamma_L3 = Gamma13
+                     Gamma_S3 = Gamma24
                 else:
-                    Gamma_L3 = Gamma24
-                    Gamma_S3 = Gamma13
+                     Gamma_L3 = Gamma24
+                     Gamma_S3 = Gamma13
 
             elif diff_Gamma2 < diff_Gamma1:
                 if Gamma14 > Gamma23:
@@ -518,11 +508,11 @@ for  name_sample in combined_list:    # for data + background
                      Gamma_S1 = Gamma14
 
                 if Gamma13 > Gamma24:
-                    Gamma_L2 = Gamma13
-                    Gamma_S2 = Gamma24
+                     Gamma_L2 = Gamma13
+                     Gamma_S2 = Gamma24
                 else:
-                    Gamma_L2 = Gamma24
-                    Gamma_S2 = Gamma13
+                     Gamma_L2 = Gamma24
+                     Gamma_S2 = Gamma13
 
                 if Gamma12 > Gamma34:
                      Gamma_L3 = Gamma12
@@ -535,14 +525,14 @@ for  name_sample in combined_list:    # for data + background
         Gamma_L2_X_GammaL3 = Gamma_L2 * Gamma_L3
 
         #Triple Jet boast
-        if not (jet1_mass + jet2_mass + jet3_mass) == 0:
-            Gamma123 = (jet1_energy + jet2_energy + jet3_energy)/(jet1_mass + jet2_mass + jet3_mass)
-        if not (jet1_mass + jet2_mass + jet4_mass) == 0:
-            Gamma124 = (jet1_energy + jet2_energy + jet4_energy)/(jet1_mass + jet2_mass + jet4_mass)
-        if not (jet1_mass + jet3_mass + jet4_mass) == 0:
-            Gamma134 = (jet1_energy + jet3_energy + jet4_energy)/(jet1_mass + jet3_mass + jet4_mass)
-        if not (jet2_mass + jet3_mass + jet4_mass) == 0:
-            Gamma234 = (jet2_energy + jet3_energy + jet4_energy)/(jet2_mass + jet3_mass + jet4_mass)
+        if not ((jet1_4mom + jet2_4mom + jet3_4mom).M()) == 0:
+            Gamma123 = (jet1_4mom.Energy() + jet2_4mom.Energy() + jet3_4mom.Energy())/((jet1_4mom + jet2_4mom + jet3_4mom).M())
+        if not ((jet1_4mom + jet2_4mom + jet4_4mom).M()) == 0:
+            Gamma124 = (jet1_4mom.Energy() + jet2_4mom.Energy() + jet4_4mom.Energy())/((jet1_4mom + jet2_4mom + jet4_4mom).M())
+        if not ((jet1_4mom + jet3_4mom + jet4_4mom).M()) == 0:
+            Gamma134 = (jet1_4mom.Energy() + jet3_4mom.Energy() + jet4_4mom.Energy())/((jet1_4mom + jet3_4mom + jet4_4mom).M())
+        if not ((jet2_4mom + jet3_4mom + jet4_4mom).M()) == 0:
+            Gamma234 = (jet2_4mom.Energy() + jet3_4mom.Energy() + jet4_4mom.Energy())/(((jet2_4mom + jet3_4mom + jet4_4mom).M()))
 
         #find the maximal of the above boast
         if Gamma123 > Gamma124 and Gamma123 > Gamma134 and Gamma123 > Gamma234:

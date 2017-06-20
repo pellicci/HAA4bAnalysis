@@ -581,18 +581,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   var_jet3Btag = jet3.bDiscriminator(bdiscr_);
   var_jet4Btag = jet4.bDiscriminator(bdiscr_);
 
- //Input for Gamma Variables
-  jet1_energy = jet1_4mom.E();
-  jet2_energy = jet2_4mom.E();
-  jet3_energy = jet3_4mom.E();
-  jet4_energy = jet4_4mom.E();
-
-  jet1_mass   = jet1_4mom.M();
-  jet2_mass   = jet2_4mom.M();
-  jet3_mass   = jet3_4mom.M();
-  jet4_mass   = jet4_4mom.M();
-
-
   h_jet1pt->Fill(jet1.p4().Pt());
   h_jet2pt->Fill(jet2.p4().Pt());
   h_jet3pt->Fill(jet3.p4().Pt());
@@ -1291,18 +1279,6 @@ void HAA4bAnalysis::create_Histos_and_Trees(){
   mytree->Branch("jet2Btag", &var_jet2Btag, "jet2Btag/F");
   mytree->Branch("jet3Btag", &var_jet3Btag, "jet3Btag/F");
   mytree->Branch("jet4Btag", &var_jet4Btag, "jet4Btag/F");
-
-  //variables for gamma calculation.
-  mytree->Branch("jet1_energy", &jet1_energy, "jet1_energy/F");
-  mytree->Branch("jet2_energy", &jet2_energy, "jet2_energy/F");
-  mytree->Branch("jet3_energy", &jet3_energy, "jet3_energy/F");
-  mytree->Branch("jet4_energy", &jet4_energy, "jet4_energy/F");
-
-  mytree->Branch("jet1_mass", &jet1_mass, "jet1_mass/F");
-  mytree->Branch("jet2_mass", &jet2_mass, "jet2_mass/F");
-  mytree->Branch("jet3_mass", &jet3_mass, "jet3_mass/F");
-  mytree->Branch("jet4_mass", &jet4_mass, "jet4_mass/F");
-
 
   mytree->Branch("N_nPv", &_nPv, "_nPv/I");                                          //Filling Primary Verticies 
 
