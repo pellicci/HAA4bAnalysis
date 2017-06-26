@@ -12,7 +12,7 @@ config.JobType.pluginName = 'Analysis'
 config.JobType.inputFiles = ['MCpileUp_25ns_Recent2016.root','pileUpHistogramFromjson_Nominal.root', 'pileUpHistogramFromjson_ScaleUp.root', 'pileUpHistogramFromjson_ScaleDown.root', 'CSVv2_Moriond17_B_H.csv', 'input_data/Summer16_23Sep2016V4_MC_L1FastJet_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L1RC_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L2L3Residual_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L2Relative_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_L3Absolute_AK4PFchs.txt', 'input_data/Summer16_23Sep2016V4_MC_Uncertainty_AK4PFchs.txt'] #data files for PileUp reweighting
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=False']
-config.JobType.allowUndistributedCMSSW = True
+#config.JobType.allowUndistributedCMSSW = True
 
 config.section_('Data')
 config.Data.splitting = 'FileBased'

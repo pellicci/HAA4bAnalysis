@@ -109,9 +109,9 @@ HAA4bAnalysis::HAA4bAnalysis(const edm::ParameterSet& iConfig) :
   pvCollection_    (iConfig.getParameter<edm::InputTag>("pvCollection")),   
   bsCollection_    (iConfig.getParameter<edm::InputTag>("bsCollection")),  
   PileupSrc_       (iConfig.getParameter<edm::InputTag>("PileupSrc")),    
-  rhoSrc_          (iConfig.getParameter<edm::InputTag>("rhoSrc"))//,
- // jecPayloadNames_ (iConfig.getParameter<std::vector<std::string> >("jecPayloadNames") ),
- // jecUncName_      (iConfig.getParameter<std::string>("jecUncName"))
+  rhoSrc_          (iConfig.getParameter<edm::InputTag>("rhoSrc")),
+  jecPayloadNames_ (iConfig.getParameter<std::vector<std::string> >("jecPayloadNames") ),
+  jecUncName_      (iConfig.getParameter<std::string>("jecUncName"))
 
 {
   jetstoken_          = consumes<std::vector<pat::Jet> >(jets_); 
@@ -190,9 +190,9 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 //   edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl; //////////////////////////
 //   iSetup.get<JetCorrectionsRecord>().get("AK4PFchs",JetCorParColl);
-/*
+
   //Apply Jet Corrections On Fly             //Procedure works locally but not on crab and hence commented 
-  std::vector<JetCorrectorParameters> vPar;
+/*  std::vector<JetCorrectorParameters> vPar;
   for ( std::vector<std::string>::const_iterator payloadBegin = jecPayloadNames_.begin(),
         payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
         JetCorrectorParameters pars(*ipayload);
@@ -205,10 +205,10 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 */
 
-/*   //Alternative way of getting Unceratainity directly from DB without use ot .txt files
-   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
-   JetCorrectionUncertainty *jecUnc         = new JetCorrectionUncertainty(JetCorPar);
-*/
+   //Alternative way of getting Unceratainity directly from DB without use ot .txt files
+//   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+//   JetCorrectionUncertainty *jecUnc         = new JetCorrectionUncertainty(JetCorPar);
+
   //get the Handle of the primary vertex collection and remove the beamspot
   edm::Handle<reco::BeamSpot> bmspot;
   iEvent.getByLabel(bsCollection_,bmspot);
@@ -362,8 +362,8 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       std::cout<<"Jet Scale Factor Scale Down variation = "<<Jet_resolutionSF_Down<<std::endl;
    
       //Alternative way to get JEC Uncertainities
-      //Retrieving Jet Energy Correction Uncertainities directly from DB without use of text files
-/*      jecUnc->setJetEta(jet->p4().eta());  //Set eta
+/*      //Retrieving Jet Energy Correction Uncertainities directly from DB without use of text files
+      jecUnc->setJetEta(jet->p4().eta());  //Set eta
       jecUnc->setJetPt(jet->p4().Pt());    //Set Pt Here wehave to use the corrected Pt and don't know how. Please checck it 
  
        JEC_Uncertainity = jecUnc->getUncertainty(true);
@@ -377,8 +377,6 @@ void HAA4bAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       std::cout<<"Pt Scale Up is "      <<ptCor_ScaleUp<<std::endl;
       std::cout<<"Pt Scale Down is "    <<ptCor_ScaleDown<<std::endl;
 */
-     /////////////////////////////////////////////////////////////////////////
-     //Gamma variables for background reduction
 
     //Jet Btag and other Info
     float thecsv = jet->bDiscriminator(bdiscr_);
@@ -710,7 +708,11 @@ void HAA4bAnalysis::endJob()
   if (Jet_corr_JERUp   != NULL) delete[] Jet_corr_JERUp;  
   if (Jet_corr_JERDown != NULL) delete[] Jet_corr_JERDown; 
 
-
+  if (GenJet_pt   != NULL) delete[] GenJet_pt; 
+  if (GenJet_eta  != NULL) delete[] GenJet_eta; 
+  if (GenJet_phi  != NULL) delete[] GenJet_phi; 
+  if (GenJet_mass != NULL) delete[] GenJet_mass; 
+  
 }
 
 int HAA4bAnalysis::get_best_combination(LorentzVector& m1, LorentzVector& m2, LorentzVector& m3, LorentzVector& m4){
@@ -1133,10 +1135,10 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
   //Generator level info from MC
   genWeight   = 0.;
 
-//  GenJet_pt [Max_Jets]  = {0.}; 
-//  GenJet_eta[Max_Jets]  = {0.}; 
-//  GenJet_phi[Max_Jets]  = {0.}; 
-//  GenJet_mass[Max_Jets] = {0.};
+  GenJet_pt [Max_Jets]  = {0.}; 
+  GenJet_eta[Max_Jets]  = {0.}; 
+  GenJet_phi[Max_Jets]  = {0.}; 
+  GenJet_mass[Max_Jets] = {0.};
 
   Jet_id = 0;
   Jet_mcFlavour = 0;
@@ -1155,18 +1157,18 @@ void HAA4bAnalysis::fill_global_Tree(edm::Handle<std::vector<pat::Jet> >& global
     genJet_iterator = 0;  //for tree
     int genJet_loop_increment =0;  //for loop increament
 
-   for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
+    for(auto genpart = genParticles->begin(); genpart != genParticles->end(); genpart++){
 
       genJet_iterator++;  
       nGenJets++;
 
     genWeight     = is_mc; // temporary
 
-//       GenJet_pt[genJet_loop_increment]   = genpart->pt(); //tempororaly commented as program crashes if it is uncommented.
-//       GenJet_eta[genJet_loop_increment]    = genpart->eta(); 
-//       GenJet_phi[genJet_loop_increment]    = genpart->phi(); 
-//       GenJet_mass[genJet_loop_increment]   = genpart->mass();
-//
+  //     GenJet_pt[genJet_loop_increment]     = genpart->pt(); //tempororaly commented as program crashes if it is uncommented.
+  //     GenJet_eta[genJet_loop_increment]    = genpart->eta(); 
+  //     GenJet_phi[genJet_loop_increment]    = genpart->phi(); 
+  //     GenJet_mass[genJet_loop_increment]   = genpart->mass();
+
       // genJet_iterator++; 
       
        genJet_loop_increment++;

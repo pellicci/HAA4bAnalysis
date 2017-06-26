@@ -100,7 +100,7 @@ private:
   TLorentzVector *jet4_4mom_tree_fit;
 //==============================================
 
-   const int Max_Jets = 25;
+   const int Max_Jets = 200;
 
   // vectors to store MC information for background analysis
   std::vector<float> Genb_pt;
@@ -258,10 +258,10 @@ private:
   float* Jet_mass = new float[Max_Jets](); 
   float* Jet_btag = new float[Max_Jets]();
 
-//  float* GenJet_pt    = new float[Max_Jets]; 
-//  float* GenJet_eta   = new float[Max_Jets]; 
-//  float* GenJet_phi   = new float[Max_Jets]; 
-//  float* GenJet_mass  = new float[Max_Jets]; 
+  float* GenJet_pt    = new float[Max_Jets](); 
+  float* GenJet_eta   = new float[Max_Jets](); 
+  float* GenJet_phi   = new float[Max_Jets](); 
+  float* GenJet_mass  = new float[Max_Jets](); 
 
   float LHE_weights_scale_wgt; 
   float nLHE_weights_pdf;

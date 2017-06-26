@@ -12,7 +12,7 @@ config.JobType.pluginName = 'Analysis'
 config.JobType.inputFiles = ['CSVv2_Moriond17_B_H.csv','input_data/Summer16_23Sep2016BCDV4_DATA_L1FastJet_AK4PFchs.txt', 'input_data/Summer16_23Sep2016BCDV4_DATA_L1RC_AK4PFchs.txt', 'input_data/Summer16_23Sep2016BCDV4_DATA_L2L3Residual_AK4PFchs.txt', 'input_data/Summer16_23Sep2016BCDV4_DATA_L2Relative_AK4PFchs.txt','input_data/Summer16_23Sep2016BCDV4_DATA_L2Residual_AK4PFchs.txt', 'input_data/Summer16_23Sep2016BCDV4_DATA_L3Absolute_AK4PFchs.txt', 'input_data/Summer16_23Sep2016BCDV4_DATA_Uncertainty_AK4PFchs.txt'] #data files 
 config.JobType.outputFiles = ['HAA4bAnalysis_output.root']
 config.JobType.pyCfgParams = ['runningOnData=True']
-config.JobType.allowUndistributedCMSSW = True
+config.JobType.allowUndistributedCMSSW = False
 
 config.section_('Data')
 config.Data.lumiMask = 'json/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
